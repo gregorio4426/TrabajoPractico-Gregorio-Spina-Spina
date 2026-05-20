@@ -1,11 +1,19 @@
 package utn.simulacro_nombreAlumno.model;
 
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
-
+@Entity
+@Table(name = "asignaciones_rutina")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class AsignacionRutina {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
