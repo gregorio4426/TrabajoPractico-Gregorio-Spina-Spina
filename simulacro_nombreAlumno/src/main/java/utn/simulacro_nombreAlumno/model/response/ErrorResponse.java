@@ -1,15 +1,12 @@
-package utn.simulacro_nombreAlumno.model.dto.response;
+package utn.simulacro_nombreAlumno.model.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ErrorResponseDTO {
+public class ErrorResponse {
     private String mensaje;
 }
