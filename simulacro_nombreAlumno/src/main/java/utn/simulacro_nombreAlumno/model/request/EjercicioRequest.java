@@ -17,7 +17,6 @@ public class EjercicioRequest {
     private String descripcion;
 
 
-    private Integer duracionMinutos;    /// estos dos campos no estan en la entity , faltaria el grupo muscular aca
-    private Integer caloriasEstimadas;
+
 }
 

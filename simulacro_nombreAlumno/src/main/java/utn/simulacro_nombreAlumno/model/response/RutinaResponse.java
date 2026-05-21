@@ -14,7 +14,7 @@ public class RutinaResponse {
     private String nombre;
     private String descripcion;
     private Set<EjercicioResponse> ejercicios;
-    private Long profesorId;            /// cambiaria a devolver el nombre de los profesores
-    private Long alumnoId;              /// cambiaria a devolver el nombre de los alumnos
+    private String profesor;
+    private String alumno;
 }
 
