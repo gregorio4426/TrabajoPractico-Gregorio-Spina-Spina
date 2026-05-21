@@ -17,9 +17,16 @@ public class Profesor {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+    @Column(nullable = false, length = 20)
 	private String nombre;
+
+    @Column(nullable = false, length = 20)
 	private String apellido;
+
+    @Column(nullable = false,unique = true ,length = 150)
 	private String email;
+
+    @Column(nullable = false, length = 50)
 	private String especialidad;
 
     @ManyToMany(mappedBy = "profesores")

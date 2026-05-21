@@ -11,10 +11,19 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class AlumnoRequest {
+
+    @NotBlank
     private String nombre;
+    @NotBlank
     private String apellido;
+    @Email
     private String email;
+
+    @Positive
+    @NotNull
     private Integer edad;
+
+    @FutureOrPresent
     private LocalDate fechaNacimiento;
 }
 

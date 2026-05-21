@@ -5,16 +5,17 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 @Entity
-@Table(name = "asignaciones_rutina")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "asignaciones_rutina")
 public class AsignacionRutina {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
     private boolean activa;

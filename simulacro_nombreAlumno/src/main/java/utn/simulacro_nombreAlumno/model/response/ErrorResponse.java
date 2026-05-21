@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorResponse {
     private String mensaje;
+        ///  le falata la fecha y tipo
 }

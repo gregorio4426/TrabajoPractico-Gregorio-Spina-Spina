@@ -1,5 +1,6 @@
 package utn.simulacro_nombreAlumno.model.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -9,10 +10,14 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class EjercicioRequest {
-
+    @NotBlank
     private String nombre;
+
+    @NotBlank
     private String descripcion;
-    private Integer duracionMinutos;
+
+
+    private Integer duracionMinutos;    /// estos dos campos no estan en la entity , faltaria el grupo muscular aca
     private Integer caloriasEstimadas;
 }
 
