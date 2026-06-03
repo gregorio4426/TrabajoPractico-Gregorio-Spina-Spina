@@ -10,7 +10,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class RutinaResponse {
-    private Long id;
+
     private String nombre;
     private String descripcion;
     private Set<EjercicioResponse> ejercicios;

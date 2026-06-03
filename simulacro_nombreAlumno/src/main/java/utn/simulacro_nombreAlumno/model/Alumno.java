@@ -7,12 +7,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name = "alumnos")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "alumnos")
 public class Alumno {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,6 +24,9 @@ public class Alumno {
     @Column(nullable = false, length = 20)
 	private String apellido;
 
+    @Column(nullable = false, length = 3)
+    private int edad;
+
     @Column(nullable = false, unique = true, length = 150)
 	private String email;
 
@@ -32,6 +35,7 @@ public class Alumno {
     @Enumerated(EnumType.STRING)
     private Nivel nivel;
 
+    @Enumerated(EnumType.STRING)
     private Objetivo objetivo;
 
     @ManyToMany

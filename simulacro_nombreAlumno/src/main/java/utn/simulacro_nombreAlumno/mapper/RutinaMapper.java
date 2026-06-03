@@ -6,9 +6,13 @@ import utn.simulacro_nombreAlumno.model.Rutina;
 import utn.simulacro_nombreAlumno.model.request.RutinaRequest;
 import utn.simulacro_nombreAlumno.model.response.RutinaResponse;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface RutinaMapper {
     RutinaResponse toDto (Rutina rutina);
     Rutina toEntity(RutinaRequest request);
+
+    List<RutinaResponse> toLISTDto (List<Rutina> rutinas);
 }
 

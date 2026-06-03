@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 public class AlumnoResponse {
-    private Long id;
+
     private String nombre;
     private String apellido;
     private String email;

@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class EjercicioResponse {
-    private Long id;
+
     private String nombre;
     private String descripcion;
 

@@ -20,7 +20,8 @@ public class RutinaRequest {
 
     @NotBlank
     private String descripcion;
-    /// ids de ejercicios que componen la rutina???
+
+    /// ids de ejercicios que componen la rutina??? y hay q pensar como hacer la funcion de crear
     private List<Long> ejercicioIds;
 
     @NotNull

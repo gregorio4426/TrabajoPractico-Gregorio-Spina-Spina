@@ -2,6 +2,8 @@ package utn.simulacro_nombreAlumno.model.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import utn.simulacro_nombreAlumno.model.Nivel;
+import utn.simulacro_nombreAlumno.model.Objetivo;
 
 import java.time.LocalDate;
 
@@ -23,7 +25,14 @@ public class AlumnoRequest {
     @NotNull
     private Integer edad;
 
-    @FutureOrPresent
+    @PastOrPresent
     private LocalDate fechaNacimiento;
+
+    ///  nose si van validaciones aca
+    @NotBlank
+    private Nivel nivel;
+ /// nose si va validaciones aca
+    @NotBlank
+    private Objetivo objetivo;
 }
 
