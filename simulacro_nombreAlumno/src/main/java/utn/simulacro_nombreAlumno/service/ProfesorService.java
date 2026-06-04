@@ -36,13 +36,17 @@ public class ProfesorService  {
 
 
     public ProfesorResponse updateProfesor(Long id, ProfesorRequest nuevo) {
+
         Profesor profesor = findEntityById(id);
-        profesor = profesorMapper.toEntity(nuevo);
+
+        profesor.setNombre(nuevo.getNombre());
+        profesor.setApellido(nuevo.getApellido());
+        profesor.setEmail(nuevo.getEmail());
+        profesor.setEspecialidad(nuevo.getEspecialidad());
 
         profesorRepository.save(profesor);
-        ProfesorResponse resp = profesorMapper.toDto(profesor);
-        return resp;
 
+        return profesorMapper.toDto(profesor);
     }
 
     public Profesor findEntityById(long id) {
