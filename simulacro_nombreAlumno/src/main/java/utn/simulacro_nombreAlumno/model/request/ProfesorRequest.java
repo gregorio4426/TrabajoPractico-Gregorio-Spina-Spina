@@ -23,4 +23,3 @@ public class ProfesorRequest {
    @NotBlank
     private String especialidad;
 }
-

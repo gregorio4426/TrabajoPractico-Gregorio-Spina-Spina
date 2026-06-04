@@ -9,6 +9,8 @@ import utn.simulacro_nombreAlumno.model.Rutina;
 import utn.simulacro_nombreAlumno.model.response.RutinaResponse;
 import utn.simulacro_nombreAlumno.repository.RutinaRepository;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class RutinaService {
@@ -23,6 +25,12 @@ public class RutinaService {
 
     public RutinaResponse findRutinaResponseById(long id) {
         return  rutinaMapper.toDto(findEntityById(id));
+    }
+
+    public List<RutinaResponse> listarTodas (){
+        List<Rutina> todas = rutinaRepository.findAll();
+        return rutinaMapper.toLISTDto(todas);
+
     }
 
 
