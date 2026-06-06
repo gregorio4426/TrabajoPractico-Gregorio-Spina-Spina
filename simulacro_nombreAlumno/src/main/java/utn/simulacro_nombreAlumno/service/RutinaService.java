@@ -39,18 +39,14 @@ public class RutinaService {
         if (request.getEjercicioIds() == null || request.getEjercicioIds().isEmpty()) {
             throw new ReglaNegocioException("La rutina debe tener al menos un ejercicio");
         }
-
         Profesor profesor = profesorService.findEntityById(request.getProfesorId());
-
         List<Ejercicio> ejercicios = new ArrayList<>();
-        for (Long ejercicioId : request.getEjercicioIds()) {
-            ejercicios.add(ejercicioService.findEntityById(ejercicioId));
+        for (Long eid : request.getEjercicioIds()) {
+            ejercicios.add(ejercicioService.findEntityById(eid));
         }
-
         Rutina rutina = rutinaMapper.toEntity(request);
         rutina.setEjercicios(ejercicios);
         rutina.setProfesor(profesor);
-
         return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
 
