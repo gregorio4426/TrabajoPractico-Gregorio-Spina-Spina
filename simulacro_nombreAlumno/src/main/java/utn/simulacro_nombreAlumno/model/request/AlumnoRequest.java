@@ -29,10 +29,10 @@ public class AlumnoRequest {
     private LocalDate fechaNacimiento;
 
     ///  nose si van validaciones aca
-    @NotBlank
+    @NotNull
     private Nivel nivel;
  /// nose si va validaciones aca
-    @NotBlank
+    @NotNull
     private Objetivo objetivo;
 }
 
