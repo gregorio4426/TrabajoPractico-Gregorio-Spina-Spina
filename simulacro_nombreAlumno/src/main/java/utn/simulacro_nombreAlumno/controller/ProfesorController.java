@@ -22,5 +22,11 @@ public class ProfesorController {
 
         return ResponseEntity.ok(profesorService.updateProfesor(id, cambios));
     }
+
+    @PostMapping
+    public ResponseEntity<ProfesorResponse> registrar(@Valid @RequestBody ProfesorRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(profesorService.createProfesor(request));
+    }
+
 }
 

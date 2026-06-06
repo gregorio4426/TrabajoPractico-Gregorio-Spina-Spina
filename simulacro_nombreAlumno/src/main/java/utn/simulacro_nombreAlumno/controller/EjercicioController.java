@@ -34,5 +34,8 @@ public class EjercicioController {
     public ResponseEntity<EjercicioResponse> create(@Valid @RequestBody EjercicioRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ejercicioService.createEjercicio(request));
     }
+
+
+
 }
 
