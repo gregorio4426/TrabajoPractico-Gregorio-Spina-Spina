@@ -40,6 +40,11 @@ public class EjercicioController {
         return ResponseEntity.ok(ejercicioService.updateEjercicio(id, request));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        ejercicioService.deleteEjercicio(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }
 
