@@ -44,4 +44,10 @@ public class RutinaController {
     public ResponseEntity<AsignacionResponse> asignar(@Valid @RequestBody AsignacionRutinaRequest asignacionRutinaRequest) {
         return ResponseEntity.ok(rutinaService.asignarRutina(asignacionRutinaRequest));
     }
+
+    @GetMapping("/activa/alumno/{alumnoId}")
+    public ResponseEntity<RutinaResponse> getRutinaActiva(@PathVariable Long alumnoId) {
+        return ResponseEntity.ok(rutinaService.getRutinaActivaDeAlumno(alumnoId));
+    }
+
 }
