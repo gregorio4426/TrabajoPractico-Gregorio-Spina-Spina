@@ -9,6 +9,8 @@ import utn.simulacro_nombreAlumno.model.request.ProfesorRequest;
 import utn.simulacro_nombreAlumno.model.response.ProfesorResponse;
 import utn.simulacro_nombreAlumno.service.ProfesorService;
 
+import java.util.List;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +28,11 @@ public class ProfesorController {
     @PostMapping
     public ResponseEntity<ProfesorResponse> registrar(@Valid @RequestBody ProfesorRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(profesorService.createProfesor(request));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ProfesorResponse>> listarTodos() {
+        return ResponseEntity.ok(profesorService.listarProfesores());
     }
 
 }
