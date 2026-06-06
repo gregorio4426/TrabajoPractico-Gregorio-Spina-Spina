@@ -32,4 +32,10 @@ public class RutinaController {
         return ResponseEntity.ok(rutinaService.updateRutina(id, request));
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        rutinaService.deleteRutina(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
