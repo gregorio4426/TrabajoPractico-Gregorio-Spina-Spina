@@ -30,7 +30,10 @@ public class AlumnoController {
         return ResponseEntity.ok(alumnoService.listarAlumnos());
     }
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<AlumnoResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(alumnoService.findAlumnoResponseById(id));
+    }
 
 
 
