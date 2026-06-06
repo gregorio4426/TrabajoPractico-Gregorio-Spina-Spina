@@ -35,7 +35,10 @@ public class AlumnoController {
         return ResponseEntity.ok(alumnoService.findAlumnoResponseById(id));
     }
 
-
+    @PutMapping("/{id}")
+    public ResponseEntity<AlumnoResponse> update(@PathVariable Long id, @Valid @RequestBody AlumnoRequest request) {
+        return ResponseEntity.ok(alumnoService.updateAlumno(id, request));
+    }
 
 
 }
