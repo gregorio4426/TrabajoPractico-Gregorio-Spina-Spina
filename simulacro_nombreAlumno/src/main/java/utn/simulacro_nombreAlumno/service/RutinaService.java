@@ -50,6 +50,21 @@ public class RutinaService {
         return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
 
+    public RutinaResponse updateRutina(Long id, RutinaRequest request) {
+        Rutina rutina = findEntityById(id);
+        if (request.getEjercicioIds() == null || request.getEjercicioIds().isEmpty()) {
+            throw new ReglaNegocioException("La rutina debe tener al menos un ejercicio");
+        }
+        List<Ejercicio> ejercicios = new ArrayList<>();
+        for (Long eid : request.getEjercicioIds()) {
+            ejercicios.add(ejercicioService.findEntityById(eid));
+        }
+        rutina.setNombre(request.getNombre());
+        rutina.setDescripcion(request.getDescripcion());
+        rutina.setEjercicios(ejercicios);
+        rutina.setProfesor(profesorService.findEntityById(request.getProfesorId()));
+        return rutinaMapper.toDto(rutinaRepository.save(rutina));
+    }
 }
 
 
