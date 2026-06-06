@@ -35,6 +35,14 @@ public class AlumnoService  {
 
         }
 
+    public AlumnoResponse updateAlumno(Long id, AlumnoRequest request) {
+        Alumno alumno = findEntityById(id);
+        alumno = alumnoMapper.toEntity(request);
+        alumnoRepository.save(alumno);
+        return alumnoMapper.toDto(alumno);
+    }
+
+
         public List<AlumnoResponse> listarAlumnos() {
             List<Alumno> alumnos = alumnoRepository.findAll();
             List<AlumnoResponse> alumnoResponse = alumnoMapper.toLISTDto(alumnos);
