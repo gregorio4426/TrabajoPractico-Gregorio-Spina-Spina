@@ -38,6 +38,17 @@ public class EjercicioService {
         return ejercicioResponse;
     }
 
+    public EjercicioResponse updateEjercicio(Long id, EjercicioRequest request) {
+        Ejercicio ejercicio = findEntityById(id);
+        ejercicio = ejercicioMapper.toEntity(request);
+        ejercicioRepository.save(ejercicio);
+        return ejercicioMapper.toDto(ejercicio);
+    }
+
+    public void deleteEjercicio(Long id) {
+        ejercicioRepository.delete(findEntityById(id));
+    }
+
     public Ejercicio findEntityById(long id) {
         return ejercicioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
