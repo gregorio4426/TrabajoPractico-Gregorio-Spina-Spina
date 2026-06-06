@@ -4,14 +4,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import utn.simulacro_nombreAlumno.exception.ReglaNegocioException;
 import utn.simulacro_nombreAlumno.exception.RecursoNoEncontradoException;
+import utn.simulacro_nombreAlumno.mapper.AsignacionMapper;
 import utn.simulacro_nombreAlumno.mapper.RutinaMapper;
-import utn.simulacro_nombreAlumno.model.Ejercicio;
-import utn.simulacro_nombreAlumno.model.Profesor;
-import utn.simulacro_nombreAlumno.model.Rutina;
+import utn.simulacro_nombreAlumno.model.*;
+import utn.simulacro_nombreAlumno.model.request.AsignacionRutinaRequest;
 import utn.simulacro_nombreAlumno.model.request.RutinaRequest;
+import utn.simulacro_nombreAlumno.model.response.AsignacionResponse;
 import utn.simulacro_nombreAlumno.model.response.RutinaResponse;
+import utn.simulacro_nombreAlumno.repository.AsignacionRutinaRepository;
 import utn.simulacro_nombreAlumno.repository.RutinaRepository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class RutinaService {
     private final RutinaMapper rutinaMapper;
     private final EjercicioService ejercicioService;
     private final ProfesorService profesorService;
+    private final AsignacionRutinaRepository asignacionRutinaRepository;
+    private final AlumnoService alumnoService;
+    private final AsignacionMapper asignacionMapper;
 
     public Rutina findEntityById(long id) {
          return rutinaRepository.findById(id)
@@ -68,6 +74,28 @@ public class RutinaService {
 
     public void deleteRutina(Long id) {
         rutinaRepository.delete(findEntityById(id));
+    }
+
+    public AsignacionResponse asignarRutina(AsignacionRutinaRequest request) {
+        Rutina rutina = findEntityById(request.getRutinaId());
+        Alumno alumno = alumnoService.findEntityById(request.getAlumnoId());
+
+        // Desactivar asignación activa previa si existe
+        asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno).ifPresent(a -> {
+            a.setActiva(false);
+            a.setFechaFin(LocalDateTime.now());
+            asignacionRutinaRepository.save(a);
+        });
+
+        AsignacionRutina asignacion = AsignacionRutina.builder()
+                .rutina(rutina)
+                .alumno(alumno)
+                .fechaInicio(LocalDateTime.now())
+                .activa(true)
+                .build();
+        asignacionRutinaRepository.save(asignacion);
+
+        return asignacionMapper.toResponse(asignacion);
     }
 }
 
