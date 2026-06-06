@@ -40,7 +40,7 @@ public class RutinaController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{rutinaId}/asignar/{alumnoId}")
+    @PostMapping("/asignar")
     public ResponseEntity<AsignacionResponse> asignar(@Valid @RequestBody AsignacionRutinaRequest asignacionRutinaRequest) {
         return ResponseEntity.ok(rutinaService.asignarRutina(asignacionRutinaRequest));
     }
