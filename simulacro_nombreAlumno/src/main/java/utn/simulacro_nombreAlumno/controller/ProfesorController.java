@@ -34,6 +34,9 @@ public class ProfesorController {
     public ResponseEntity<List<ProfesorResponse>> listarTodos() {
         return ResponseEntity.ok(profesorService.listarProfesores());
     }
-
+    @GetMapping("/{id}")
+    public ResponseEntity<ProfesorResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(profesorService.findProfesorResponseById(id));
+    }
 }
 
