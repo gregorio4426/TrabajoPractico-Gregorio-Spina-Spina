@@ -23,8 +23,8 @@ import java.util.List;
 @Service
 public class AlumnoService  {
 
-    private final AlumnoMapper alumnoMapper;
-    private final AlumnoRepository alumnoRepository;
+    private  AlumnoMapper alumnoMapper;
+    private  AlumnoRepository alumnoRepository;
 
 
         public AlumnoResponse createAlumno(AlumnoRequest nuevo) {

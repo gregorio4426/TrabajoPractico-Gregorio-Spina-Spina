@@ -10,9 +10,12 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface RutinaMapper {
-    RutinaResponse toDto (Rutina rutina);
+    
+    @Mapping(target = "profesor", expression = "java(rutina.getProfesor() != null ? rutina.getProfesor().getNombre() : null)")
+    RutinaResponse toDto(Rutina rutina);
+    
     Rutina toEntity(RutinaRequest request);
 
-    List<RutinaResponse> toLISTDto (List<Rutina> rutinas);
+    List<RutinaResponse> toLISTDto(List<Rutina> rutinas);
 }
 

@@ -2,7 +2,7 @@ package utn.simulacro_nombreAlumno.model.response;
 
 import lombok.*;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,7 +13,7 @@ public class RutinaResponse {
 
     private String nombre;
     private String descripcion;
-    private Set<EjercicioResponse> ejercicios;
+    private List<EjercicioResponse> ejercicios;
     private String profesor;
     private String alumno;
 }

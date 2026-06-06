@@ -2,13 +2,17 @@ package utn.simulacro_nombreAlumno.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import utn.simulacro_nombreAlumno.exception.ReglaNegocioException;
 import utn.simulacro_nombreAlumno.exception.RecursoNoEncontradoException;
 import utn.simulacro_nombreAlumno.mapper.RutinaMapper;
-import utn.simulacro_nombreAlumno.model.Alumno;
+import utn.simulacro_nombreAlumno.model.Ejercicio;
+import utn.simulacro_nombreAlumno.model.Profesor;
 import utn.simulacro_nombreAlumno.model.Rutina;
+import utn.simulacro_nombreAlumno.model.request.RutinaRequest;
 import utn.simulacro_nombreAlumno.model.response.RutinaResponse;
 import utn.simulacro_nombreAlumno.repository.RutinaRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -17,23 +21,38 @@ public class RutinaService {
 
     private final RutinaRepository rutinaRepository;
     private final RutinaMapper rutinaMapper;
+    private final EjercicioService ejercicioService;
+    private final ProfesorService profesorService;
 
     public Rutina findEntityById(long id) {
-        return rutinaRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
-    }
-
-    public RutinaResponse findRutinaResponseById(long id) {
-        return  rutinaMapper.toDto(findEntityById(id));
-    }
+         return rutinaRepository.findById(id)
+                 .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
+     }
 
     public List<RutinaResponse> listarTodas (){
-        List<Rutina> todas = rutinaRepository.findAll();
-        return rutinaMapper.toLISTDto(todas);
+         List<Rutina> todas = rutinaRepository.findAll();
+         return rutinaMapper.toLISTDto(todas);
 
+     }
+
+    public RutinaResponse crearRutina(RutinaRequest request) {
+        if (request.getEjercicioIds() == null || request.getEjercicioIds().isEmpty()) {
+            throw new ReglaNegocioException("La rutina debe tener al menos un ejercicio");
+        }
+
+        Profesor profesor = profesorService.findEntityById(request.getProfesorId());
+
+        List<Ejercicio> ejercicios = new ArrayList<>();
+        for (Long ejercicioId : request.getEjercicioIds()) {
+            ejercicios.add(ejercicioService.findEntityById(ejercicioId));
+        }
+
+        Rutina rutina = rutinaMapper.toEntity(request);
+        rutina.setEjercicios(ejercicios);
+        rutina.setProfesor(profesor);
+
+        return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
-
-
 
 }
 

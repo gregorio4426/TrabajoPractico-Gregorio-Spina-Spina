@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "rutinas")
@@ -29,7 +28,7 @@ public class Rutina {
 			joinColumns = @JoinColumn(name = "rutina_id"),
 			inverseJoinColumns = @JoinColumn(name = "ejercicio_id")
 	)
-	private Set<Ejercicio> ejercicios;
+	private List<Ejercicio> ejercicios;
 
 	@ManyToOne
 	@JoinColumn(name = "profesor_id")
