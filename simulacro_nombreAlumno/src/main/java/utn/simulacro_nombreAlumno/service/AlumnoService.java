@@ -25,6 +25,7 @@ public class AlumnoService  {
 
     private  AlumnoMapper alumnoMapper;
     private  AlumnoRepository alumnoRepository;
+    private  ProfesorService profesorService;
 
 
         public AlumnoResponse createAlumno(AlumnoRequest nuevo) {
@@ -66,6 +67,15 @@ public class AlumnoService  {
 
             return alumnoMapper.toDto(alumno);
         }
+    public AlumnoResponse elegirProfesor(Long alumnoId, Long profesorId) {
+        Alumno alumno = findEntityById(alumnoId);
+        Profesor profesor = profesorService.findEntityById(profesorId);
+        if (!alumno.getProfesores().contains(profesor)) {
+            alumno.getProfesores().add(profesor);
+        }
+        alumnoRepository.save(alumno);
+        return alumnoMapper.toDto(alumno);
+    }
 
 
     public Alumno findEntityById(long id) {
