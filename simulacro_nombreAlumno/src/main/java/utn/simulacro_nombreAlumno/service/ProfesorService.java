@@ -51,7 +51,7 @@ public class ProfesorService  {
 
     public Profesor findEntityById(long id) {
         return profesorRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Profesor no encontrado"));
     }
 
     public ProfesorResponse findProfesorResponseById(long id) {

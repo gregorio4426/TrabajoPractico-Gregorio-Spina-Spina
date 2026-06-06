@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/profesores")
 public class ProfesorController {
 
-    public final ProfesorService profesorService ;
+    private final ProfesorService profesorService ;
 
     @PatchMapping("{id}")
     public ResponseEntity<ProfesorResponse> updateProfesor(@PathVariable Long id, @Valid @RequestBody ProfesorRequest cambios) {
