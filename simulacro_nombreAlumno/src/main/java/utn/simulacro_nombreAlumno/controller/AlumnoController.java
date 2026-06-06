@@ -39,7 +39,7 @@ public class AlumnoController {
     public ResponseEntity<AlumnoResponse> update(@PathVariable Long id, @Valid @RequestBody AlumnoRequest request) {
         return ResponseEntity.ok(alumnoService.updateAlumno(id, request));
     }
-
+    
 
 }
 
