@@ -23,9 +23,9 @@ import java.util.List;
 @Service
 public class AlumnoService  {
 
-    private  AlumnoMapper alumnoMapper;
-    private  AlumnoRepository alumnoRepository;
-    private  ProfesorService profesorService;
+    private final AlumnoMapper alumnoMapper;
+    private final AlumnoRepository alumnoRepository;
+    private final ProfesorService profesorService;
 
 
         public AlumnoResponse createAlumno(AlumnoRequest nuevo) {
