@@ -50,4 +50,8 @@ public class RutinaController {
         return ResponseEntity.ok(rutinaService.getRutinaActivaDeAlumno(alumnoId));
     }
 
+    @GetMapping("/historial/alumno/{alumnoId}")
+    public ResponseEntity<List<RutinaResponse>> getHistorial(@PathVariable Long alumnoId) {
+        return ResponseEntity.ok(rutinaService.getHistorialDeAlumno(alumnoId));
+    }
 }
