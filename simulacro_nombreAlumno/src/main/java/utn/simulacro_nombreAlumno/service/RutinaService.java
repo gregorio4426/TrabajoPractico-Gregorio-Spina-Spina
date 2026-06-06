@@ -107,6 +107,13 @@ public class RutinaService {
         }
         return responses;
     }
+
+    public RutinaResponse getRutinaActivaDeAlumno(Long alumnoId) {
+        Alumno alumno = alumnoService.findEntityById(alumnoId);
+        AsignacionRutina asignacion = asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno)
+                .orElseThrow(() -> new RecursoNoEncontradoException("El alumno no tiene una rutina activa"));
+        return rutinaMapper.toDto(asignacion.getRutina());
+    }
 }
 
 
