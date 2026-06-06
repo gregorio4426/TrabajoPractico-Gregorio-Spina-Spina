@@ -97,6 +97,16 @@ public class RutinaService {
 
         return asignacionMapper.toResponse(asignacion);
     }
+
+    public List<RutinaResponse> getHistorialDeAlumno(Long alumnoId) {
+        Alumno alumno = alumnoService.findEntityById(alumnoId);
+        List<AsignacionRutina> historial = asignacionRutinaRepository.findByAlumno(alumno);
+        List<RutinaResponse> responses = new ArrayList<>();
+        for (AsignacionRutina a : historial) {
+            responses.add(rutinaMapper.toDto(a.getRutina()));
+        }
+        return responses;
+    }
 }
 
 
