@@ -39,7 +39,10 @@ public class AlumnoController {
     public ResponseEntity<AlumnoResponse> update(@PathVariable Long id, @Valid @RequestBody AlumnoRequest request) {
         return ResponseEntity.ok(alumnoService.updateAlumno(id, request));
     }
-
+    @PostMapping("/{alumnoId}/profesores/{profesorId}")
+    public ResponseEntity<AlumnoResponse> elegirProfesor(@PathVariable Long alumnoId, @PathVariable Long profesorId) {
+        return ResponseEntity.ok(alumnoService.elegirProfesor(alumnoId, profesorId));
+    }
 
 }
 

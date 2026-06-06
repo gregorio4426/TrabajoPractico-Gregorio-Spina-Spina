@@ -35,7 +35,16 @@ public class EjercicioController {
         return ResponseEntity.status(HttpStatus.CREATED).body(ejercicioService.createEjercicio(request));
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<EjercicioResponse> update(@PathVariable Long id, @Valid @RequestBody EjercicioRequest request) {
+        return ResponseEntity.ok(ejercicioService.updateEjercicio(id, request));
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        ejercicioService.deleteEjercicio(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }
 
