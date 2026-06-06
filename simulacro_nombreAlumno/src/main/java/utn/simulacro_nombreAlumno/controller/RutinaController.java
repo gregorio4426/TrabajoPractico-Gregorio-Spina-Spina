@@ -3,7 +3,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import utn.simulacro_nombreAlumno.model.request.AsignacionRutinaRequest;
 import utn.simulacro_nombreAlumno.model.request.RutinaRequest;
+import utn.simulacro_nombreAlumno.model.response.AsignacionResponse;
 import utn.simulacro_nombreAlumno.model.response.RutinaResponse;
 import utn.simulacro_nombreAlumno.service.RutinaService;
 
@@ -38,4 +40,8 @@ public class RutinaController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/{rutinaId}/asignar/{alumnoId}")
+    public ResponseEntity<AsignacionResponse> asignar(@Valid @RequestBody AsignacionRutinaRequest asignacionRutinaRequest) {
+        return ResponseEntity.ok(rutinaService.asignarRutina(asignacionRutinaRequest));
+    }
 }
