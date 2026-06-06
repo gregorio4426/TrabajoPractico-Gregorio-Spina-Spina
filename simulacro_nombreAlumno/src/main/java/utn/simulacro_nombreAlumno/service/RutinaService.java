@@ -65,6 +65,10 @@ public class RutinaService {
         rutina.setProfesor(profesorService.findEntityById(request.getProfesorId()));
         return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
+
+    public void deleteRutina(Long id) {
+        rutinaRepository.delete(findEntityById(id));
+    }
 }
 
 
