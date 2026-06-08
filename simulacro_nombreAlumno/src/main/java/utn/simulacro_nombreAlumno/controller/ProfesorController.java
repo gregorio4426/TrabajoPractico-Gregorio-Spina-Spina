@@ -19,7 +19,7 @@ public class ProfesorController {
 
     private final ProfesorService profesorService ;
 
-    @PatchMapping("{id}")
+    @PutMapping("{id}")
     public ResponseEntity<ProfesorResponse> updateProfesor(@PathVariable Long id, @Valid @RequestBody ProfesorRequest cambios) {
 
         return ResponseEntity.ok(profesorService.updateProfesor(id, cambios));
