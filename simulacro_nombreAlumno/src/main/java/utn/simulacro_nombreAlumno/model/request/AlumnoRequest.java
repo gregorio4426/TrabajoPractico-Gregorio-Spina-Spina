@@ -25,6 +25,7 @@ public class AlumnoRequest {
     @NotNull
     private Integer edad;
 
+    @NotNull
     @PastOrPresent
     private LocalDate fechaNacimiento;
 

@@ -24,7 +24,7 @@ public class RutinaController {
     }
 
     @PostMapping
-    public ResponseEntity<RutinaResponse> crearRutina(@RequestBody RutinaRequest request) {
+    public ResponseEntity<RutinaResponse> crearRutina(@Valid @RequestBody RutinaRequest request) {
         RutinaResponse response = rutinaService.crearRutina(request);
         return ResponseEntity.ok(response);
     }
