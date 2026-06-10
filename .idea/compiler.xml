@@ -13,6 +13,12 @@
         <module name="simulacro_nombreAlumno.test" />
         <module name="simulacro_nombreAlumno.main" />
       </profile>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="simulacro_nombreAlumno" />
+      </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">

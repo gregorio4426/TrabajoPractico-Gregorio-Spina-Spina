@@ -17,10 +17,8 @@ public class EjercicioRequest {
     @NotBlank
     private String descripcion;
 
-    @NotBlank
+    @NotNull
     private GrupoMuscular grupoMuscular;
-
-
 
 }
 
