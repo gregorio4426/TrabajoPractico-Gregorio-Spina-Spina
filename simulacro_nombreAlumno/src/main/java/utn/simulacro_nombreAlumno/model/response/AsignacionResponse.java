@@ -1,7 +1,13 @@
 package utn.simulacro_nombreAlumno.model.response;
 
-import java.time.LocalDateTime;
+import lombok.*;
 
+import java.time.LocalDateTime;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class AsignacionResponse {
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;

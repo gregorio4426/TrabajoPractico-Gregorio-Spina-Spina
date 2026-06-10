@@ -15,7 +15,6 @@ import utn.simulacro_nombreAlumno.model.response.ProfesorResponse;
 import utn.simulacro_nombreAlumno.repository.AlumnoRepository;
 import utn.simulacro_nombreAlumno.repository.ProfesorRepository;
 
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +37,11 @@ public class AlumnoService  {
 
     public AlumnoResponse updateAlumno(Long id, AlumnoRequest request) {
         Alumno alumno = findEntityById(id);
-        alumno = alumnoMapper.toEntity(request);
+        alumno.setNombre(request.getNombre());
+        alumno.setApellido(request.getApellido());
+        alumno.setEdad(request.getEdad());
+        alumno.setNivel(request.getNivel());
+        alumno.setObjetivo(request.getObjetivo());
         alumnoRepository.save(alumno);
         return alumnoMapper.toDto(alumno);
     }

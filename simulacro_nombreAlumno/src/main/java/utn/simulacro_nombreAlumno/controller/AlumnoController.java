@@ -1,5 +1,4 @@
 package utn.simulacro_nombreAlumno.controller;
-import ch.qos.logback.core.read.ListAppender;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

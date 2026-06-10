@@ -34,9 +34,6 @@ public class Rutina {
 	@JoinColumn(name = "profesor_id")
 	private Profesor profesor;
 
-	@OneToMany (mappedBy = "rutina")
-    private List<Alumno> alumnos;
-
     @OneToMany (mappedBy = "rutina")
     private List<AsignacionRutina> asignaciones;
 }
