@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/ludoteca_nombreAlumno #(Server local)
+    url: jdbc:mysql://localhost:3306/APPgimnasioBD #(Server local)
     #url: jdbc:mysql://172.16.1.64:3306/ludoteca_nombreAlumno (Server UTN)
 
     username: root #(Server Local)
