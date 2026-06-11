@@ -3,6 +3,7 @@ package utn.simulacro_nombreAlumno.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,9 +18,9 @@ public class Rutina {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
 	private String nombre;
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
 	private String descripcion;
 
 	@ManyToMany
@@ -35,5 +36,6 @@ public class Rutina {
 	private Profesor profesor;
 
     @OneToMany (mappedBy = "rutina")
-    private List<AsignacionRutina> asignaciones;
+    @Builder.Default
+    private List<AsignacionRutina> asignaciones = new ArrayList<>();
 }

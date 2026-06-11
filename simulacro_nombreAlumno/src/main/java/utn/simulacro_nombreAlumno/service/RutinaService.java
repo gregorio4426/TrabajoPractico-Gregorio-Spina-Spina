@@ -73,7 +73,10 @@ public class RutinaService {
     }
 
     public void deleteRutina(Long id) {
-        rutinaRepository.delete(findEntityById(id));
+        Rutina rutina = findEntityById(id);
+        asignacionRutinaRepository.deleteAll(rutina.getAsignaciones());
+        rutina.getEjercicios().clear();
+        rutinaRepository.delete(rutina);
     }
 
     public AsignacionResponse asignarRutina(AsignacionRutinaRequest request) {
