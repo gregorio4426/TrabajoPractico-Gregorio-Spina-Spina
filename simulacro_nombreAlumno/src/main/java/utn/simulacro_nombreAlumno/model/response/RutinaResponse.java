@@ -15,6 +15,6 @@ public class RutinaResponse {
     private String descripcion;
     private List<EjercicioResponse> ejercicios;
     private String profesor;
-    private String alumno;
+    private List<String> alumnos;
 }
 

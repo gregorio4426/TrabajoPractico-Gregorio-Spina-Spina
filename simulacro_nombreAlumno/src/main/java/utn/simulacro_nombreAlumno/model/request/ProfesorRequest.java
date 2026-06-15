@@ -14,7 +14,7 @@ public class ProfesorRequest {
    @NotBlank
     private String nombre;
 
-   @NotNull
+   @NotBlank
     private String apellido;
 
    @Email

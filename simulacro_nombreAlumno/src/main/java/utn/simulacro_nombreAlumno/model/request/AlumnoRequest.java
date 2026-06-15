@@ -25,14 +25,15 @@ public class AlumnoRequest {
     @NotNull
     private Integer edad;
 
+    @NotNull
     @PastOrPresent
     private LocalDate fechaNacimiento;
 
     ///  nose si van validaciones aca
-    @NotBlank
+    @NotNull
     private Nivel nivel;
  /// nose si va validaciones aca
-    @NotBlank
+    @NotNull
     private Objetivo objetivo;
 }
 
