@@ -38,6 +38,10 @@ public class Alumno {
     @Enumerated(EnumType.STRING)
     private Objetivo objetivo;
 
+    @OneToOne
+    @JoinColumn(name = "usuario_id", unique = true)
+    private Usuario usuario;
+
     @ManyToMany
     @JoinTable(
         name = "alumnos_profesore",
