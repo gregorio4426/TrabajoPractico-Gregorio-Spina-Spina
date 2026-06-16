@@ -6,7 +6,7 @@ spring:
     username: root #(Server Local)
     #username: bdd1 (Server UTN)
 
-    password: Tomas2002 #(Server Local)
+    password: 1234 #(Server Local)
     #password: bdd1 (Server UTN)
 
     driver-class-name: com.mysql.cj.jdbc.Driver
