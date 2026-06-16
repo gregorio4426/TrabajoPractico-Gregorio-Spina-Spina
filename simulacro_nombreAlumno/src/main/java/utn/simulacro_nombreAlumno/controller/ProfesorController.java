@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import utn.simulacro_nombreAlumno.model.request.ProfesorRequest;
 import utn.simulacro_nombreAlumno.model.response.ProfesorResponse;
@@ -19,24 +20,24 @@ public class ProfesorController {
 
     private final ProfesorService profesorService ;
 
-    @PutMapping("{id}")
-    public ResponseEntity<ProfesorResponse> updateProfesor(@PathVariable Long id, @Valid @RequestBody ProfesorRequest cambios) {
-
-        return ResponseEntity.ok(profesorService.updateProfesor(id, cambios));
-    }
-
-    @PostMapping
-    public ResponseEntity<ProfesorResponse> registrar(@Valid @RequestBody ProfesorRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(profesorService.createProfesor(request));
-    }
-
+    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR')")
     @GetMapping
     public ResponseEntity<List<ProfesorResponse>> listarTodos() {
         return ResponseEntity.ok(profesorService.listarProfesores());
     }
+
+    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ProfesorResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(profesorService.findProfesorResponseById(id));
+    }
+
+    @PreAuthorize("hasRole('PROFESOR')")
+    @PatchMapping("/{id}")
+    public ResponseEntity<ProfesorResponse> update(
+            @PathVariable Long id,
+            @Valid @RequestBody ProfesorRequest request) {
+        return ResponseEntity.ok(profesorService.updateProfesor(id, request));
     }
 }
 

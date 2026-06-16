@@ -29,6 +29,10 @@ public class Profesor {
     @Column(nullable = false, length = 50)
 	private String especialidad;
 
+    @OneToOne
+    @JoinColumn(name = "usuario_id", unique = true)
+    private Usuario usuario;
+
     @ManyToMany(mappedBy = "profesores")
     private List<Alumno> alumnos;
 

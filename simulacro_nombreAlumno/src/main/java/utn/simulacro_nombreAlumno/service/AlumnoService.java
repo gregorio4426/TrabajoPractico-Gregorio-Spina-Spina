@@ -5,11 +5,9 @@ import org.springframework.stereotype.Service;
 import utn.simulacro_nombreAlumno.exception.RecursoNoEncontradoException;
 import utn.simulacro_nombreAlumno.mapper.AlumnoMapper;
 import utn.simulacro_nombreAlumno.mapper.ProfesorMapper;
-import utn.simulacro_nombreAlumno.model.Alumno;
-import utn.simulacro_nombreAlumno.model.Nivel;
-import utn.simulacro_nombreAlumno.model.Objetivo;
-import utn.simulacro_nombreAlumno.model.Profesor;
+import utn.simulacro_nombreAlumno.model.*;
 import utn.simulacro_nombreAlumno.model.request.AlumnoRequest;
+import utn.simulacro_nombreAlumno.model.request.RegisterAlumnoRequest;
 import utn.simulacro_nombreAlumno.model.response.AlumnoResponse;
 import utn.simulacro_nombreAlumno.model.response.ProfesorResponse;
 import utn.simulacro_nombreAlumno.repository.AlumnoRepository;
@@ -27,31 +25,36 @@ public class AlumnoService  {
     private final ProfesorService profesorService;
 
 
-        public AlumnoResponse createAlumno(AlumnoRequest nuevo) {
-            Alumno alumno = alumnoMapper.toEntity(nuevo);
-            alumnoRepository.save(alumno);
-            AlumnoResponse alumnoResponse = alumnoMapper.toDto(alumno);
-            return alumnoResponse;
-
-        }
+    public Alumno createAlumno(RegisterAlumnoRequest request, Usuario usuario) {
+        Alumno alumno = Alumno.builder()
+                .nombre(request.getNombre())
+                .apellido(request.getApellido())
+                .email(request.getEmail())
+                .edad(request.getEdad())
+                .fechaNacimiento(request.getFechaNacimiento())
+                .nivel(request.getNivel())
+                .objetivo(request.getObjetivo())
+                .usuario(usuario)
+                .build();
+        return alumnoRepository.save(alumno);
+    }
 
     public AlumnoResponse updateAlumno(Long id, AlumnoRequest request) {
         Alumno alumno = findEntityById(id);
         alumno.setNombre(request.getNombre());
         alumno.setApellido(request.getApellido());
+        alumno.setEmail(request.getEmail());
         alumno.setEdad(request.getEdad());
+        alumno.setFechaNacimiento(request.getFechaNacimiento());
         alumno.setNivel(request.getNivel());
         alumno.setObjetivo(request.getObjetivo());
         alumnoRepository.save(alumno);
         return alumnoMapper.toDto(alumno);
     }
 
-
-        public List<AlumnoResponse> listarAlumnos() {
-            List<Alumno> alumnos = alumnoRepository.findAll();
-            List<AlumnoResponse> alumnoResponse = alumnoMapper.toLISTDto(alumnos);
-            return alumnoResponse;
-        }
+    public List<AlumnoResponse> listarAlumnos() {
+        return alumnoMapper.toLISTDto(alumnoRepository.findAll());
+    }
 
         public AlumnoResponse patchNivel(Long id, Nivel nuevo) {
 
@@ -89,7 +92,9 @@ public class AlumnoService  {
     public AlumnoResponse findAlumnoResponseById(long id) {
         return  alumnoMapper.toDto(findEntityById(id));
     }
-
+    public java.util.Optional<Alumno> findByUsuario(utn.simulacro_nombreAlumno.model.Usuario usuario) {
+        return alumnoRepository.findByUsuario(usuario);
+    }
 }
 
 

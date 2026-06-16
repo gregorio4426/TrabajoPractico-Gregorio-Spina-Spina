@@ -35,6 +35,10 @@ public class RutinaService {
                  .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
      }
 
+     public RutinaResponse findById(Long id) {
+        return rutinaMapper.toDto(findEntityById(id));
+    }
+
     public List<RutinaResponse> listarTodas (){
          List<Rutina> todas = rutinaRepository.findAll();
          return rutinaMapper.toLISTDto(todas);
@@ -79,14 +83,13 @@ public class RutinaService {
         rutinaRepository.delete(rutina);
     }
 
-    public AsignacionResponse asignarRutina(AsignacionRutinaRequest request) {
-        Rutina rutina = findEntityById(request.getRutinaId());
-        Alumno alumno = alumnoService.findEntityById(request.getAlumnoId());
+    public AsignacionResponse asignarRutina(Long rutinaId, Long alumnoId) {
+        Rutina rutina = findEntityById(rutinaId);
+        Alumno alumno = alumnoService.findEntityById(alumnoId);
 
         // Desactivar asignación activa previa si existe
         asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno).ifPresent(a -> {
             a.setActiva(false);
-            a.setFechaFin(LocalDateTime.now());
             asignacionRutinaRepository.save(a);
         });
 
@@ -98,7 +101,13 @@ public class RutinaService {
                 .build();
         asignacionRutinaRepository.save(asignacion);
 
-        return asignacionMapper.toResponse(asignacion);
+        return new AsignacionResponse(
+                asignacion.getFechaInicio(),
+                asignacion.getFechaFin(),
+                asignacion.isActiva(),
+                rutina.getNombre(),
+                alumno.getNombre() + " " + alumno.getApellido()
+        );
     }
 
     public List<RutinaResponse> getHistorialDeAlumno(Long alumnoId) {
