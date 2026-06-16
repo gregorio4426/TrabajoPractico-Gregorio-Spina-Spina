@@ -1,7 +1,7 @@
 # 🏋️ GymApp API — Trabajo Práctico UTN
 
-REST API para la gestión de un gimnasio, desarrollada con **Java 21** y **Spring Boot 4**.  
-Permite administrar alumnos, profesores, ejercicios y rutinas, incluyendo asignación y seguimiento de rutinas activas por alumno.
+REST API para la gestión de un gimnasio, desarrollada con **Java 21** y **Spring Boot 3**.
+Permite administrar alumnos, profesores, ejercicios y rutinas, incluyendo autenticación con **JWT** y autorización por roles (`ALUMNO` / `PROFESOR`).
 
 ---
 
@@ -10,20 +10,19 @@ Permite administrar alumnos, profesores, ejercicios y rutinas, incluyendo asigna
 | Tecnología | Versión |
 |---|---|
 | Java | 21 |
-| Spring Boot | 4.0.6 |
+| Spring Boot | 3.4.5 |
 | Spring Data JPA | — |
+| Spring Security + JWT (jjwt) | 0.11.5 |
 | Spring Validation | — |
 | MySQL | 8+ |
 | Lombok | — |
 | MapStruct | 1.6.3 |
-| Springdoc OpenAPI (Swagger) | 2.8.8 |
+| Springdoc OpenAPI (Swagger) | 2.6.0 |
 | Maven | — |
 
 ---
 
 ## 📐 Arquitectura
-
-El proyecto sigue una arquitectura en capas estándar:
 
 ```
 Controller → Service → Repository → Base de datos (MySQL)
@@ -33,6 +32,8 @@ Controller → Service → Repository → Base de datos (MySQL)
 - **MapStruct** para el mapeo entre entidades y DTOs
 - **Manejo global de excepciones** con `@RestControllerAdvice`
 - **Validaciones** con Bean Validation (`@Valid`) en todos los endpoints de escritura
+- **Seguridad stateless** con JWT: cada request autenticado lleva el header `Authorization: Bearer <token>`
+- **Autorización por rol** con `@PreAuthorize` en los controllers (`ALUMNO` / `PROFESOR`)
 
 ---
 
@@ -59,48 +60,65 @@ Ejercicio ←── EjercicioController
 
 ---
 
+## 🔐 Autenticación
+
+Todos los endpoints (salvo `/api/auth/**` y Swagger) requieren un JWT válido en el header:
+
+```
+Authorization: Bearer <token>
+```
+
+### Auth `/api/auth`
+
+| Método | Ruta | Descripción | Acceso |
+|---|---|---|---|
+| `POST` | `/api/auth/register/alumno` | Registrar alumno | Público |
+| `POST` | `/api/auth/register/profesor` | Registrar profesor | Público |
+| `POST` | `/api/auth/login` | Login (devuelve JWT) | Público |
+
+---
+
 ## 🚀 Endpoints
 
 ### Alumnos `/api/alumnos`
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `POST` | `/api/alumnos` | Registrar alumno |
-| `GET` | `/api/alumnos` | Listar todos |
-| `GET` | `/api/alumnos/{id}` | Obtener por ID |
-| `PUT` | `/api/alumnos/{id}` | Actualizar alumno |
-| `POST` | `/api/alumnos/{alumnoId}/profesores/{profesorId}` | Asignar profesor a alumno |
+| Método | Ruta | Descripción | Rol requerido |
+|---|---|---|---|
+| `GET` | `/api/alumnos` | Listar todos | ALUMNO, PROFESOR |
+| `GET` | `/api/alumnos/{id}` | Obtener por ID | ALUMNO, PROFESOR |
+| `PUT` | `/api/alumnos/{id}` | Actualizar alumno | ALUMNO |
+| `POST` | `/api/alumnos/{alumnoId}/profesores/{profesorId}` | Asignar/elegir profesor | ALUMNO |
 
 ### Profesores `/api/profesores`
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `POST` | `/api/profesores` | Registrar profesor |
-| `GET` | `/api/profesores` | Listar todos |
-| `GET` | `/api/profesores/{id}` | Obtener por ID |
-| `PUT` | `/api/profesores/{id}` | Actualizar profesor |
+| Método | Ruta | Descripción | Rol requerido |
+|---|---|---|---|
+| `GET` | `/api/profesores` | Listar todos | ALUMNO, PROFESOR |
+| `GET` | `/api/profesores/{id}` | Obtener por ID | ALUMNO, PROFESOR |
+| `PATCH` | `/api/profesores/{id}` | Actualizar profesor | PROFESOR |
 
 ### Ejercicios `/api/ejercicios`
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `POST` | `/api/ejercicios` | Crear ejercicio |
-| `GET` | `/api/ejercicios` | Listar todos |
-| `GET` | `/api/ejercicios/{id}` | Obtener por ID |
-| `PUT` | `/api/ejercicios/{id}` | Actualizar ejercicio |
-| `DELETE` | `/api/ejercicios/{id}` | Eliminar ejercicio |
+| Método | Ruta | Descripción | Rol requerido |
+|---|---|---|---|
+| `GET` | `/api/ejercicios` | Listar todos | ALUMNO, PROFESOR |
+| `GET` | `/api/ejercicios/{id}` | Obtener por ID | ALUMNO, PROFESOR |
+| `POST` | `/api/ejercicios` | Crear ejercicio | PROFESOR |
+| `PUT` | `/api/ejercicios/{id}` | Actualizar ejercicio | PROFESOR |
+| `DELETE` | `/api/ejercicios/{id}` | Eliminar ejercicio | PROFESOR |
 
 ### Rutinas `/api/rutinas`
 
-| Método | Ruta | Descripción |
-|---|---|---|
-| `POST` | `/api/rutinas` | Crear rutina |
-| `GET` | `/api/rutinas` | Listar todas |
-| `PUT` | `/api/rutinas/{id}` | Actualizar rutina |
-| `DELETE` | `/api/rutinas/{id}` | Eliminar rutina |
-| `POST` | `/api/rutinas/asignar` | Asignar rutina a alumno |
-| `GET` | `/api/rutinas/activa/alumno/{alumnoId}` | Obtener rutina activa del alumno |
-| `GET` | `/api/rutinas/historial/alumno/{alumnoId}` | Historial de rutinas del alumno |
+| Método | Ruta | Descripción | Rol requerido |
+|---|---|---|---|
+| `GET` | `/api/rutinas` | Listar todas | ALUMNO, PROFESOR |
+| `GET` | `/api/rutinas/{id}` | Obtener por ID | ALUMNO, PROFESOR |
+| `POST` | `/api/rutinas` | Crear rutina | PROFESOR |
+| `PUT` | `/api/rutinas/{id}` | Actualizar rutina | PROFESOR |
+| `DELETE` | `/api/rutinas/{id}` | Eliminar rutina | PROFESOR |
+| `POST` | `/api/rutinas/{rutinaId}/asignar/{alumnoId}` | Asignar rutina a alumno | PROFESOR |
+| `GET` | `/api/rutinas/activa/alumno/{alumnoId}` | Rutina activa del alumno | ALUMNO, PROFESOR |
+| `GET` | `/api/rutinas/historial/alumno/{alumnoId}` | Historial de rutinas del alumno | ALUMNO, PROFESOR |
 
 ---
 
@@ -144,13 +162,27 @@ spring:
 
 ---
 
-## 📄 Documentación (Swagger)
+## 📄 Documentación interactiva (Swagger)
 
-Una vez levantada la aplicación, la documentación interactiva está disponible en:
+Una vez levantada la aplicación (puerto por defecto `8080`), la documentación interactiva está disponible en:
 
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
+
+El JSON de la especificación OpenAPI está en:
+
+```
+http://localhost:8080/v3/api-docs
+```
+
+### Cómo probar endpoints protegidos en Swagger
+
+1. Ejecutar `POST /api/auth/register/alumno` o `register/profesor` (o usar un usuario ya existente).
+2. Ejecutar `POST /api/auth/login` con esas credenciales y copiar el `token` de la respuesta.
+3. Hacer clic en el botón **Authorize** (🔒) arriba a la derecha en Swagger.
+4. Pegar `Bearer <token>` (con el prefijo `Bearer ` incluido) y confirmar.
+5. A partir de ahí, todos los endpoints protegidos van a usar ese token automáticamente.
 
 ---
 
@@ -158,4 +190,4 @@ http://localhost:8080/swagger-ui/index.html
 
 - **Facundo Gregorio**
 - **Nicolás Spina**
-- **Tomas Spina** 
+- **Tomas Spina**
