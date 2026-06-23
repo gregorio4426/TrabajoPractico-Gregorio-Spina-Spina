@@ -1,5 +1,6 @@
 package utn.simulacro_nombreAlumno.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import utn.simulacro_nombreAlumno.model.Nivel;
@@ -33,7 +34,7 @@ public class RegisterAlumnoRequest {
     @NotNull
     private Integer edad;
 
-    @PastOrPresent
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaNacimiento;
 
     @NotNull

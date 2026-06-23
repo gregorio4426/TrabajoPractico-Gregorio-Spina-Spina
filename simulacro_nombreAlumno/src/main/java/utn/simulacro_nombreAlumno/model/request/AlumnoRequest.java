@@ -2,6 +2,7 @@ package utn.simulacro_nombreAlumno.model.request;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.cglib.core.Local;
 import utn.simulacro_nombreAlumno.model.Nivel;
 import utn.simulacro_nombreAlumno.model.Objetivo;
 
@@ -21,18 +22,12 @@ public class AlumnoRequest {
     @Email
     private String email;
 
-    @Positive
-    @NotNull
-    private Integer edad;
+    @Past
+    private LocalDate FechaDeNacimiento;
 
-    @NotNull
-    @PastOrPresent
-    private LocalDate fechaNacimiento;
-
-    ///  nose si van validaciones aca
     @NotNull
     private Nivel nivel;
- /// nose si va validaciones aca
+
     @NotNull
     private Objetivo objetivo;
 }

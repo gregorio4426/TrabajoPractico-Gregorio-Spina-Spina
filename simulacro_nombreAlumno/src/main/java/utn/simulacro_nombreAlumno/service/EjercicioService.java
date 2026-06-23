@@ -6,6 +6,7 @@ import utn.simulacro_nombreAlumno.exception.RecursoNoEncontradoException;
 import utn.simulacro_nombreAlumno.mapper.EjercicioMapper;
 import utn.simulacro_nombreAlumno.mapper.ProfesorMapper;
 import utn.simulacro_nombreAlumno.model.Ejercicio;
+import utn.simulacro_nombreAlumno.model.GrupoMuscular;
 import utn.simulacro_nombreAlumno.model.Profesor;
 import utn.simulacro_nombreAlumno.model.request.EjercicioRequest;
 import utn.simulacro_nombreAlumno.model.response.EjercicioResponse;
@@ -52,6 +53,10 @@ public class EjercicioService {
     public Ejercicio findEntityById(long id) {
         return ejercicioRepository.findById(id)
                 .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
+    }
+    public List<EjercicioResponse> listarPorGrupoMuscular(GrupoMuscular grupoMuscular) {
+        List<Ejercicio> ejercicios = ejercicioRepository.findByGrupoMuscular(grupoMuscular);
+        return ejercicioMapper.toLISTDto(ejercicios);
     }
 
     public EjercicioResponse findEjercicioResponseById(long id) {

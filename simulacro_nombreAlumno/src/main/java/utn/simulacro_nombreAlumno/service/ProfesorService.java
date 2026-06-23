@@ -1,6 +1,7 @@
 package utn.simulacro_nombreAlumno.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import utn.simulacro_nombreAlumno.exception.RecursoNoEncontradoException;
 import utn.simulacro_nombreAlumno.mapper.ProfesorMapper;
@@ -11,6 +12,7 @@ import utn.simulacro_nombreAlumno.model.request.RegisterProfesorRequest;
 import utn.simulacro_nombreAlumno.model.response.ProfesorResponse;
 import utn.simulacro_nombreAlumno.model.response.RutinaResponse;
 import utn.simulacro_nombreAlumno.repository.ProfesorRepository;
+import utn.simulacro_nombreAlumno.security.CustomUserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +62,24 @@ public class ProfesorService  {
 
     public java.util.Optional<Profesor> findByUsuario(utn.simulacro_nombreAlumno.model.Usuario usuario) {
         return profesorRepository.findByUsuario(usuario);
+    }
+
+    public ProfesorResponse getMiPerfil(org.springframework.security.core.Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Profesor profesor = userDetails.getUsuario().getProfesor();
+        if (profesor == null) throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
+        return profesorMapper.toDto(profesor);
+    }
+
+    public ProfesorResponse updateMiPerfil(ProfesorRequest request, Authentication authentication) {
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        Profesor profesor = userDetails.getUsuario().getProfesor();
+        if (profesor == null) throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
+        profesor.setNombre(request.getNombre());
+        profesor.setApellido(request.getApellido());
+        profesor.setEspecialidad(request.getEspecialidad());
+        profesorRepository.save(profesor);
+        return profesorMapper.toDto(profesor);
     }
 }
 

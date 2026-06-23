@@ -22,10 +22,5 @@ public class RutinaRequest {
     private String descripcion;
 
     private List<Long> ejercicioIds;
-
-    @NotNull
-    private Long profesorId;
-
-
 }
 

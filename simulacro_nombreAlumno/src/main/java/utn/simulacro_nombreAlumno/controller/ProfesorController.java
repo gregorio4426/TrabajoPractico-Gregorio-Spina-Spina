@@ -5,6 +5,7 @@ import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import utn.simulacro_nombreAlumno.model.request.ProfesorRequest;
 import utn.simulacro_nombreAlumno.model.response.ProfesorResponse;
@@ -38,6 +39,20 @@ public class ProfesorController {
             @PathVariable Long id,
             @Valid @RequestBody ProfesorRequest request) {
         return ResponseEntity.ok(profesorService.updateProfesor(id, request));
+    }
+
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('PROFESOR')")
+    public ResponseEntity<ProfesorResponse> getMiPerfil(Authentication authentication) {
+        return ResponseEntity.ok(profesorService.getMiPerfil(authentication));
+    }
+
+    @PutMapping("/me")
+    @PreAuthorize("hasRole('PROFESOR')")
+    public ResponseEntity<ProfesorResponse> updateMiPerfil(
+            @Valid @RequestBody ProfesorRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(profesorService.updateMiPerfil(request, authentication));
     }
 }
 
