@@ -108,9 +108,10 @@ public class RutinaService {
         Rutina rutina = findEntityById(rutinaId);
         Alumno alumno = alumnoService.findEntityById(alumnoId);
 
-        // Desactivar asignación activa previa si existe
+
         asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno).ifPresent(a -> {
             a.setActiva(false);
+            a.setFechaFin(LocalDateTime.now());
             asignacionRutinaRepository.save(a);
         });
 

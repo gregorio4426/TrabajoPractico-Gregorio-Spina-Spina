@@ -12,7 +12,7 @@ import java.util.List;
 public interface RutinaMapper {
     
     @Mapping(target = "profesor", expression = "java(rutina.getProfesor() != null ? rutina.getProfesor().getNombre() : null)")
-    @Mapping(target = "alumnos", expression = "java(rutina.getAsignaciones().stream().map(a -> a.getAlumno().getNombre() + \" \" + a.getAlumno().getApellido()).collect(java.util.stream.Collectors.toList()))")
+    @Mapping(target = "alumnos", expression = "java(rutina.getAsignaciones().stream().filter(a -> a.isActiva()).map(a -> a.getAlumno().getNombre() + \" \" + a.getAlumno().getApellido()).collect(java.util.stream.Collectors.toList()))")
     RutinaResponse toDto(Rutina rutina);
     
     Rutina toEntity(RutinaRequest request);
