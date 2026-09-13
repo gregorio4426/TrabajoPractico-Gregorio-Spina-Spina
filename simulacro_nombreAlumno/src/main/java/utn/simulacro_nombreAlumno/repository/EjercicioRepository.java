@@ -9,5 +9,7 @@ import java.util.List;
 
 public interface EjercicioRepository extends JpaRepository<Ejercicio, Long> {
     List<Ejercicio> findByGrupoMuscular(GrupoMuscular grupoMuscular);
+
+    List<Ejercicio> findByNombreContainingIgnoreCase(String nombre);
 }
 

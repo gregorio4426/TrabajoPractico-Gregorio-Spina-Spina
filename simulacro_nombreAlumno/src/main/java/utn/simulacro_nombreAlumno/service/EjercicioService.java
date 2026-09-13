@@ -64,6 +64,13 @@ public class EjercicioService {
     public EjercicioResponse findEjercicioResponseById(long id) {
         return  ejercicioMapper.toDto(findEntityById(id));
     }
+
+    public List<EjercicioResponse> listarPorNombre(String nombre) {
+        return ejercicioMapper.toLISTDto(
+                ejercicioRepository.findByNombreContainingIgnoreCase(nombre)
+        );
+    }
+
 }
 
 

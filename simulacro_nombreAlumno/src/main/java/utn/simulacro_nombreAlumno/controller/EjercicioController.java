@@ -23,9 +23,13 @@ public class EjercicioController {
 
     @GetMapping
     public ResponseEntity<List<EjercicioResponse>> findAll(
-            @RequestParam(required = false) GrupoMuscular grupoMuscular) {
+            @RequestParam(required = false) GrupoMuscular grupoMuscular,
+            @RequestParam(required = false) String nombre) {
         if (grupoMuscular != null) {
             return ResponseEntity.ok(ejercicioService.listarPorGrupoMuscular(grupoMuscular));
+        }
+        if (nombre != null && !nombre.isBlank()) {
+            return ResponseEntity.ok(ejercicioService.listarPorNombre(nombre));
         }
         return ResponseEntity.ok(ejercicioService.listarEjercicios());
     }
