@@ -59,6 +59,9 @@ public class SecurityConfig {
                         .requestMatchers(
                                 org.springframework.http.HttpMethod.POST,   "/api/rutinas/*/asignar/**"
                         ).hasRole("PROFESOR")
+                        .requestMatchers(
+                                org.springframework.http.HttpMethod.POST, "/api/auth/register/profesor"
+                        ).hasRole("ADMIN")
 
                         .anyRequest().authenticated()
                 )
