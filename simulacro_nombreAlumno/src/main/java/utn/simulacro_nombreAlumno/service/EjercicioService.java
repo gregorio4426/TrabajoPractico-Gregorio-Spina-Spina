@@ -41,7 +41,9 @@ public class EjercicioService {
 
     public EjercicioResponse updateEjercicio(Long id, EjercicioRequest request) {
         Ejercicio ejercicio = findEntityById(id);
-        ejercicio = ejercicioMapper.toEntity(request);
+        ejercicio.setNombre(request.getNombre());
+        ejercicio.setDescripcion(request.getDescripcion());
+        ejercicio.setGrupoMuscular(request.getGrupoMuscular());
         ejercicioRepository.save(ejercicio);
         return ejercicioMapper.toDto(ejercicio);
     }
