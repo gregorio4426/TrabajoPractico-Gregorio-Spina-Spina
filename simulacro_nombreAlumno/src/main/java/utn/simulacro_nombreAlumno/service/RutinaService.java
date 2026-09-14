@@ -17,6 +17,8 @@ import utn.simulacro_nombreAlumno.model.response.RutinaResponse;
 import utn.simulacro_nombreAlumno.repository.AsignacionRutinaRepository;
 import utn.simulacro_nombreAlumno.repository.RutinaRepository;
 import utn.simulacro_nombreAlumno.security.CustomUserDetails;
+import utn.simulacro_nombreAlumno.model.DiaRutina;
+import utn.simulacro_nombreAlumno.model.DiaEjercicio;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,20 +52,44 @@ public class RutinaService {
      }
 
     public RutinaResponse crearRutina(RutinaRequest request, Authentication authentication) {
-        if (request.getEjercicioIds() == null || request.getEjercicioIds().isEmpty()) {
-            throw new ReglaNegocioException("La rutina debe tener al menos un ejercicio");
+        if (request.getDias() == null || request.getDias().isEmpty()) {
+            throw new ReglaNegocioException("La rutina debe tener al menos un día");
         }
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         Profesor profesor = userDetails.getUsuario().getProfesor();
         if (profesor == null) throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
 
-        List<Ejercicio> ejercicios = new ArrayList<>();
-        for (Long eid : request.getEjercicioIds()) {
-            ejercicios.add(ejercicioService.findEntityById(eid));
+        Rutina rutina = Rutina.builder()
+                .nombre(request.getNombre())
+                .descripcion(request.getDescripcion())
+                .profesor(profesor)
+                .build();
+
+        List<DiaRutina> dias = new ArrayList<>();
+        for (var diaReq : request.getDias()) {
+            DiaRutina dia = DiaRutina.builder()
+                    .nombre(diaReq.getNombre())
+                    .numeroOrden(diaReq.getNumeroOrden())
+                    .rutina(rutina)
+                    .build();
+
+            List<DiaEjercicio> ejercicios = new ArrayList<>();
+            if (diaReq.getEjercicios() != null) {
+                for (var ejReq : diaReq.getEjercicios()) {
+                    Ejercicio ejercicio = ejercicioService.findEntityById(ejReq.getEjercicioId());
+                    ejercicios.add(DiaEjercicio.builder()
+                            .diaRutina(dia)
+                            .ejercicio(ejercicio)
+                            .seriesSugeridas(ejReq.getSeriesSugeridas())
+                            .repsSugeridas(ejReq.getRepsSugeridas())
+                            .pesoSugerido(ejReq.getPesoSugerido())
+                            .build());
+                }
+            }
+            dia.setEjercicios(ejercicios);
+            dias.add(dia);
         }
-        Rutina rutina = rutinaMapper.toEntity(request);
-        rutina.setEjercicios(ejercicios);
-        rutina.setProfesor(profesor);
+        rutina.setDias(dias);
         return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
 
@@ -75,18 +101,37 @@ public class RutinaService {
         if (profesorAutenticado == null)
             throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
         if (!rutina.getProfesor().getId().equals(profesorAutenticado.getId()))
-            throw new org.springframework.security.access.AccessDeniedException("Solo el profesor que creó esta rutina puede modificarla");
+            throw new AccessDeniedException("Solo el profesor que creó esta rutina puede modificarla");
 
-        if (request.getEjercicioIds() == null || request.getEjercicioIds().isEmpty())
-            throw new ReglaNegocioException("La rutina debe tener al menos un ejercicio");
-
-        List<Ejercicio> ejercicios = new ArrayList<>();
-        for (Long eid : request.getEjercicioIds()) {
-            ejercicios.add(ejercicioService.findEntityById(eid));
-        }
         rutina.setNombre(request.getNombre());
         rutina.setDescripcion(request.getDescripcion());
-        rutina.setEjercicios(ejercicios);
+
+        if (request.getDias() != null && !request.getDias().isEmpty()) {
+            rutina.getDias().clear();
+            for (var diaReq : request.getDias()) {
+                DiaRutina dia = DiaRutina.builder()
+                        .nombre(diaReq.getNombre())
+                        .numeroOrden(diaReq.getNumeroOrden())
+                        .rutina(rutina)
+                        .build();
+
+                List<DiaEjercicio> ejercicios = new ArrayList<>();
+                if (diaReq.getEjercicios() != null) {
+                    for (var ejReq : diaReq.getEjercicios()) {
+                        Ejercicio ejercicio = ejercicioService.findEntityById(ejReq.getEjercicioId());
+                        ejercicios.add(DiaEjercicio.builder()
+                                .diaRutina(dia)
+                                .ejercicio(ejercicio)
+                                .seriesSugeridas(ejReq.getSeriesSugeridas())
+                                .repsSugeridas(ejReq.getRepsSugeridas())
+                                .pesoSugerido(ejReq.getPesoSugerido())
+                                .build());
+                    }
+                }
+                dia.setEjercicios(ejercicios);
+                rutina.getDias().add(dia);
+            }
+        }
         return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
 
@@ -101,7 +146,7 @@ public class RutinaService {
             throw new org.springframework.security.access.AccessDeniedException("Solo el profesor que creó esta rutina puede eliminarla");
 
         asignacionRutinaRepository.deleteAll(rutina.getAsignaciones());
-        rutina.getEjercicios().clear();
+        rutina.getDias().clear();
         rutinaRepository.delete(rutina);
     }
     public AsignacionResponse asignarRutina(Long rutinaId, Long alumnoId) {

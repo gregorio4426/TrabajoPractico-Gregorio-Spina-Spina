@@ -1,26 +1,22 @@
 package utn.simulacro_nombreAlumno.model.request;
 
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RutinaRequest {
+public class DiaRutinaRequest {
 
     @NotBlank
     private String nombre;
 
-    @NotBlank
-    private String descripcion;
+    @NotNull
+    private Integer numeroOrden;
 
-    private List<DiaRutinaRequest> dias;
+    private List<DiaEjercicioRequest> ejercicios;
 }
-

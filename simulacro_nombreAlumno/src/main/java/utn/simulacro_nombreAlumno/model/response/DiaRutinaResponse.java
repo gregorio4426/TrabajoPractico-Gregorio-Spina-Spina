@@ -1,7 +1,6 @@
 package utn.simulacro_nombreAlumno.model.response;
 
 import lombok.*;
-
 import java.util.List;
 
 @Getter
@@ -9,12 +8,10 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RutinaResponse {
+public class DiaRutinaResponse {
 
+    private Long id;
     private String nombre;
-    private String descripcion;
-    private List<DiaRutinaResponse> dias;
-    private String profesor;
-    private List<String> alumnos;
+    private Integer numeroOrden;
+    private List<DiaEjercicioResponse> ejercicios;
 }
-
