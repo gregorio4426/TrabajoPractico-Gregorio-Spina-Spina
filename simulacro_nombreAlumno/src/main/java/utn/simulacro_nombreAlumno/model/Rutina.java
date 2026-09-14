@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 @Setter
-public class Rutina {
+public class    Rutina {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -23,13 +23,9 @@ public class Rutina {
     @Column(nullable = false)
 	private String descripcion;
 
-	@ManyToMany
-	@JoinTable(
-			name = "rutina_ejercicio",
-			joinColumns = @JoinColumn(name = "rutina_id"),
-			inverseJoinColumns = @JoinColumn(name = "ejercicio_id")
-	)
-	private List<Ejercicio> ejercicios;
+    @OneToMany(mappedBy = "rutina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<DiaRutina> dias = new ArrayList<>();
 
 	@ManyToOne
 	@JoinColumn(name = "profesor_id")
