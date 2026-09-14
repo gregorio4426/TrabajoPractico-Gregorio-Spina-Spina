@@ -1,7 +1,7 @@
-# 🏋️ GymApp API — Trabajo Práctico UTN
+# 🏋️ Simulacro — API REST Gestión de Gimnasio
 
-REST API para la gestión de un gimnasio, desarrollada con **Java 21** y **Spring Boot 3**.
-Permite administrar alumnos, profesores, ejercicios y rutinas, con autenticación **JWT** y autorización por roles (`ALUMNO` / `PROFESOR`).
+REST API para la gestión integral de un gimnasio, desarrollada con **Java 21** y **Spring Boot 3**.
+Permite administrar alumnos, profesores, ejercicios, rutinas y sesiones de entrenamiento, con autenticación **JWT** y autorización por roles.
 
 ---
 
@@ -11,13 +11,13 @@ Permite administrar alumnos, profesores, ejercicios y rutinas, con autenticació
 |---|---|
 | Java | 21 |
 | Spring Boot | 3.4.5 |
-| Spring Data JPA | — |
+| Spring Data JPA / Hibernate | — |
 | Spring Security + JWT (jjwt) | 0.11.5 |
 | Spring Validation | — |
 | MySQL | 8+ |
 | Lombok | — |
 | MapStruct | 1.6.3 |
-| Springdoc OpenAPI (Swagger) | 2.6.0 |
+| Springdoc OpenAPI (Swagger) | 2.8.5 |
 | Maven | — |
 
 ---
@@ -33,37 +33,65 @@ Controller → Service → Repository → Base de datos (MySQL)
 - **Manejo global de excepciones** con `@RestControllerAdvice`
 - **Validaciones** con Bean Validation (`@Valid`) en todos los endpoints de escritura
 - **Seguridad stateless** con JWT: cada request lleva el header `Authorization: Bearer <token>`
-- **Autorización por rol** con `@PreAuthorize` en los controllers (`ALUMNO` / `PROFESOR`)
-- **Ownership verification**: cada usuario solo puede operar sobre sus propios datos (IDOR protection)
+- **Autorización por rol** con `@PreAuthorize` en los controllers
+- **DataSeeder**: crea automáticamente un usuario ADMIN al levantar la aplicación por primera vez
 
 ---
 
 ## 🗂️ Modelo de dominio
 
 ```
-Alumno ←──── AlumnoController
-  │
+Usuario
+  └── Rol (enum: ADMIN / PROFESOR / ALUMNO)
+  └── OneToOne → Alumno o Profesor
+
+Alumno
   ├── Nivel (enum: PRINCIPIANTE / INTERMEDIO / AVANZADO)
   ├── Objetivo (enum)
-  ├── FechaNacimiento → edad calculada automáticamente
   ├── Profesores (ManyToMany)
-  └── AsignacionesRutina (OneToMany)
-         │
-         └── Rutina ←── RutinaController
-               │
-               ├── Ejercicios (ManyToMany)
-               └── Profesor (ManyToOne) ← solo el profesor creador puede editar/eliminar
+  ├── AsignacionesRutina (OneToMany)
+  └── Sesiones (OneToMany)
 
-Ejercicio ←── EjercicioController
+Profesor
+  └── Rutinas creadas (OneToMany)
+
+Rutina
+  ├── Profesor (ManyToOne)
+  ├── Dias (OneToMany → DiaRutina)
+  └── Asignaciones (OneToMany → AsignacionRutina)
+
+DiaRutina
+  ├── nombre (ej: "Día 1 - Pecho y Tríceps")
+  ├── numeroOrden
+  └── Ejercicios (OneToMany → DiaEjercicio)
+
+DiaEjercicio
+  ├── Ejercicio (ManyToOne)
+  ├── seriesSugeridas
+  ├── repsSugeridas
+  └── pesoSugerido
+
+Ejercicio
   └── GrupoMuscular (enum: PECHO / ESPALDA / PIERNAS / BRAZOS / HOMBROS / ABDOMINALES)
 
-Usuario ──── Alumno o Profesor (OneToOne)
-  └── Rol (enum: ALUMNO / PROFESOR)
+Sesion (entrenamiento de un alumno en un día de rutina)
+  ├── Alumno (ManyToOne)
+  ├── DiaRutina (ManyToOne)
+  ├── fecha
+  ├── completada
+  └── Series (OneToMany)
+
+Serie
+  ├── DiaEjercicio (ManyToOne)
+  ├── numeroSerie
+  ├── repsHechas
+  ├── pesoUsado
+  └── completada
 ```
 
 ---
 
-## 🔐 Autenticación
+## 🔐 Autenticación y roles
 
 Todos los endpoints (salvo `/api/auth/**` y Swagger) requieren un JWT válido en el header:
 
@@ -71,47 +99,58 @@ Todos los endpoints (salvo `/api/auth/**` y Swagger) requieren un JWT válido en
 Authorization: Bearer <token>
 ```
 
-### Auth `/api/auth`
+### Roles
 
-| Método | Ruta | Descripción | Acceso |
-|---|---|---|---|
-| `POST` | `/api/auth/register/alumno` | Registrar alumno | Público |
-| `POST` | `/api/auth/register/profesor` | Registrar profesor | Público |
-| `POST` | `/api/auth/login` | Login (devuelve JWT) | Público |
+| Rol | Descripción |
+|---|---|
+| `ADMIN` | Creado automáticamente al iniciar la app. Puede registrar profesores. |
+| `PROFESOR` | Gestiona ejercicios, rutinas y alumnos. |
+| `ALUMNO` | Consulta rutinas asignadas y registra sus sesiones de entrenamiento. |
+
+### Credenciales del ADMIN por defecto
+
+```
+Email:    admin@gimnasio.com
+Password: Admin1234!
+```
 
 ---
 
 ## 🚀 Endpoints
 
+### Auth `/api/auth`
+
+| Método | Ruta | Descripción | Acceso |
+|---|---|---|---|
+| `POST` | `/api/auth/register/alumno` | Registrar alumno | Público |
+| `POST` | `/api/auth/register/profesor` | Registrar profesor | ADMIN |
+| `POST` | `/api/auth/login` | Login (devuelve JWT) | Público |
+
 ### Alumnos `/api/alumnos`
 
-| Método | Ruta | Descripción | Rol requerido |
+| Método | Ruta | Descripción | Rol |
 |---|---|---|---|
 | `GET` | `/api/alumnos` | Listar todos | PROFESOR |
 | `GET` | `/api/alumnos/{id}` | Obtener por ID | PROFESOR |
-| `PUT` | `/api/alumnos/{id}` | Actualizar alumno por ID (uso futuro ADMIN) | PROFESOR |
 | `GET` | `/api/alumnos/me` | Ver mi perfil | ALUMNO |
 | `PUT` | `/api/alumnos/me` | Actualizar mi perfil | ALUMNO |
-| `POST` | `/api/alumnos/{alumnoId}/profesores/{profesorId}` | Asignar profesor (por ID) | ALUMNO |
 | `POST` | `/api/alumnos/me/profesores/{profesorId}` | Asignarme un profesor | ALUMNO |
-
-> Los endpoints `/{id}` son para uso administrativo (PROFESOR). El alumno opera siempre sobre `/me`.
 
 ### Profesores `/api/profesores`
 
-| Método | Ruta | Descripción | Rol requerido |
+| Método | Ruta | Descripción | Rol |
 |---|---|---|---|
 | `GET` | `/api/profesores` | Listar todos | ALUMNO, PROFESOR |
 | `GET` | `/api/profesores/{id}` | Obtener por ID | ALUMNO, PROFESOR |
-| `PATCH` | `/api/profesores/{id}` | Actualizar profesor por ID (uso futuro ADMIN) | PROFESOR |
 | `GET` | `/api/profesores/me` | Ver mi perfil | PROFESOR |
 | `PUT` | `/api/profesores/me` | Actualizar mi perfil | PROFESOR |
 
 ### Ejercicios `/api/ejercicios`
 
-| Método | Ruta | Descripción | Rol requerido |
+| Método | Ruta | Descripción | Rol |
 |---|---|---|---|
 | `GET` | `/api/ejercicios` | Listar todos | ALUMNO, PROFESOR |
+| `GET` | `/api/ejercicios?nombre=press` | Filtrar por nombre | ALUMNO, PROFESOR |
 | `GET` | `/api/ejercicios?grupoMuscular=PECHO` | Filtrar por grupo muscular | ALUMNO, PROFESOR |
 | `POST` | `/api/ejercicios` | Crear ejercicio | PROFESOR |
 | `PUT` | `/api/ejercicios/{id}` | Actualizar ejercicio | PROFESOR |
@@ -121,29 +160,79 @@ Authorization: Bearer <token>
 
 ### Rutinas `/api/rutinas`
 
-| Método | Ruta | Descripción | Rol requerido |
+| Método | Ruta | Descripción | Rol |
 |---|---|---|---|
 | `GET` | `/api/rutinas` | Listar todas | ALUMNO, PROFESOR |
 | `GET` | `/api/rutinas/{id}` | Obtener por ID | PROFESOR |
-| `POST` | `/api/rutinas` | Crear rutina (se asigna al profesor autenticado) | PROFESOR |
+| `POST` | `/api/rutinas` | Crear rutina con días y ejercicios | PROFESOR |
 | `PUT` | `/api/rutinas/{id}` | Actualizar rutina (solo el creador) | PROFESOR |
 | `DELETE` | `/api/rutinas/{id}` | Eliminar rutina (solo el creador) | PROFESOR |
 | `POST` | `/api/rutinas/asignar/alumno/{alumnoId}/rutina/{rutinaId}` | Asignar rutina a alumno | PROFESOR |
-| `GET` | `/api/rutinas/activa/alumno/{alumnoId}` | Rutina activa de un alumno por ID | ALUMNO*, PROFESOR |
-| `GET` | `/api/rutinas/historial/alumno/{alumnoId}` | Historial de rutinas por ID | ALUMNO*, PROFESOR |
 | `GET` | `/api/rutinas/me/activa` | Mi rutina activa | ALUMNO |
 | `GET` | `/api/rutinas/me/historial` | Mi historial de rutinas | ALUMNO |
 
-> *Un alumno solo puede consultar su propio `alumnoId`. Intentar consultar el de otro devuelve `403 Forbidden`.
+#### Body para crear una rutina
+
+```json
+{
+  "nombre": "Rutina Fuerza A",
+  "descripcion": "Rutina de 3 días para ganar fuerza e hipertrofia.",
+  "dias": [
+    {
+      "nombre": "Día 1 - Pecho y Tríceps",
+      "numeroOrden": 1,
+      "ejercicios": [
+        {
+          "ejercicioId": 1,
+          "seriesSugeridas": 4,
+          "repsSugeridas": 8,
+          "pesoSugerido": 60.0
+        }
+      ]
+    }
+  ]
+}
+```
+
+### Sesiones `/api/sesiones`
+
+| Método | Ruta | Descripción | Rol |
+|---|---|---|---|
+| `POST` | `/api/sesiones` | Iniciar una sesión de entrenamiento | ALUMNO |
+| `POST` | `/api/sesiones/{id}/series` | Registrar una serie dentro de la sesión | ALUMNO |
+| `PUT` | `/api/sesiones/{id}/completar` | Marcar sesión como completada | ALUMNO |
+| `GET` | `/api/sesiones/me/historial` | Ver mi historial de sesiones | ALUMNO |
+| `GET` | `/api/sesiones/alumno/{alumnoId}/historial` | Ver historial de un alumno | PROFESOR |
+
+#### Body para iniciar una sesión
+
+```json
+{
+  "diaRutinaId": 1,
+  "fecha": "2026-09-14"
+}
+```
+
+#### Body para registrar una serie
+
+```json
+{
+  "diaEjercicioId": 1,
+  "numeroSerie": 1,
+  "repsHechas": 8,
+  "pesoUsado": 60.0
+}
+```
 
 ---
 
-## 🔒 Seguridad — reglas de negocio
+## 🔒 Reglas de negocio
 
-- Un **alumno** solo puede ver y modificar sus propios datos (`/me`). Acceder a datos de otro alumno por ID devuelve `403`.
-- Un **profesor** puede ver y modificar datos de cualquier alumno, pero solo puede editar/eliminar las rutinas que él mismo creó.
-- La **edad** se calcula automáticamente a partir de la `fechaNacimiento` al registrarse o actualizar el perfil.
-- Al asignar una nueva rutina activa a un alumno, la anterior se desactiva automáticamente.
+- Un **alumno** solo puede ver y modificar sus propios datos. Acceder a datos de otro alumno devuelve `403`.
+- Un **profesor** puede ver datos de cualquier alumno, pero solo puede editar/eliminar las rutinas que él mismo creó.
+- Al asignar una nueva rutina a un alumno, la anterior se desactiva automáticamente.
+- Solo el **ADMIN** puede registrar profesores.
+- Un alumno solo puede registrar series en sus propias sesiones.
 
 ---
 
@@ -162,6 +251,8 @@ Crear la base de datos en MySQL antes de levantar la aplicación:
 ```sql
 CREATE DATABASE APPgimnasioBD;
 ```
+
+> Las tablas se crean automáticamente al levantar la app (`ddl-auto: update`).
 
 ### `application.yaml`
 
@@ -189,31 +280,24 @@ spring:
 
 ## 📄 Documentación interactiva (Swagger)
 
-Una vez levantada la aplicación, la documentación está disponible en:
+Una vez levantada la aplicación:
 
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
 
-El JSON de la especificación OpenAPI está en:
-
-```
-http://localhost:8080/v3/api-docs
-```
-
 ### Cómo probar endpoints protegidos en Swagger
 
-1. Ejecutar `POST /api/auth/register/alumno` o `register/profesor`.
-2. Ejecutar `POST /api/auth/login` y copiar el `token` de la respuesta.
-3. Hacer clic en el botón **Authorize** (🔒) arriba a la derecha.
-4. Pegar `Bearer <token>` (con el prefijo `Bearer ` incluido) y confirmar.
-5. A partir de ahí todos los endpoints protegidos usan ese token automáticamente.
+1. Ejecutar `POST /api/auth/login` con las credenciales del admin o de un usuario registrado.
+2. Copiar el `token` de la respuesta.
+3. Hacer clic en **Authorize** (🔒) arriba a la derecha.
+4. Pegar `Bearer <token>` y confirmar.
+5. Todos los endpoints protegidos usarán ese token automáticamente.
 
 ---
-
 
 ## 👥 Autores
 
 - **Facundo Gregorio**
 - **Nicolás Spina**
-- **Tomas Spina**
+- **Tomás Spina**
