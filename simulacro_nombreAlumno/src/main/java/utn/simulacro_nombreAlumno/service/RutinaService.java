@@ -212,6 +212,9 @@ public class RutinaService {
             throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
 
         Rutina rutina = findEntityById(rutinaId);
+        Profesor profesor = userDetails.getUsuario().getProfesor();
+        if (!rutina.getProfesor().getId().equals(profesor.getId()))
+            throw new AccessDeniedException("Solo podés asignar rutinas creadas por vos");
         Alumno alumno = alumnoService.findEntityById(alumnoId);
 
         asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno).ifPresent(a -> {

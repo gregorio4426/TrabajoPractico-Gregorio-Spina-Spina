@@ -11,6 +11,7 @@ import utn.simulacro_nombreAlumno.model.request.SerieRequest;
 import utn.simulacro_nombreAlumno.model.request.SesionRequest;
 import utn.simulacro_nombreAlumno.model.response.SerieResponse;
 import utn.simulacro_nombreAlumno.model.response.SesionResponse;
+import utn.simulacro_nombreAlumno.model.response.UltimoEjercicioResponse;
 import utn.simulacro_nombreAlumno.service.SesionService;
 import java.util.List;
 
@@ -18,34 +19,30 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/sesiones")
 public class SesionController {
-
     private final SesionService sesionService;
 
     @PostMapping
     @PreAuthorize("hasRole('ALUMNO')")
-    public ResponseEntity<SesionResponse> iniciarSesion(
-            @Valid @RequestBody SesionRequest request,
-            Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(sesionService.iniciarSesion(request, authentication));
+    public ResponseEntity<SesionResponse> iniciarSesion(@Valid @RequestBody SesionRequest request, Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(sesionService.iniciarSesion(request, authentication));
     }
 
     @PostMapping("/{id}/series")
     @PreAuthorize("hasRole('ALUMNO')")
-    public ResponseEntity<SerieResponse> registrarSerie(
-            @PathVariable Long id,
-            @Valid @RequestBody SerieRequest request,
-            Authentication authentication) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(sesionService.registrarSerie(id, request, authentication));
+    public ResponseEntity<SerieResponse> registrarSerie(@PathVariable Long id, @Valid @RequestBody SerieRequest request, Authentication authentication) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(sesionService.registrarSerie(id, request, authentication));
     }
 
     @PutMapping("/{id}/completar")
     @PreAuthorize("hasRole('ALUMNO')")
-    public ResponseEntity<SesionResponse> completarSesion(
-            @PathVariable Long id,
-            Authentication authentication) {
+    public ResponseEntity<SesionResponse> completarSesion(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(sesionService.completarSesion(id, authentication));
+    }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ALUMNO','PROFESOR')")
+    public ResponseEntity<SesionResponse> getDetalle(@PathVariable Long id, Authentication authentication) {
+        return ResponseEntity.ok(sesionService.getDetalle(id, authentication));
     }
 
     @GetMapping("/me/historial")
@@ -54,11 +51,15 @@ public class SesionController {
         return ResponseEntity.ok(sesionService.getHistorialMe(authentication));
     }
 
+    @GetMapping("/me/ejercicios/{ejercicioId}/ultima")
+    @PreAuthorize("hasRole('ALUMNO')")
+    public ResponseEntity<UltimoEjercicioResponse> getUltimoEjercicio(@PathVariable Long ejercicioId, Authentication authentication) {
+        return ResponseEntity.ok(sesionService.getUltimoEjercicio(ejercicioId, authentication));
+    }
+
     @GetMapping("/alumno/{alumnoId}/historial")
     @PreAuthorize("hasRole('PROFESOR')")
-    public ResponseEntity<List<SesionResponse>> getHistorialDeAlumno(
-            @PathVariable Long alumnoId,
-            Authentication authentication) {
+    public ResponseEntity<List<SesionResponse>> getHistorialDeAlumno(@PathVariable Long alumnoId, Authentication authentication) {
         return ResponseEntity.ok(sesionService.getHistorialDeAlumno(alumnoId, authentication));
     }
 }

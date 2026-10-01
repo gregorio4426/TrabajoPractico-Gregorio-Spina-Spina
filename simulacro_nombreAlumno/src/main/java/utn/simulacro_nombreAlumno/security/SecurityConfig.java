@@ -3,6 +3,7 @@ package utn.simulacro_nombreAlumno.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -29,52 +30,22 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html"
-                        ).permitAll()
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.POST,   "/api/ejercicios"
-                        ).hasRole("PROFESOR")
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.PUT,    "/api/ejercicios/**"
-                        ).hasRole("PROFESOR")
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.DELETE, "/api/ejercicios/**"
-                        ).hasRole("PROFESOR")
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.POST,   "/api/rutinas"
-                        ).hasRole("PROFESOR")
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.PUT,    "/api/rutinas/**"
-                        ).hasRole("PROFESOR")
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.DELETE, "/api/rutinas/**"
-                        ).hasRole("PROFESOR")
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.POST,   "/api/rutinas/*/asignar/**"
-                        ).hasRole("PROFESOR")
-                        .requestMatchers(
-                                org.springframework.http.HttpMethod.POST, "/api/auth/register/profesor"
-                        ).hasRole("ADMIN")
-
+                        .requestMatchers(HttpMethod.POST, "/api/auth/register/profesor").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register/alumno").permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/ejercicios", "/api/rutinas").hasRole("PROFESOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/ejercicios/**", "/api/rutinas/**").hasRole("PROFESOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/ejercicios/**", "/api/rutinas/**").hasRole("PROFESOR")
                         .anyRequest().authenticated()
                 )
-
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
         return http.build();
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+    public PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
 
     @Bean
     public AuthenticationProvider authenticationProvider() {
@@ -85,10 +56,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
-
 }
