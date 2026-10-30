@@ -25,13 +25,20 @@ public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final CustomUserDetailsService userDetailsService;
+    private final SecurityErrorWriter errors;
+    private final CorsProperties corsProperties;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(org.springframework.security.config.Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable())
+                .exceptionHandling(ex -> ex.authenticationEntryPoint((req,res,error) -> errors.unauthorized(res))
+                        .accessDeniedHandler((req,res,error) -> errors.forbidden(res)))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
+                        .requestMatchers("/api/admin", "/api/admin/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/auth/register/profesor").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register/alumno").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
@@ -58,5 +65,26 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
+    }
+
+    @Bean
+    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        var cors = new org.springframework.web.cors.CorsConfiguration();
+        for (String origin : corsProperties.getAllowedOrigins()) {
+            if (origin == null || origin.isBlank()) continue;
+            try {
+                var uri = java.net.URI.create(origin);
+                if (!("https".equals(uri.getScheme()) || "http".equals(uri.getScheme())) || uri.getHost() == null
+                        || uri.getUserInfo() != null || uri.getQuery() != null || uri.getFragment() != null
+                        || (uri.getPath() != null && !uri.getPath().isEmpty()) || origin.contains("*")) throw new IllegalArgumentException();
+            } catch (IllegalArgumentException ex) { throw new IllegalStateException("Configurar orígenes CORS explícitos sin rutas ni comodines"); }
+            cors.addAllowedOrigin(origin);
+        }
+        cors.setAllowedMethods(java.util.List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
+        cors.setAllowedHeaders(java.util.List.of("Authorization","Content-Type","Accept"));
+        cors.setExposedHeaders(java.util.List.of("WWW-Authenticate"));
+        cors.setAllowCredentials(false); cors.setMaxAge(3600L);
+        var source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**",cors); return source;
     }
 }

@@ -1,5 +1,6 @@
 package utn.simulacro_nombreAlumno.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,11 +30,16 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final IdentidadService identidad;
+    private final utn.simulacro_nombreAlumno.validation.ValidacionEntrenamiento validacion;
 
 
     @Transactional
     public AuthResponse registerAlumno(RegisterAlumnoRequest request) {
-        validarEmailDisponible(request.getEmail());
+        request.setEmail(utn.simulacro_nombreAlumno.security.EmailNormalizer.normalize(request.getEmail()));
+        validacion.validar(request);
+        utn.simulacro_nombreAlumno.security.PasswordPolicy.validate(request.getPassword(), 8);
+        identidad.exigirEmailDisponible(request.getEmail(), null);
 
         Usuario usuario = usuarioRepository.save(
                 Usuario.builder()
@@ -44,19 +50,17 @@ public class AuthService {
         );
         Alumno alumno = alumnoService.createAlumno(request, usuario);
 
-        String token = jwtService.generateToken(new CustomUserDetails(usuario));
-
-        return AuthResponse.builder()
-                .token(token)
-                .email(usuario.getEmail())
-                .rol(usuario.getRol().name())
-                .perfilId(alumno.getId())
-                .build();
+        usuario.setAlumno(alumno);
+        return identidad.respuesta(usuario);
     }
 
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public AuthResponse registerProfesor(RegisterProfesorRequest request) {
-        validarEmailDisponible(request.getEmail());
+        request.setEmail(utn.simulacro_nombreAlumno.security.EmailNormalizer.normalize(request.getEmail()));
+        validacion.validar(request);
+        utn.simulacro_nombreAlumno.security.PasswordPolicy.validate(request.getPassword(), 8);
+        identidad.exigirEmailDisponible(request.getEmail(), null);
 
         Usuario usuario = usuarioRepository.save(
                 Usuario.builder()
@@ -68,49 +72,19 @@ public class AuthService {
 
         Profesor profesor = profesorService.createProfesor(request, usuario);
 
-        String token = jwtService.generateToken(new CustomUserDetails(usuario));
-
-        return AuthResponse.builder()
-                .token(token)
-                .email(usuario.getEmail())
-                .rol(usuario.getRol().name())
-                .perfilId(profesor.getId())
-                .build();
+        usuario.setProfesor(profesor);
+        return identidad.respuesta(usuario);
     }
+    @Transactional
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
-                .orElseThrow();
-
-        Long perfilId = null;
-        if (usuario.getRol() == Rol.ALUMNO) {
-            perfilId = alumnoService.findByUsuario(usuario)
-                    .map(Alumno::getId).orElse(null);
-        } else if (usuario.getRol() == Rol.PROFESOR) {
-            perfilId = profesorService.findByUsuario(usuario)
-                    .map(Profesor::getId).orElse(null);
+        request.setEmail(utn.simulacro_nombreAlumno.security.EmailNormalizer.normalize(request.getEmail()));
+        validacion.validar(request);
+        var auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        Usuario authenticated = ((CustomUserDetails)auth.getPrincipal()).getUsuario();
+        Usuario usuario = identidad.bloquear(authenticated.getId());
+        if (!usuario.isActivo() || !passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+            throw new org.springframework.security.authentication.BadCredentialsException("Credenciales inválidas");
         }
-
-        String token = jwtService.generateToken(new CustomUserDetails(usuario));
-
-        return AuthResponse.builder()
-                .token(token)
-                .email(usuario.getEmail())
-                .rol(usuario.getRol().name())
-                .perfilId(perfilId)
-                .build();
+        return identidad.respuesta(usuario);
     }
-
-    private void validarEmailDisponible(String email) {
-        if (usuarioRepository.findByEmail(email).isPresent()) {
-            throw new ReglaNegocioException("Ya existe un usuario con ese email");
-        }
-    }
-
 }

@@ -21,13 +21,13 @@ public class RutinaController {
 
     private final RutinaService rutinaService;
 
-    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO','PROFESOR')")
     @GetMapping
     public ResponseEntity<List<RutinaResponse>> listarTodas (){
          return ResponseEntity.ok(rutinaService.listarTodas());
     }
 
-    @PreAuthorize("hasAnyRole('PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR','ALUMNO')")
     @GetMapping("/{id}")
     public ResponseEntity<RutinaResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(rutinaService.findById(id));
@@ -35,7 +35,8 @@ public class RutinaController {
 
     @PreAuthorize("hasRole('PROFESOR')")
     @PostMapping
-    public ResponseEntity<RutinaResponse> crear(@Valid @RequestBody RutinaRequest request , Authentication authentication) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<RutinaResponse> crear(@org.springframework.validation.annotation.Validated(utn.simulacro_nombreAlumno.validation.CreacionRutina.class) @RequestBody RutinaRequest request , Authentication authentication) {
         return ResponseEntity.status(HttpStatus.CREATED).body(rutinaService.crearRutina(request ,authentication ));
     }
 
@@ -47,17 +48,20 @@ public class RutinaController {
 
     @PreAuthorize("hasRole('PROFESOR')")
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
         rutinaService.deleteRutina(id, authentication);
         return ResponseEntity.noContent().build();
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR','ALUMNO')")
     @GetMapping("/activa/alumno/{alumnoId}")
     public ResponseEntity<RutinaResponse> getRutinaActiva(@PathVariable Long alumnoId, Authentication authentication) {
         return ResponseEntity.ok(rutinaService.getRutinaActivaDeAlumno(alumnoId, authentication));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR','ALUMNO')")
     @GetMapping("/historial/alumno/{alumnoId}")
     public ResponseEntity<List<RutinaResponse>> getHistorial(@PathVariable Long alumnoId, Authentication authentication) {
         return ResponseEntity.ok(rutinaService.getHistorialDeAlumno(alumnoId, authentication));
@@ -80,5 +84,17 @@ public class RutinaController {
     @PreAuthorize("hasRole('ALUMNO')")
     public ResponseEntity<List<RutinaResponse>> getHistorialMe(Authentication authentication) {
         return ResponseEntity.ok(rutinaService.getHistorialMe(authentication));
+    }
+
+    @GetMapping("/{id}/versiones")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR','ALUMNO')")
+    public ResponseEntity<List<RutinaResponse>> versiones(@PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(rutinaService.listarVersiones(id, auth));
+    }
+
+    @GetMapping("/{id}/versiones/{numero}")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR','ALUMNO')")
+    public ResponseEntity<RutinaResponse> version(@PathVariable Long id, @PathVariable int numero, Authentication auth) {
+        return ResponseEntity.ok(rutinaService.getVersion(id, numero, auth));
     }
 }

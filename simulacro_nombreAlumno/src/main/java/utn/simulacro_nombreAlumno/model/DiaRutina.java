@@ -6,7 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "dias_rutina")
+@org.hibernate.annotations.Immutable
+@Table(name = "dias_rutina", indexes = @Index(name = "ix_dia_orden", columnList = "rutina_id,numero_orden,id"))
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +29,8 @@ public class DiaRutina {
     @JoinColumn(name = "rutina_id")
     private Rutina rutina;
 
-    @OneToMany(mappedBy = "diaRutina", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "diaRutina", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @OrderBy("id ASC")
     @Builder.Default
     private List<DiaEjercicio> ejercicios = new ArrayList<>();
 }

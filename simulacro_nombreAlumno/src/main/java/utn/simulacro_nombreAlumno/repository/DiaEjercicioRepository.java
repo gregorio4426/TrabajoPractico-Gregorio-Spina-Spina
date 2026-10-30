@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import utn.simulacro_nombreAlumno.model.DiaEjercicio;
 
 public interface DiaEjercicioRepository extends JpaRepository<DiaEjercicio, Long> {
+    boolean existsByEjercicio_Id(Long ejercicioId);
 }

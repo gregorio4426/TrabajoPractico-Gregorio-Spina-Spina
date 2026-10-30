@@ -11,6 +11,8 @@ import utn.simulacro_nombreAlumno.model.request.ProfesorRequest;
 import utn.simulacro_nombreAlumno.model.response.ProfesorResponse;
 import utn.simulacro_nombreAlumno.service.ProfesorService;
 
+import utn.simulacro_nombreAlumno.model.response.AlumnoResponse;
+import utn.simulacro_nombreAlumno.service.AlumnoService;
 import java.util.List;
 
 
@@ -19,21 +21,22 @@ import java.util.List;
 @RequestMapping("/api/profesores")
 public class ProfesorController {
 
-    private final ProfesorService profesorService ;
+    private final ProfesorService profesorService;
+    private final AlumnoService alumnoService;
 
-    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO','PROFESOR')")
     @GetMapping
     public ResponseEntity<List<ProfesorResponse>> listarTodos() {
         return ResponseEntity.ok(profesorService.listarProfesores());
     }
 
-    @PreAuthorize("hasAnyRole('ALUMNO', 'PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO','PROFESOR')")
     @GetMapping("/{id}")
     public ResponseEntity<ProfesorResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(profesorService.findProfesorResponseById(id));
     }
 
-    @PreAuthorize("hasRole('PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @PatchMapping("/{id}")
     public ResponseEntity<ProfesorResponse> update(
             @PathVariable Long id,
@@ -54,5 +57,17 @@ public class ProfesorController {
             Authentication authentication) {
         return ResponseEntity.ok(profesorService.updateMiPerfil(request, authentication));
     }
-}
 
+    @GetMapping("/me/alumnos")
+    @PreAuthorize("hasRole('PROFESOR')")
+    public ResponseEntity<List<AlumnoResponse>> misAlumnos(Authentication auth) {
+        return ResponseEntity.ok(alumnoService.misAlumnos(auth));
+    }
+
+    @DeleteMapping("/me/alumnos/{alumnoId}")
+    @PreAuthorize("hasRole('PROFESOR')")
+    public ResponseEntity<Void> desvincularAlumno(@PathVariable Long alumnoId, Authentication auth) {
+        alumnoService.desvincularMiAlumno(alumnoId, auth);
+        return ResponseEntity.noContent().build();
+    }
+}

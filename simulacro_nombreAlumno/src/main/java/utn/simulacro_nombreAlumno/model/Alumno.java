@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import lombok.*;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Builder
@@ -46,11 +47,15 @@ public class Alumno {
     @JoinTable(
         name = "alumnos_profesore",
         joinColumns = @JoinColumn(name = "alumno_id"),
-        inverseJoinColumns = @JoinColumn(name = "profesor_id")
+        inverseJoinColumns = @JoinColumn(name = "profesor_id"),
+        uniqueConstraints = @UniqueConstraint(name="uk_alumno_profesor", columnNames={"alumno_id","profesor_id"})
     )
-    private List<Profesor> profesores;
+    @Builder.Default
+    private List<Profesor> profesores = new ArrayList<>();
 
     @OneToMany(mappedBy = "alumno")
     private List<AsignacionRutina> rutinasAsignadas;
 
+    @Column(length = 150)
+    private String emailContacto;
 }

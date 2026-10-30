@@ -16,8 +16,12 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado: " + email));
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(EmailNormalizer.normalize(email))
+                .orElseThrow(() -> new UsernameNotFoundException("Credenciales inválidas"));
         return new CustomUserDetails(usuario);
+    }
+    public CustomUserDetails loadById(Long id) {
+        return new CustomUserDetails(usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("Credenciales inválidas")));
     }
 }
