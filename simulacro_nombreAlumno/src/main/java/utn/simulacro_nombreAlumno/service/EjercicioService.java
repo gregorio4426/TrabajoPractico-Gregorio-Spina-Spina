@@ -1,5 +1,6 @@
 package utn.simulacro_nombreAlumno.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import utn.simulacro_nombreAlumno.exception.RecursoNoEncontradoException;
@@ -23,8 +24,10 @@ public class EjercicioService {
 
     private final EjercicioMapper ejercicioMapper;
     private final EjercicioRepository ejercicioRepository;
+    private final utn.simulacro_nombreAlumno.repository.DiaEjercicioRepository prescripciones;
 
 
+    @PreAuthorize("hasRole('PROFESOR')")
     public EjercicioResponse createEjercicio(EjercicioRequest nuevo) {
         Ejercicio ejercicio = ejercicioMapper.toEntity(nuevo);
         ejercicioRepository.save(ejercicio);
@@ -39,6 +42,7 @@ public class EjercicioService {
         return ejercicioResponse;
     }
 
+    @PreAuthorize("hasRole('PROFESOR')")
     public EjercicioResponse updateEjercicio(Long id, EjercicioRequest request) {
         Ejercicio ejercicio = findEntityById(id);
         ejercicio.setNombre(request.getNombre());
@@ -48,7 +52,11 @@ public class EjercicioService {
         return ejercicioMapper.toDto(ejercicio);
     }
 
+    @PreAuthorize("hasRole('PROFESOR')")
     public void deleteEjercicio(Long id) {
+        if (prescripciones.existsByEjercicio_Id(id)) {
+            throw new utn.simulacro_nombreAlumno.exception.ReglaNegocioException("El ejercicio está referenciado por rutinas o historial y no puede eliminarse");
+        }
         ejercicioRepository.delete(findEntityById(id));
     }
 

@@ -42,4 +42,5 @@ public class RegisterAlumnoRequest {
 
     @NotNull
     private Objetivo objetivo;
+    public void setEmail(String email) { this.email = utn.simulacro_nombreAlumno.security.EmailNormalizer.normalize(email); }
 }

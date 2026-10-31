@@ -31,4 +31,9 @@ public class Usuario {
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
     private Profesor profesor;
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean activo = true;
+    @Column(nullable = false)
+    private long tokenVersion;
 }

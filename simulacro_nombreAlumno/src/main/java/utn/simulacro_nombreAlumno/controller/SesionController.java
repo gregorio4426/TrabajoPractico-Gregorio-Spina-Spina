@@ -23,12 +23,14 @@ public class SesionController {
 
     @PostMapping
     @PreAuthorize("hasRole('ALUMNO')")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<SesionResponse> iniciarSesion(@Valid @RequestBody SesionRequest request, Authentication authentication) {
         return ResponseEntity.status(HttpStatus.CREATED).body(sesionService.iniciarSesion(request, authentication));
     }
 
     @PostMapping("/{id}/series")
     @PreAuthorize("hasRole('ALUMNO')")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<SerieResponse> registrarSerie(@PathVariable Long id, @Valid @RequestBody SerieRequest request, Authentication authentication) {
         return ResponseEntity.status(HttpStatus.CREATED).body(sesionService.registrarSerie(id, request, authentication));
     }
@@ -40,7 +42,7 @@ public class SesionController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ALUMNO','PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO','PROFESOR')")
     public ResponseEntity<SesionResponse> getDetalle(@PathVariable Long id, Authentication authentication) {
         return ResponseEntity.ok(sesionService.getDetalle(id, authentication));
     }
@@ -58,8 +60,42 @@ public class SesionController {
     }
 
     @GetMapping("/alumno/{alumnoId}/historial")
-    @PreAuthorize("hasRole('PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     public ResponseEntity<List<SesionResponse>> getHistorialDeAlumno(@PathVariable Long alumnoId, Authentication authentication) {
         return ResponseEntity.ok(sesionService.getHistorialDeAlumno(alumnoId, authentication));
+    }
+
+    @PatchMapping("/{id}/series/{serieId}")
+    @PreAuthorize("hasRole('ALUMNO')")
+    public ResponseEntity<SerieResponse> corregirSerie(@PathVariable Long id, @PathVariable Long serieId,
+            @Valid @RequestBody utn.simulacro_nombreAlumno.model.request.CorreccionSerieRequest request, Authentication auth) {
+        return ResponseEntity.ok(sesionService.corregirSerie(id, serieId, request, auth));
+    }
+
+    @DeleteMapping("/{id}/series/{serieId}")
+    @PreAuthorize("hasRole('ALUMNO')")
+    public ResponseEntity<SerieResponse> anularSerie(@PathVariable Long id, @PathVariable Long serieId,
+            @Valid @RequestBody utn.simulacro_nombreAlumno.model.request.AnulacionSerieRequest request, Authentication auth) {
+        return ResponseEntity.ok(sesionService.anularSerie(id, serieId, request, auth));
+    }
+
+    @PatchMapping("/{id}/correccion")
+    @PreAuthorize("hasRole('ALUMNO')")
+    public ResponseEntity<SesionResponse> corregirSesion(@PathVariable Long id,
+            @Valid @RequestBody utn.simulacro_nombreAlumno.model.request.CorreccionSesionRequest request, Authentication auth) {
+        return ResponseEntity.ok(sesionService.corregirSesion(id, request, auth));
+    }
+
+    @GetMapping("/{id}/auditoria")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR','ALUMNO')")
+    public ResponseEntity<List<utn.simulacro_nombreAlumno.model.response.AuditoriaEntrenamientoResponse>> auditoria(@PathVariable Long id, Authentication auth) {
+        return ResponseEntity.ok(sesionService.auditoria(id, auth));
+    }
+
+    @PutMapping("/{id}/series/{serieId}/restaurar")
+    @PreAuthorize("hasRole('ALUMNO')")
+    public ResponseEntity<SerieResponse> restaurarSerie(@PathVariable Long id, @PathVariable Long serieId,
+            @Valid @RequestBody utn.simulacro_nombreAlumno.model.request.CorreccionSerieRequest request, Authentication auth) {
+        return ResponseEntity.ok(sesionService.restaurarSerie(id, serieId, request, auth));
     }
 }

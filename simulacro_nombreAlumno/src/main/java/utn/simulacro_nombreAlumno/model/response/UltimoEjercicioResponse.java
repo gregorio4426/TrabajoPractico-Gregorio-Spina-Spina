@@ -15,4 +15,5 @@ public class UltimoEjercicioResponse {
     private Long ejercicioId;
     private String ejercicioNombre;
     private List<SerieResponse> series;
+    private java.time.LocalDate fechaEfectiva;
 }

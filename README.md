@@ -34,7 +34,7 @@ Controller → Service → Repository → Base de datos (MySQL)
 - **Validaciones** con Bean Validation (`@Valid`) en todos los endpoints de escritura
 - **Seguridad stateless** con JWT: cada request lleva el header `Authorization: Bearer <token>`
 - **Autorización por rol** con `@PreAuthorize` en los controllers
-- **DataSeeder**: crea automáticamente un usuario ADMIN al levantar la aplicación por primera vez
+- **Bootstrap de ADMIN**: opt-in con variables seguras; sin cuentas o contraseñas predeterminadas. Ver la guía de seguridad de etapa 5.
 
 ---
 
@@ -93,7 +93,7 @@ Serie
 
 ## 🔐 Autenticación y roles
 
-Todos los endpoints (salvo `/api/auth/**` y Swagger) requieren un JWT válido en el header:
+Todos los endpoints (salvo login, registro de alumno y Swagger) requieren un JWT válido en el header:
 
 ```
 Authorization: Bearer <token>
@@ -103,16 +103,13 @@ Authorization: Bearer <token>
 
 | Rol | Descripción |
 |---|---|
-| `ADMIN` | Creado automáticamente al iniciar la app. Puede registrar profesores. |
+| `ADMIN` | Creación inicial opt-in con configuración segura. Puede registrar profesores. |
 | `PROFESOR` | Gestiona ejercicios, rutinas y alumnos. |
 | `ALUMNO` | Consulta rutinas asignadas y registra sus sesiones de entrenamiento. |
 
-### Credenciales del ADMIN por defecto
+### Configuración del administrador
 
-```
-Email:    admin@gimnasio.com
-Password: Admin1234!
-```
+No hay credenciales predeterminadas. Configurar el bootstrap inicial mediante variables de entorno y deshabilitarlo después de crear el primer ADMIN. Ver [seguridad, variables y migración 004](simulacro_nombreAlumno/docs/etapa-5-seguridad.md).
 
 ---
 
@@ -252,7 +249,7 @@ Crear la base de datos en MySQL antes de levantar la aplicación:
 CREATE DATABASE APPgimnasioBD;
 ```
 
-> Las tablas se crean automáticamente al levantar la app (`ddl-auto: update`).
+> El arranque valida el esquema (`ddl-auto: validate`). En una base vacía, ejecutar los scripts 001, 002, 003, 004 y 005 de `simulacro_nombreAlumno/src/main/resources/db/mysql/` en orden. En una base existente, aplicar únicamente las migraciones pendientes, con backup y la aplicación detenida. Ver [versionado y recuperación](simulacro_nombreAlumno/docs/etapa-3-historial.md) y [consistencia, correcciones y migración 003](simulacro_nombreAlumno/docs/etapa-4-consistencia.md).
 
 ### `application.yaml`
 
@@ -260,15 +257,15 @@ CREATE DATABASE APPgimnasioBD;
 spring:
   datasource:
     url: jdbc:mysql://localhost:3306/APPgimnasioBD
-    username: root
-    password: 1234
+    username: ${GYM_DB_USERNAME}
+    password: ${GYM_DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
 ```
 
-> Modificar `username` y `password` según tu entorno local.
+> Configurar también GYM_JWT_SECRET_BASE64 y las demás variables de la [guía de seguridad](simulacro_nombreAlumno/docs/etapa-5-seguridad.md). No hay secretos de desarrollo en el código.
 
 ### Levantar el proyecto
 
@@ -300,3 +297,7 @@ http://localhost:8080/swagger-ui/index.html
 
 - **Facundo Gregorio**
 - **Nicolás Spina**
+
+La administración general está documentada en [etapa 6: endpoints ADMIN, cambios de rol y migración 005](simulacro_nombreAlumno/docs/etapa-6-administracion.md).
+
+La entrega del backend y sus dashboards están documentados en [etapa 7: estadísticas, contrato OpenAPI y ejecución local](simulacro_nombreAlumno/docs/etapa-7-dashboards.md). El frontend todavía no está implementado.

@@ -38,4 +38,6 @@ public class Profesor {
 
     @OneToMany (mappedBy = "profesor")
     private List <Rutina> rutinas;
+    @Column(length = 150)
+    private String emailContacto;
 }

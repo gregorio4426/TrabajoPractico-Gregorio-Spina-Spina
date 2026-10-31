@@ -30,5 +30,8 @@ public class AlumnoRequest {
 
     @NotNull
     private Objetivo objetivo;
+    @jakarta.validation.constraints.Email
+    @jakarta.validation.constraints.Size(max = 150)
+    private String emailContacto;
 }
 

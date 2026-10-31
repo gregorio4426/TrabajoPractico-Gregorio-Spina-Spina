@@ -36,6 +36,7 @@ public class EjercicioController {
 
     @PostMapping
     @PreAuthorize("hasRole('PROFESOR')")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<EjercicioResponse> create(@Valid @RequestBody EjercicioRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(ejercicioService.createEjercicio(request));
     }
@@ -48,6 +49,7 @@ public class EjercicioController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('PROFESOR')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         ejercicioService.deleteEjercicio(id);
         return ResponseEntity.noContent().build();

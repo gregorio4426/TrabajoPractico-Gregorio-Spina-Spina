@@ -1,8 +1,11 @@
 package utn.simulacro_nombreAlumno.service;
 
+import utn.simulacro_nombreAlumno.security.AccesoService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import utn.simulacro_nombreAlumno.exception.RecursoNoEncontradoException;
 import utn.simulacro_nombreAlumno.mapper.ProfesorMapper;
 import utn.simulacro_nombreAlumno.model.Profesor;
@@ -23,6 +26,8 @@ public class ProfesorService  {
 
     private final ProfesorMapper profesorMapper;
     private final ProfesorRepository profesorRepository;
+    private final AccesoService acceso;
+    private final IdentidadService identidad;
 
     public Profesor createProfesor(RegisterProfesorRequest request, Usuario usuario) {
         Profesor profesor = Profesor.builder()
@@ -36,16 +41,16 @@ public class ProfesorService  {
     }
 
     public List<ProfesorResponse> listarProfesores() {
+        acceso.usuario(SecurityContextHolder.getContext().getAuthentication());
         return profesorMapper.toLISTDto(profesorRepository.findAll());
     }
 
     // SCRUM-26 — Modificar perfil profesor
+    @Transactional
     public ProfesorResponse updateProfesor(Long id, ProfesorRequest nuevo) {
+        acceso.editarPerfilProfesor(id, SecurityContextHolder.getContext().getAuthentication());
         Profesor profesor = findEntityById(id);
-        profesor.setNombre(nuevo.getNombre());
-        profesor.setApellido(nuevo.getApellido());
-        profesor.setEmail(nuevo.getEmail());
-        profesor.setEspecialidad(nuevo.getEspecialidad());
+        aplicarPerfil(profesor, nuevo);
         profesorRepository.save(profesor);
         return profesorMapper.toDto(profesor);
     }
@@ -56,6 +61,7 @@ public class ProfesorService  {
     }
 
     public ProfesorResponse findProfesorResponseById(long id) {
+        acceso.usuario(SecurityContextHolder.getContext().getAuthentication());
         return profesorMapper.toDto(findEntityById(id));
     }
 
@@ -65,21 +71,24 @@ public class ProfesorService  {
     }
 
     public ProfesorResponse getMiPerfil(org.springframework.security.core.Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Profesor profesor = userDetails.getUsuario().getProfesor();
-        if (profesor == null) throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
+        Profesor profesor = findEntityById(acceso.profesorPropio(authentication).getId());
         return profesorMapper.toDto(profesor);
     }
 
+    @Transactional
     public ProfesorResponse updateMiPerfil(ProfesorRequest request, Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Profesor profesor = userDetails.getUsuario().getProfesor();
-        if (profesor == null) throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
-        profesor.setNombre(request.getNombre());
-        profesor.setApellido(request.getApellido());
-        profesor.setEspecialidad(request.getEspecialidad());
+        Profesor profesor = findEntityById(acceso.profesorPropio(authentication).getId());
+        aplicarPerfil(profesor, request);
         profesorRepository.save(profesor);
         return profesorMapper.toDto(profesor);
+    }
+    private void aplicarPerfil(Profesor profesor, ProfesorRequest request) {
+        String email = identidad.correoPerfil(profesor.getUsuario(), request.getEmail());
+        profesor.setNombre(request.getNombre());
+        profesor.setApellido(request.getApellido());
+        if (email != null) profesor.setEmail(email);
+        if (request.getEmailContacto() != null) profesor.setEmailContacto(request.getEmailContacto());
+        profesor.setEspecialidad(request.getEspecialidad());
     }
 }
 

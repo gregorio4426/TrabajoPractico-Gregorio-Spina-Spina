@@ -14,6 +14,7 @@ import utn.simulacro_nombreAlumno.security.CustomUserDetails;
 import utn.simulacro_nombreAlumno.service.AlumnoService;
 
 
+import utn.simulacro_nombreAlumno.model.request.SeguimientoAlumnoRequest;
 import java.util.List;
 
 @RestController
@@ -25,24 +26,24 @@ public class AlumnoController {
 
 
 
-    @PreAuthorize("hasAnyRole('PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
     @GetMapping
     public ResponseEntity<List<AlumnoResponse>> listarTodos() {
         return ResponseEntity.ok(alumnoService.listarAlumnos());
     }
-    @PreAuthorize("hasAnyRole( 'PROFESOR')")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR','ALUMNO')")
     @GetMapping("/{id}")
     public ResponseEntity<AlumnoResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(alumnoService.findAlumnoResponseById(id));
     }
 
-    @PreAuthorize("hasRole('ALUMNO')")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO')")
     @PutMapping("/{id}")
     public ResponseEntity<AlumnoResponse> update(
             @PathVariable Long id, @Valid @RequestBody AlumnoRequest request, Authentication authentication) {
         return ResponseEntity.ok(alumnoService.updateAlumno(id, request, authentication));
     }
-    @PreAuthorize("hasRole('ALUMNO')")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO')")
     @PostMapping("/{alumnoId}/profesores/{profesorId}")
     public ResponseEntity<AlumnoResponse> elegirProfesor(@PathVariable Long alumnoId, @PathVariable Long profesorId, Authentication authentication) {
         return ResponseEntity.ok(alumnoService.elegirProfesor(alumnoId, profesorId, authentication));
@@ -70,5 +71,30 @@ public class AlumnoController {
         return ResponseEntity.ok(alumnoService.elegirProfesorMe(profesorId, authentication));
     }
 
-}
 
+    @DeleteMapping("/me/profesores/{profesorId}")
+    @PreAuthorize("hasRole('ALUMNO')")
+    public ResponseEntity<AlumnoResponse> desvincularMe(@PathVariable Long profesorId, Authentication auth) {
+        return ResponseEntity.ok(alumnoService.desvincularProfesorMe(profesorId, auth));
+    }
+
+    @DeleteMapping("/{alumnoId}/profesores/{profesorId}")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO')")
+    public ResponseEntity<AlumnoResponse> desvincular(@PathVariable Long alumnoId, @PathVariable Long profesorId, Authentication auth) {
+        return ResponseEntity.ok(alumnoService.desvincularProfesor(alumnoId, profesorId, auth));
+    }
+
+    @PutMapping("/{alumnoId}/profesores/{anteriorId}/reemplazo/{nuevoId}")
+    @PreAuthorize("hasAnyRole('ADMIN','ALUMNO')")
+    public ResponseEntity<AlumnoResponse> reemplazar(@PathVariable Long alumnoId, @PathVariable Long anteriorId,
+                                                   @PathVariable Long nuevoId, Authentication auth) {
+        return ResponseEntity.ok(alumnoService.reemplazarProfesor(alumnoId, anteriorId, nuevoId, auth));
+    }
+
+    @PatchMapping("/{id}/seguimiento")
+    @PreAuthorize("hasAnyRole('ADMIN','PROFESOR')")
+    public ResponseEntity<AlumnoResponse> seguimiento(@PathVariable Long id,
+            @Valid @RequestBody SeguimientoAlumnoRequest request, Authentication auth) {
+        return ResponseEntity.ok(alumnoService.actualizarSeguimiento(id, request, auth));
+    }
+}

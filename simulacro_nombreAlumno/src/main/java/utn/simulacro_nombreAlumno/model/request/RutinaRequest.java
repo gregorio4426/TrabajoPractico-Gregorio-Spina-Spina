@@ -4,6 +4,9 @@ package utn.simulacro_nombreAlumno.model.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+import utn.simulacro_nombreAlumno.validation.PesoValido;
 
 import java.util.List;
 import java.util.Set;
@@ -16,11 +19,14 @@ import java.util.Set;
 public class RutinaRequest {
 
     @NotBlank
+    @Size(max = 255)
     private String nombre;
 
     @NotBlank
+    @Size(max = 255)
     private String descripcion;
 
-    private List<DiaRutinaRequest> dias;
+    @NotEmpty(groups = utn.simulacro_nombreAlumno.validation.CreacionRutina.class)
+    private List<@NotNull @Valid DiaRutinaRequest> dias;
 }
 

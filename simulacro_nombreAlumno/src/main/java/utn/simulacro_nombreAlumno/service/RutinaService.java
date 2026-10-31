@@ -1,5 +1,7 @@
 package utn.simulacro_nombreAlumno.service;
 
+import utn.simulacro_nombreAlumno.security.AccesoService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -35,224 +37,214 @@ public class RutinaService {
     private final AsignacionRutinaRepository asignacionRutinaRepository;
     private final AlumnoService alumnoService;
     private final AsignacionMapper asignacionMapper;
+    private final AccesoService acceso;
+    private final utn.simulacro_nombreAlumno.validation.ValidacionEntrenamiento validacion;
+    @jakarta.persistence.PersistenceContext
+    private jakarta.persistence.EntityManager entityManager;
 
     public Rutina findEntityById(long id) {
          return rutinaRepository.findById(id)
                  .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
      }
 
-     public RutinaResponse findById(Long id) {
-        return rutinaMapper.toDto(findEntityById(id));
+    @Transactional
+    public RutinaResponse findById(Long id) {
+        acceso.usuario(actual());
+        return respuesta(ultima(raiz(findEntityById(id))), actual());
     }
 
-    public List<RutinaResponse> listarTodas (){
-         List<Rutina> todas = rutinaRepository.findAll();
-         return rutinaMapper.toLISTDto(todas);
+    @Transactional
+    public List<RutinaResponse> listarTodas() {
+        acceso.usuario(actual());
+        return rutinaRepository.findByRaizIsNullAndArchivadaFalseOrderByIdAsc().stream()
+                .map(this::ultima).map(r -> respuesta(r, actual())).toList();
+    }
 
-     }
+    @Transactional
+    public List<RutinaResponse> listarVersiones(Long id, Authentication auth) {
+        acceso.usuario(auth);
+        Rutina raiz = raiz(findEntityById(id));
+        List<Rutina> versiones = new ArrayList<>();
+        versiones.add(raiz);
+        versiones.addAll(rutinaRepository.findByRaiz_IdOrderByNumeroVersionAsc(raiz.getId()));
+        return versiones.stream().map(r -> respuesta(r, auth)).toList();
+    }
 
-    public RutinaResponse crearRutina(RutinaRequest request, Authentication authentication) {
+    @Transactional
+    public RutinaResponse getVersion(Long id, int numero, Authentication auth) {
+        acceso.usuario(auth);
+        Rutina raiz = raiz(findEntityById(id));
+        Rutina version = numero == 1 ? raiz : rutinaRepository.findByRaiz_IdAndNumeroVersion(raiz.getId(), numero)
+                .orElseThrow(() -> new RecursoNoEncontradoException("Versión de rutina no encontrada"));
+        return respuesta(version, auth);
+    }
+
+    @Transactional
+    public RutinaResponse crearRutina(RutinaRequest request, Authentication auth) {
+        Profesor profesor = acceso.profesorPropio(auth);
+        validacion.rutina(request, true);
         if (request.getDias() == null || request.getDias().isEmpty()) {
             throw new ReglaNegocioException("La rutina debe tener al menos un día");
         }
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Profesor profesor = userDetails.getUsuario().getProfesor();
-        if (profesor == null) throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
+        Rutina rutina = Rutina.builder().nombre(request.getNombre()).descripcion(request.getDescripcion())
+                .profesor(profesor).build();
+        cargarDias(rutina, request);
+        return respuesta(rutinaRepository.save(rutina), auth);
+    }
 
-        Rutina rutina = Rutina.builder()
-                .nombre(request.getNombre())
-                .descripcion(request.getDescripcion())
-                .profesor(profesor)
-                .build();
+    @Transactional
+    public RutinaResponse updateRutina(Long id, RutinaRequest request, Authentication auth) {
+        Profesor profesor = acceso.profesorPropio(auth);
+        Rutina raiz = raizBloqueada(id);
+        exigirCreador(raiz, profesor);
+        validacion.rutina(request, false);
+        if (raiz.isArchivada()) throw new ReglaNegocioException("La rutina está archivada");
+        Rutina anterior = ultimaBloqueada(raiz);
+        Rutina nueva = Rutina.builder().raiz(raiz).numeroVersion(anterior.getNumeroVersion() + 1)
+                .nombre(request.getNombre()).descripcion(request.getDescripcion()).profesor(raiz.getProfesor()).build();
+        if (request.getDias() == null || request.getDias().isEmpty()) {
+            copiarDias(anterior, nueva); // Compatibilidad con PUT de metadatos sin días.
+        } else cargarDias(nueva, request);
+        if (java.util.Objects.equals(anterior.getNombre(), nueva.getNombre())
+                && java.util.Objects.equals(anterior.getDescripcion(), nueva.getDescripcion())
+                && firma(anterior).equals(firma(nueva))) return respuesta(anterior, auth);
+        return respuesta(rutinaRepository.save(nueva), auth);
+    }
 
-        List<DiaRutina> dias = new ArrayList<>();
-        for (var diaReq : request.getDias()) {
-            DiaRutina dia = DiaRutina.builder()
-                    .nombre(diaReq.getNombre())
-                    .numeroOrden(diaReq.getNumeroOrden())
-                    .rutina(rutina)
-                    .build();
+    @Transactional
+    public void deleteRutina(Long id, Authentication auth) {
+        Profesor profesor = acceso.profesorPropio(auth);
+        Rutina raiz = raizBloqueada(id);
+        exigirCreador(raiz, profesor);
+        raiz.setArchivada(true); // Ningún DELETE ni limpieza de relaciones históricas.
+    }
 
-            List<DiaEjercicio> ejercicios = new ArrayList<>();
-            if (diaReq.getEjercicios() != null) {
-                for (var ejReq : diaReq.getEjercicios()) {
-                    Ejercicio ejercicio = ejercicioService.findEntityById(ejReq.getEjercicioId());
-                    ejercicios.add(DiaEjercicio.builder()
-                            .diaRutina(dia)
-                            .ejercicio(ejercicio)
-                            .seriesSugeridas(ejReq.getSeriesSugeridas())
-                            .repsSugeridas(ejReq.getRepsSugeridas())
-                            .pesoSugerido(ejReq.getPesoSugerido())
-                            .build());
-                }
-            }
-            dia.setEjercicios(ejercicios);
-            dias.add(dia);
+    private Rutina raiz(Rutina rutina) { return rutina.getRaiz() == null ? rutina : rutina.getRaiz(); }
+
+    private Rutina raizBloqueada(Long id) {
+        Rutina raiz = raiz(findEntityById(id));
+        // Refresca también el primer nivel de caché tras esperar el bloqueo.
+        entityManager.refresh(raiz, jakarta.persistence.LockModeType.PESSIMISTIC_WRITE);
+        return raiz;
+    }
+
+    private Rutina ultimaBloqueada(Rutina raiz) {
+        return rutinaRepository.findTopByRaiz_IdOrderByNumeroVersionDesc(raiz.getId()).orElse(raiz);
+    }
+
+    private Rutina ultima(Rutina raiz) {
+        return rutinaRepository.findFirstByRaiz_IdOrderByNumeroVersionDesc(raiz.getId()).orElse(raiz);
+    }
+
+    private void exigirCreador(Rutina rutina, Profesor profesor) {
+        if (rutina.getProfesor() == null || !rutina.getProfesor().getId().equals(profesor.getId())) {
+            throw new AccessDeniedException("Solo el profesor creador puede modificar o asignar esta rutina");
         }
-        rutina.setDias(dias);
-        return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
 
-    public RutinaResponse updateRutina(Long id, RutinaRequest request, Authentication authentication) {
-        Rutina rutina = findEntityById(id);
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Profesor profesorAutenticado = userDetails.getUsuario().getProfesor();
-        if (profesorAutenticado == null)
-            throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
-        if (!rutina.getProfesor().getId().equals(profesorAutenticado.getId()))
-            throw new AccessDeniedException("Solo el profesor que creó esta rutina puede modificarla");
-
-        rutina.setNombre(request.getNombre());
-        rutina.setDescripcion(request.getDescripcion());
-
-        if (request.getDias() != null && !request.getDias().isEmpty()) {
-            rutina.getDias().clear();
-            for (var diaReq : request.getDias()) {
-                DiaRutina dia = DiaRutina.builder()
-                        .nombre(diaReq.getNombre())
-                        .numeroOrden(diaReq.getNumeroOrden())
-                        .rutina(rutina)
-                        .build();
-
-                List<DiaEjercicio> ejercicios = new ArrayList<>();
-                if (diaReq.getEjercicios() != null) {
-                    for (var ejReq : diaReq.getEjercicios()) {
-                        Ejercicio ejercicio = ejercicioService.findEntityById(ejReq.getEjercicioId());
-                        ejercicios.add(DiaEjercicio.builder()
-                                .diaRutina(dia)
-                                .ejercicio(ejercicio)
-                                .seriesSugeridas(ejReq.getSeriesSugeridas())
-                                .repsSugeridas(ejReq.getRepsSugeridas())
-                                .pesoSugerido(ejReq.getPesoSugerido())
-                                .build());
-                    }
-                }
-                dia.setEjercicios(ejercicios);
-                rutina.getDias().add(dia);
+    private void cargarDias(Rutina rutina, RutinaRequest request) {
+        for (var req : request.getDias()) {
+            DiaRutina dia = DiaRutina.builder().nombre(req.getNombre()).numeroOrden(req.getNumeroOrden()).rutina(rutina).build();
+            if (req.getEjercicios() != null) for (var e : req.getEjercicios()) {
+                Ejercicio ejercicio = ejercicioService.findEntityById(e.getEjercicioId());
+                dia.getEjercicios().add(DiaEjercicio.builder().diaRutina(dia).ejercicio(ejercicio)
+                        .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas()).pesoSugerido(e.getPesoSugerido())
+                        .ejercicioNombreSnapshot(ejercicio.getNombre()).ejercicioDescripcionSnapshot(ejercicio.getDescripcion())
+                        .grupoMuscularSnapshot(ejercicio.getGrupoMuscular() == null ? null : ejercicio.getGrupoMuscular().name()).build());
             }
+            rutina.getDias().add(dia);
         }
-        return rutinaMapper.toDto(rutinaRepository.save(rutina));
     }
 
-    public void deleteRutina(Long id, Authentication authentication) {
-        Rutina rutina = findEntityById(id);
-
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Profesor profesorAutenticado = userDetails.getUsuario().getProfesor();
-        if (profesorAutenticado == null)
-            throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
-        if (!rutina.getProfesor().getId().equals(profesorAutenticado.getId()))
-            throw new org.springframework.security.access.AccessDeniedException("Solo el profesor que creó esta rutina puede eliminarla");
-
-        asignacionRutinaRepository.deleteAll(rutina.getAsignaciones());
-        rutina.getDias().clear();
-        rutinaRepository.delete(rutina);
+    private void copiarDias(Rutina anterior, Rutina nueva) {
+        for (DiaRutina viejo : anterior.getDias()) {
+            DiaRutina dia = DiaRutina.builder().nombre(viejo.getNombre()).numeroOrden(viejo.getNumeroOrden()).rutina(nueva).build();
+            for (DiaEjercicio e : viejo.getEjercicios()) {
+                dia.getEjercicios().add(DiaEjercicio.builder().diaRutina(dia).ejercicio(e.getEjercicio())
+                        .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas()).pesoSugerido(e.getPesoSugerido())
+                        .ejercicioNombreSnapshot(e.getNombreHistorico()).grupoMuscularSnapshot(e.getGrupoHistorico())
+                        .ejercicioDescripcionSnapshot(e.getEjercicioDescripcionSnapshot()).build());
+            }
+            nueva.getDias().add(dia);
+        }
     }
+
+    private List<?> firma(Rutina rutina) {
+        return rutina.getDias().stream().map(d -> java.util.Arrays.asList(d.getNombre(), d.getNumeroOrden(),
+                d.getEjercicios().stream().map(e -> java.util.Arrays.asList(e.getEjercicio().getId(), e.getSeriesSugeridas(),
+                        e.getRepsSugeridas(), e.getPesoSugerido(), e.getNombreHistorico(), e.getGrupoHistorico(),
+                        e.getEjercicioDescripcionSnapshot())).toList())).toList();
+    }
+
+    @Transactional
     public AsignacionResponse asignarRutina(Long rutinaId, Long alumnoId) {
-        Rutina rutina = findEntityById(rutinaId);
-        Alumno alumno = alumnoService.findEntityById(alumnoId);
-
-
-        asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno).ifPresent(a -> {
-            a.setActiva(false);
-            a.setFechaFin(LocalDateTime.now());
-            asignacionRutinaRepository.save(a);
-        });
-
-        AsignacionRutina asignacion = AsignacionRutina.builder()
-                .rutina(rutina)
-                .alumno(alumno)
-                .fechaInicio(LocalDateTime.now())
-                .activa(true)
-                .build();
-        asignacionRutinaRepository.save(asignacion);
-
-        return new AsignacionResponse(
-                asignacion.getFechaInicio(),
-                asignacion.getFechaFin(),
-                asignacion.isActiva(),
-                rutina.getNombre(),
-                alumno.getNombre() + " " + alumno.getApellido()
-        );
+        return asignarRutinaMe(alumnoId, rutinaId, actual());
     }
 
     @Transactional
-    public List<RutinaResponse> getHistorialDeAlumno(Long alumnoId, Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        boolean esProfesor = userDetails.getUsuario().getRol() == Rol.PROFESOR;
-        if (!esProfesor && !userDetails.getUsuario().getAlumno().getId().equals(alumnoId)) {
-            throw new AccessDeniedException("No tenés permiso para ver el historial de otro alumno");
-        }
+    public List<RutinaResponse> getHistorialDeAlumno(Long alumnoId, Authentication auth) {
+        acceso.leerAlumno(alumnoId, auth);
         Alumno alumno = alumnoService.findEntityById(alumnoId);
-        List<AsignacionRutina> historial = asignacionRutinaRepository.findByAlumno(alumno);
-        List<RutinaResponse> responses = new ArrayList<>();
-        for (AsignacionRutina a : historial) {
-            responses.add(rutinaMapper.toDto(a.getRutina()));
-        }
-        return responses;
+        return asignacionRutinaRepository.findByAlumno(alumno).stream().map(a -> historial(a, auth)).toList();
     }
 
     @Transactional
-    public RutinaResponse getRutinaActivaDeAlumno(Long alumnoId, Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        boolean esProfesor = userDetails.getUsuario().getRol() == Rol.PROFESOR;
+    public RutinaResponse getRutinaActivaDeAlumno(Long alumnoId, Authentication auth) {
+        acceso.leerAlumno(alumnoId, auth);
         Alumno alumno = alumnoService.findEntityById(alumnoId);
-        if (!esProfesor && !userDetails.getUsuario().getAlumno().getId().equals(alumnoId)) {
-            throw new AccessDeniedException("No tenés permiso para ver las rutinas de otro alumno");
-        }
         AsignacionRutina asignacion = asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno)
                 .orElseThrow(() -> new RecursoNoEncontradoException("El alumno no tiene una rutina activa"));
-        return rutinaMapper.toDto(asignacion.getRutina());
+        return historial(asignacion, auth);
     }
 
-    public AsignacionResponse asignarRutinaMe(Long alumnoId, Long rutinaId, Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        if (userDetails.getUsuario().getProfesor() == null)
-            throw new RecursoNoEncontradoException("No tenés un perfil de profesor");
-
-        Rutina rutina = findEntityById(rutinaId);
-        Profesor profesor = userDetails.getUsuario().getProfesor();
-        if (!rutina.getProfesor().getId().equals(profesor.getId()))
-            throw new AccessDeniedException("Solo podés asignar rutinas creadas por vos");
-        Alumno alumno = alumnoService.findEntityById(alumnoId);
-
+    @Transactional
+    public AsignacionResponse asignarRutinaMe(Long alumnoId, Long rutinaId, Authentication auth) {
+        Profesor profesor = acceso.profesorPropio(auth);
+        Alumno alumno = alumnoService.gestionarEntity(alumnoId, auth);
+        Rutina raiz = raizBloqueada(rutinaId);
+        exigirCreador(raiz, profesor);
+        if (raiz.isArchivada()) throw new ReglaNegocioException("No se puede asignar una rutina archivada");
+        Rutina rutina = ultimaBloqueada(raiz);
         asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno).ifPresent(a -> {
             a.setActiva(false);
             a.setFechaFin(LocalDateTime.now());
-            asignacionRutinaRepository.save(a);
+            asignacionRutinaRepository.saveAndFlush(a);
         });
-
-        AsignacionRutina asignacion = AsignacionRutina.builder()
-                .rutina(rutina)
-                .alumno(alumno)
-                .fechaInicio(LocalDateTime.now())
-                .activa(true)
-                .build();
-        asignacionRutinaRepository.save(asignacion);
-        return asignacionMapper.toResponse(asignacion);
+        AsignacionRutina asignacion = AsignacionRutina.builder().rutina(rutina).alumno(alumno)
+                .fechaInicio(LocalDateTime.now()).activa(true).build();
+        return asignacionMapper.toResponse(asignacionRutinaRepository.save(asignacion));
     }
 
-    public RutinaResponse getRutinaActivaMe(Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Alumno alumno = userDetails.getUsuario().getAlumno();
-        if (alumno == null) throw new RecursoNoEncontradoException("No tenés un perfil de alumno");
-        AsignacionRutina asignacion = asignacionRutinaRepository.findByAlumnoAndActivaTrue(alumno)
-                .orElseThrow(() -> new RecursoNoEncontradoException("No tenés una rutina activa"));
-        return rutinaMapper.toDto(asignacion.getRutina());
+    @Transactional
+    public RutinaResponse getRutinaActivaMe(Authentication auth) {
+        return getRutinaActivaDeAlumno(acceso.alumnoPropio(auth).getId(), auth);
     }
 
-    public List<RutinaResponse> getHistorialMe(Authentication authentication) {
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        Alumno alumno = userDetails.getUsuario().getAlumno();
-        if (alumno == null) throw new RecursoNoEncontradoException("No tenés un perfil de alumno");
-        List<AsignacionRutina> historial = asignacionRutinaRepository.findByAlumno(alumno);
-        List<RutinaResponse> responses = new ArrayList<>();
-        for (AsignacionRutina a : historial) {
-            responses.add(rutinaMapper.toDto(a.getRutina()));
-        }
-        return responses;
+    @Transactional
+    public List<RutinaResponse> getHistorialMe(Authentication auth) {
+        return getHistorialDeAlumno(acceso.alumnoPropio(auth).getId(), auth);
+    }
+
+    private Authentication actual() {
+        return SecurityContextHolder.getContext().getAuthentication();
+    }
+
+    private RutinaResponse respuesta(Rutina rutina, Authentication auth) {
+        RutinaResponse response = rutinaMapper.toDto(rutina);
+        filtrarAlumnos(response, rutina, auth);
+        return response;
+    }
+
+    private RutinaResponse historial(AsignacionRutina asignacion, Authentication auth) {
+        RutinaResponse response = rutinaMapper.toHistorialDto(asignacion);
+        filtrarAlumnos(response, asignacion.getRutina(), auth);
+        return response;
+    }
+
+    private void filtrarAlumnos(RutinaResponse response, Rutina rutina, Authentication auth) {
+        // El catálogo sigue compartido, pero sus asignaciones no revelan alumnos ajenos.
+        response.setAlumnos(asignacionRutinaRepository.findActivasDeFamilia(rutina.getIdRaiz()).stream()
+                .filter(a -> acceso.puedeLeerAlumno(a.getAlumno().getId(), auth))
+                .map(a -> a.getAlumno().getNombre() + " " + a.getAlumno().getApellido()).toList());
     }
 }
-
-

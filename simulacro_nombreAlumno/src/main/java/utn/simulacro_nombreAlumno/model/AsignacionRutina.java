@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "asignaciones_rutina")
+@Table(name = "asignaciones_rutina", uniqueConstraints = @UniqueConstraint(name = "uk_alumno_asignacion_activa", columnNames = "alumno_activo_id"))
 
 public class AsignacionRutina {
     @Id
@@ -22,10 +22,12 @@ public class AsignacionRutina {
     private boolean activa;
 
     @ManyToOne
-    @JoinColumn(name = "rutina_id")
+    @JoinColumn(name = "rutina_id", nullable = false, updatable = false)
     private Rutina rutina;
 
     @ManyToOne
-    @JoinColumn(name = "alumno_id")
+    @JoinColumn(name = "alumno_id", nullable = false, updatable = false)
     private Alumno alumno;
+    @Column(insertable = false, updatable = false, columnDefinition = "bigint GENERATED ALWAYS AS (CASE WHEN activa THEN alumno_id ELSE NULL END)")
+    private Long alumnoActivoId;
 }

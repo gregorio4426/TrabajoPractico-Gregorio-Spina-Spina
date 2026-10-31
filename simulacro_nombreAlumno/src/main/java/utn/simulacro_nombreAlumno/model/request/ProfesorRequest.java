@@ -23,4 +23,7 @@ public class ProfesorRequest {
 
     @NotBlank
     private String especialidad;
+    @jakarta.validation.constraints.Email
+    @jakarta.validation.constraints.Size(max = 150)
+    private String emailContacto;
 }

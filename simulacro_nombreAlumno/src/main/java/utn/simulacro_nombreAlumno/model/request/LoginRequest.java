@@ -17,4 +17,5 @@ public class LoginRequest {
 
     @NotBlank
     private String password;
+    public void setEmail(String email) { this.email = utn.simulacro_nombreAlumno.security.EmailNormalizer.normalize(email); }
 }

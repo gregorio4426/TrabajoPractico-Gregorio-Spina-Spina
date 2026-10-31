@@ -28,4 +28,5 @@ public class RegisterProfesorRequest {
 
     @NotBlank
     private String especialidad;
+    public void setEmail(String email) { this.email = utn.simulacro_nombreAlumno.security.EmailNormalizer.normalize(email); }
 }
