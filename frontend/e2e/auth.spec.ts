@@ -6,6 +6,8 @@ function session(rol: string, seconds = 3600) {
   return { token:`${encode({alg:'HS256'})}.${encode({exp:Math.floor(Date.now()/1000)+seconds,sub:'ui@example.test',uid:1,ver:0})}.ui-only`,email:'ui@example.test',rol,perfilId:rol==='ADMIN'?null:1 };
 }
 test.beforeEach(async ({page}) => {
+  await page.route('**/api/profesores/me/dashboard*',route=>route.fulfill({json:{periodo:{},entrenamientos:{},frecuencia:{}}}));
+  await page.route(/\/api\/profesores\/me\/estadisticas(?:\/|\?|$)/,route=>route.fulfill({json:route.request().url().includes('/actividad')||route.request().url().includes('/ejercicios')?{contenido:[],pagina:0,totalPaginas:0,totalElementos:0,tamanio:20}:{periodo:{},datos:{},frecuencia:{}}}));
   // Isolated shell tests; real ADMIN requests are covered by admin.spec.ts.
   await page.route('**/api/admin/dashboard*',route=>route.fulfill({json:{estadoActual:{},entrenamientos:{},frecuencia:{},periodo:{}}}));
 });
@@ -23,13 +25,13 @@ for (const role of ['ADMIN','PROFESOR','ALUMNO']) {
     await page.goto('/login');
     await page.evaluate(data => localStorage.setItem('gym.session.v1',JSON.stringify(data)),session(role));
     await page.reload(); await expect(page).toHaveURL(new RegExp('/'+role.toLowerCase()+'$'));
-    await expect(page.getByRole('heading',{name:role==='ADMIN'?'El pulso de tu equipo.':'Tu cuenta, en su lugar.'})).toBeVisible();
+    await expect(page.getByRole('heading',{name:role==='ADMIN'?'El pulso de tu equipo.':role==='PROFESOR'?'Acompañá cada avance.':'Tu cuenta, en su lugar.'})).toBeVisible();
     await page.goto(role==='ADMIN'?'/profesor':'/admin');
     await expect(page).toHaveURL(new RegExp('/'+role.toLowerCase()+'$'));
     await page.reload(); await expect(page.getByText('ui@example.test')).toBeVisible();
     await page.setViewportSize({width:390,height:844});
     await page.getByRole('button',{name:'Abrir menú'}).click();
-    await expect(page.getByRole('navigation')).toBeVisible();
+    await expect(page.getByRole('navigation',{name:'Menú del espacio personal',exact:true})).toBeVisible();
     await page.getByRole('button',{name:'Cerrar menú',exact:true}).click();
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth > window.innerWidth);
     expect(overflow).toBe(false);
@@ -67,7 +69,7 @@ test('login and all workspaces have no horizontal overflow at 360px',async ({pag
   for(const role of ['ADMIN','PROFESOR','ALUMNO']) {
     await page.evaluate(data=>localStorage.setItem('gym.session.v1',JSON.stringify(data)),session(role));
     await page.goto('/'+role.toLowerCase());
-    await expect(page.getByRole('heading',{name:role==='ADMIN'?'El pulso de tu equipo.':'Tu cuenta, en su lugar.'})).toBeVisible();
+    await expect(page.getByRole('heading',{name:role==='ADMIN'?'El pulso de tu equipo.':role==='PROFESOR'?'Acompañá cada avance.':'Tu cuenta, en su lugar.'})).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
 });

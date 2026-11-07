@@ -23,7 +23,7 @@
         Cerrar menú ×
       </button>
     }
-    <nav>
+    <nav aria-label="Menú del espacio personal">
       <a
         class="nav-link"
         [routerLink]="auth.home()"
@@ -58,7 +58,7 @@
       <div>
         <strong>{{ config().label }}</strong
         ><span [attr.title]="auth.session()?.email">{{
-          auth.session()?.rol === 'ADMIN' ? auth.session()?.email : 'Sesión personal'
+          auth.session()?.rol !== 'ALUMNO' ? auth.session()?.email : 'Sesión personal'
         }}</span>
       </div>
     </div>

@@ -32,7 +32,7 @@
           </button>
         </div>
       }
-      <form class="admin-filters" (ngSubmit)="searchProfessors()">
+      <form class="admin-filters" (submit)="$event.preventDefault(); searchProfessors()">
         <label>Buscar profesor<input type="search" [formControl]="lookup" /></label
         ><button class="secondary" [disabled]="lookupLoading()">Buscar profesores</button>
       </form>

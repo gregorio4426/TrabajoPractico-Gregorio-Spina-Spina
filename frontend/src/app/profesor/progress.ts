@@ -7,11 +7,11 @@ import { Chart, ChartPoint } from './chart';
 import { isDenied, profesorError, text, validDates } from './utils';
 @Component({selector:'app-teacher-progress',imports:[ReactiveFormsModule,Chart],templateUrl:'./progress.html'})
 export class Progress {
- private readonly api=inject(ProfesorApi);readonly studentId=input<number|null>(null);readonly denied=output<void>();
+ private readonly api=inject(ProfesorApi);readonly studentId=input<number|null>(null);readonly period=input<{desde:string;hasta:string}|null>(null);readonly showDates=input(true);readonly denied=output<void>();
  readonly form=inject(FormBuilder).nonNullable.group({desde:'',hasta:''});readonly text=text;
  readonly summary=signal<D.ResumenEstadistico|null>(null);readonly activity=signal<StatPage<D.ActividadDia>|null>(null);readonly exercises=signal<StatPage<D.EjercicioEstadistica>|null>(null);readonly evolution=signal<StatPage<D.EvolucionEjercicio>|null>(null);
  readonly selected=signal<number|null>(null);readonly loading=signal(false);readonly error=signal('');private seq=0;private evoSeq=0;private applied={desde:'',hasta:''};
- constructor(){effect(()=>{const id=this.studentId();untracked(()=>void this.load(id));});}
+ constructor(){effect(()=>{const id=this.studentId(),period=this.period();untracked(()=>{if(period)this.form.setValue(period);void this.load(id);});});}
  async load(id=this.studentId()){
   const query=this.form.getRawValue();if(!validDates(query.desde,query.hasta)){this.error.set('La fecha desde debe ser anterior o igual a hasta.');return;}
   const seq=++this.seq;++this.evoSeq;this.loading.set(true);this.error.set('');this.summary.set(null);this.activity.set(null);this.exercises.set(null);this.evolution.set(null);this.selected.set(null);
