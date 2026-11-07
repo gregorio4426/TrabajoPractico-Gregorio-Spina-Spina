@@ -52,6 +52,7 @@ describe('Session and HTTP integration', () => {
     localStorage.setItem(SESSION_KEY, '{broken');
     auth = TestBed.inject(AuthService);
     expect(auth.session()).toBeNull();
+    expect(localStorage.getItem(SESSION_KEY)).toBeNull();
   });
   it('expires automatically without a request', () => {
     vi.useFakeTimers();
@@ -67,6 +68,17 @@ describe('Session and HTTP integration', () => {
     http.get('/api/alumnos/me').subscribe({ error: e => { status = e.status; } });
     controller.expectOne('/api/alumnos/me').flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(status).toBe(401); expect(auth.session()).toBeNull();
+  });
+  it('ignores a late 401 from an older session after a new login', () => {
+    login();
+    http.get('/api/alumnos/me').subscribe({error: () => undefined});
+    const olderRequest = controller.expectOne('/api/alumnos/me');
+    auth.login({email:'test@example.test',password:'test-only'}).subscribe();
+    const newer = testSession('PROFESOR', 3601);
+    controller.expectOne('/api/auth/login').flush(newer);
+    olderRequest.flush({}, {status:401,statusText:'Unauthorized'});
+    expect(auth.session()?.token).toBe(newer.token);
+    expect(auth.home()).toBe('/profesor');
   });
   it('preserves the session on 403', () => {
     login();

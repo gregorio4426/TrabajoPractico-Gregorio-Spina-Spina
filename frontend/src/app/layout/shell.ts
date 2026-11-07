@@ -1,10 +1,11 @@
+import { Icon } from '../shared/icon';
 import { Component, DestroyRef, ElementRef, afterRenderEffect, computed, inject, signal, viewChild } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet, NavigationEnd, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { filter } from 'rxjs';
 import { AuthService } from '../core/auth.service';
 import { ROLE_CONFIG } from './role-config';
-@Component({ selector: 'app-shell', imports: [RouterLink, RouterLinkActive, RouterOutlet], templateUrl: './shell.html' })
+@Component({ selector: 'app-shell', imports: [RouterLink, RouterLinkActive, RouterOutlet, Icon], templateUrl: './shell.html' })
 export class Shell {
   readonly auth = inject(AuthService);
   private readonly media = window.matchMedia('(max-width: 760px)');

@@ -1,10 +1,10 @@
 <main class="login-page">
   <section class="login-story" aria-label="Bienvenida">
-    <a class="brand" href="/login" aria-label="Impulso, inicio"><span class="brand-icon">↗</span> IMPULSO<span class="brand-dot">.</span></a>
+    <a class="brand" href="/login" aria-label="Impulso, inicio"><span class="brand-icon"><app-icon name="arrow" /></span> IMPULSO<span class="brand-dot">.</span></a>
     <div class="story-content"><span class="eyebrow">CADA REPETICIÓN CUENTA</span>
       <h1>Tu próximo<br>nivel empieza<br><em>hoy.</em></h1>
       <p>Un espacio para conectar tu entrenamiento, tu equipo y tus objetivos.</p>
-      <div class="motion-art" aria-hidden="true"><span></span><span></span><span></span><span></span><b>↗</b></div>
+      <div class="motion-art" aria-hidden="true"><span></span><span></span><span></span><span></span><b><app-icon name="arrow" /></b></div>
     </div>
     <div class="story-footer"><span class="status-dot"></span> CONSTANCIA. EQUIPO. PROGRESO.</div>
   </section>
@@ -22,10 +22,10 @@
         </div>
         <div id="password-error" class="field-error">@if(form.controls.password.touched && form.controls.password.invalid) { Ingresá tu contraseña. }</div>
         @if(error()) { <p class="error-message" role="alert">{{ error() }}</p> }
-        <button class="primary login-submit" type="submit" [disabled]="pending()">@if(pending()) { <span class="spinner" aria-hidden="true"></span> Ingresando… } @else { Iniciar sesión <span aria-hidden="true">↗</span> }</button>
+        <button class="primary login-submit" type="submit" [disabled]="pending()">@if(pending()) { <span class="spinner" aria-hidden="true"></span> Ingresando… } @else { Iniciar sesión <span aria-hidden="true"><app-icon name="arrow" /></span> }</button>
       </form>
       <p class="login-help">¿Todavía no tenés acceso? Consultá con la administración de tu gimnasio.</p>
-      <div class="login-security"><span aria-hidden="true">◇</span> Una cuenta. Tu rol. Tu espacio.</div>
+      <div class="login-security"><span aria-hidden="true"><app-icon name="shield" /></span> Una cuenta. Tu rol. Tu espacio.</div>
     </div><footer class="panel-footer">IMPULSO GYM <span>Hacé que cuente.</span></footer>
   </section>
 </main>

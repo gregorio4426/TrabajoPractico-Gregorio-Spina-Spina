@@ -1,3 +1,4 @@
+import { Icon } from '../shared/icon';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,7 +8,7 @@ import { AuthService } from '../core/auth.service';
 import { loginError } from '../core/api-error';
 
 @Component({
-  selector: 'app-login', imports: [ReactiveFormsModule], templateUrl: './login.html',
+  selector: 'app-login', imports: [ReactiveFormsModule, Icon], templateUrl: './login.html',
 })
 export class Login {
   readonly auth = inject(AuthService);

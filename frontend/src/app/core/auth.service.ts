@@ -71,7 +71,10 @@ export class AuthService {
       const raw = localStorage.getItem(SESSION_KEY);
       session = raw ? parseSession(JSON.parse(raw) as unknown) : null;
       if (raw && !session) { localStorage.removeItem(SESSION_KEY); this.notice.set('Tu sesión ya no es válida. Iniciá sesión nuevamente.'); }
-    } catch { /* Unavailable or damaged storage is never an authenticated session. */ }
+    } catch {
+      // A damaged saved value must not be retried on every reload.
+      try { localStorage.removeItem(SESSION_KEY); } catch { /* Storage may be disabled. */ }
+    }
     this.state.set(session);
     if (session) this.schedule(session);
   }
