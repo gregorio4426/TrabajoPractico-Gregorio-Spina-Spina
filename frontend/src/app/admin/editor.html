@@ -1,7 +1,16 @@
 <section class="admin-panel"><div class="admin-kicker"><h2>{{titles[operation()]}}</h2><button class="secondary" (click)="cancelled.emit()" [disabled]="pending()">Cancelar</button></div>
 @if(['state','role','email'].includes(operation())){<p class="admin-help">Se usará la revisión de seguridad consultada. Un cambio efectivo revoca los accesos anteriores. Cambiar de rol conserva el historial y termina los vínculos del rol anterior; no los restaura automáticamente al volver.</p>}
-@if(['link','unlink','replace'].includes(operation())){<p class="admin-help">Consultá los profesores y sus IDs en el listado. Vincular requiere perfiles con los roles vigentes. Reemplazar conserva los demás profesores y todo el historial del alumno.</p>}
+@if(['link','unlink','replace'].includes(operation())){<p class="admin-help">Buscá y seleccioná profesores por nombre o email, o ingresá su ID. Vincular requiere perfiles con los roles vigentes. Reemplazar conserva los demás profesores y todo el historial del alumno.</p>}
 @if(error()){<p class="error-message" role="alert">{{error()}}</p>}
+@if(['link','unlink','replace'].includes(operation())){
+<div class="admin-panel"><h3>Seleccionar profesor</h3>
+@if(operation()==='replace'){<div class="admin-actions"><button class="secondary" (click)="switchScope('actuales')">Buscar vínculo anterior</button><button class="secondary" (click)="switchScope('disponibles')">Buscar nuevo profesor</button></div>}
+<form class="admin-filters" (ngSubmit)="searchProfessors()"><label>Buscar profesor<input type="search" [formControl]="lookup"></label><button class="secondary" [disabled]="lookupLoading()">Buscar profesores</button></form>
+@if(lookupLoading()){<p role="status">Buscando profesores…</p>}
+@if(lookupData();as choices){<p class="admin-help">{{choices.totalElementos}} profesores {{lookupScope()==='actuales'?'vinculados':'activos y vigentes'}}.</p>
+@for(professor of choices.contenido;track professor.perfil?.id){<div class="admin-picker"><span>#{{professor.perfil?.id}} · {{professor.perfil?.nombre}} {{professor.perfil?.apellido}}<small>{{professor.perfil?.email}}</small></span><button class="secondary" (click)="chooseProfessor(professor)">Seleccionar #{{professor.perfil?.id}}</button></div>}@empty{<p>No hay profesores con esta búsqueda.</p>}
+<div class="admin-actions"><button class="secondary" (click)="searchProfessors(choices.pagina-1)" [disabled]="lookupLoading()||choices.pagina===0">Anterior grupo de profesores</button><button class="secondary" (click)="searchProfessors(choices.pagina+1)" [disabled]="lookupLoading()||choices.pagina+1>=choices.totalPaginas">Siguiente grupo de profesores</button></div>}
+</div>}
 <form [formGroup]="form" (ngSubmit)="confirm()"><fieldset class="admin-form" [disabled]="pending()" style="border:0;padding:0;margin:0">
 @for(field of fields();track field.key){<label [class.wide]="field.type==='textarea'">{{field.label}} {{field.required?'*':'(opcional)'}}
 @if(field.options){<select [formControlName]="field.key"><option value="">Seleccionar</option>@for(option of field.options;track option){<option [value]="option">{{option==='true'?'Sí':option==='false'?'No':option.replaceAll('_',' ')}}</option>}</select>}

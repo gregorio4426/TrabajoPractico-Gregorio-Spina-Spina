@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, inject, input, output, signal, viewChild } from '@angular/core';
 import { AbstractControl, FormControl, FormRecord, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { firstValueFrom, Observable } from 'rxjs';
-import { AdminApi, People } from './admin-api';
+import { AdminApi, Page, People } from './admin-api';
 import { LEVELS, OBJECTIVES, ROLES } from './catalog';
 import { adminError, at, record } from './admin-utils';
 import { AuthService } from '../core/auth.service';
@@ -15,10 +15,24 @@ export class Editor implements OnInit {
  readonly operation=input.required<Operation>();readonly type=input.required<People>();readonly id=input(0);readonly initial=input<unknown>(null);
  readonly saved=output<void>();readonly cancelled=output<void>();
  private readonly api=inject(AdminApi);private readonly auth=inject(AuthService);
+ readonly lookup = new FormControl('', {nonNullable:true});
+ readonly lookupData=signal<Page<D.ProfesorVista>|null>(null);readonly lookupLoading=signal(false);
+ readonly lookupScope=signal<'actuales'|'disponibles'>('disponibles');
  readonly form=new FormRecord<FormControl<string>>({});readonly fields=signal<Field[]>([]);readonly pending=signal(false);readonly error=signal('');
  private readonly dialog=viewChild.required<ElementRef<HTMLDialogElement>>('confirmationDialog');
  readonly titles:Record<Operation,string>={create:'Crear cuenta y perfil',profile:'Editar perfil',state:'Cambiar estado de cuenta',role:'Cambiar rol',email:'Cambiar email de acceso',account:'Dar acceso a perfil sin cuenta',link:'Vincular profesor',unlink:'Desvincular profesor',replace:'Reemplazar profesor'};
- ngOnInit(){this.configure(true);}
+ ngOnInit(){this.configure(true);if(['link','unlink','replace'].includes(this.operation())){this.lookupScope.set(this.operation()==='link'?'disponibles':'actuales');void this.searchProfessors();}}
+ async searchProfessors(page=0){
+  this.lookupLoading.set(true);this.error.set('');
+  try{const current=this.lookupScope()==='actuales';this.lookupData.set(await firstValueFrom(this.api.get<Page<D.ProfesorVista>>(current?`alumnos/${this.id()}/profesores`:'profesores',{q:this.lookup.value,pagina:page,tamanio:10,...(!current?{activo:true,vigente:true}:{})})));}
+  catch(error){this.error.set(adminError(error));this.lookupData.set(null);}
+  finally{this.lookupLoading.set(false);}
+ }
+ chooseProfessor(professor:D.ProfesorVista){
+  const key=this.operation()==='replace'?(this.lookupScope()==='actuales'?'profesorAnteriorId':'profesorNuevoId'):'profesorId';
+  this.form.controls[key]?.setValue(String(professor.perfil?.id??''));
+ }
+ switchScope(scope:'actuales'|'disponibles'){this.lookupScope.set(scope);void this.searchProfessors();}
  private field(key:string,label:string,type='text',required=true,max?:number,options?:readonly string[]):Field{return {key,label,type,required,max,options};}
  private configure(first=false){
   const mode=this.operation();const value=this.form.getRawValue();const user=record(this.type()==='usuarios'?this.initial():at(this.initial(),'cuenta'));

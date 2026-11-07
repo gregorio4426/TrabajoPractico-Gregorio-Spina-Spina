@@ -5,6 +5,10 @@ function session(rol: string, seconds = 3600) {
   const encode = (value: unknown) => Buffer.from(JSON.stringify(value)).toString('base64url');
   return { token:`${encode({alg:'HS256'})}.${encode({exp:Math.floor(Date.now()/1000)+seconds,sub:'ui@example.test',uid:1,ver:0})}.ui-only`,email:'ui@example.test',rol,perfilId:rol==='ADMIN'?null:1 };
 }
+test.beforeEach(async ({page}) => {
+  // Isolated shell tests; real ADMIN requests are covered by admin.spec.ts.
+  await page.route('**/api/admin/dashboard*',route=>route.fulfill({json:{estadoActual:{},entrenamientos:{},frecuencia:{},periodo:{}}}));
+});
 test('anonymous deep links redirect to the single login and form validates', async ({page}) => {
   await page.goto('/admin'); await expect(page).toHaveURL(/\/login$/);
   await page.getByRole('button',{name:'Iniciar sesión'}).click();
@@ -19,7 +23,7 @@ for (const role of ['ADMIN','PROFESOR','ALUMNO']) {
     await page.goto('/login');
     await page.evaluate(data => localStorage.setItem('gym.session.v1',JSON.stringify(data)),session(role));
     await page.reload(); await expect(page).toHaveURL(new RegExp('/'+role.toLowerCase()+'$'));
-    await expect(page.getByRole('heading',{name:'Tu cuenta, en su lugar.'})).toBeVisible();
+    await expect(page.getByRole('heading',{name:role==='ADMIN'?'El pulso de tu equipo.':'Tu cuenta, en su lugar.'})).toBeVisible();
     await page.goto(role==='ADMIN'?'/profesor':'/admin');
     await expect(page).toHaveURL(new RegExp('/'+role.toLowerCase()+'$'));
     await page.reload(); await expect(page.getByText('ui@example.test')).toBeVisible();
@@ -63,7 +67,7 @@ test('login and all workspaces have no horizontal overflow at 360px',async ({pag
   for(const role of ['ADMIN','PROFESOR','ALUMNO']) {
     await page.evaluate(data=>localStorage.setItem('gym.session.v1',JSON.stringify(data)),session(role));
     await page.goto('/'+role.toLowerCase());
-    await expect(page.getByRole('heading',{name:'Tu cuenta, en su lugar.'})).toBeVisible();
+    await expect(page.getByRole('heading',{name:role==='ADMIN'?'El pulso de tu equipo.':'Tu cuenta, en su lugar.'})).toBeVisible();
     expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   }
 });

@@ -23,7 +23,7 @@ export class Detail {
   finally{if(version===this.request)this.loading.set(false);}
  }
  open(operation:Operation){this.success.set('');this.operation.set(operation);}
- async saved(){if(this.creating){await this.router.navigate(['/admin',this.type],{queryParams:{q:''}});return;}this.success.set('Cambio guardado correctamente.');await this.load();}
+ async saved(){if(this.creating){await this.router.navigate(['/admin',this.type],{queryParams:{q:'',creado:'1'}});return;}await this.load();if(!this.error())this.success.set('Cambio guardado correctamente.');}
  cancel(){if(this.creating)void this.router.navigate(['/admin',this.type]);else this.operation.set(null);}
  async loadAudit(){this.error.set('');try{this.audit.set(await firstValueFrom(this.api.get<unknown>(`sesiones/${this.id()}/auditoria`)));}catch(error){this.error.set(adminError(error));}}
 }
