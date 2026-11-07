@@ -44,6 +44,15 @@ export class AuthService {
       tap(session => this.accept(session)),
     );
   }
+  replaceIdentity(response: unknown): Session {
+    const session = parseSession(response);
+    if (!session) {
+      this.logout('La identidad cambió, pero no se pudo validar la nueva sesión. Iniciá sesión nuevamente.');
+      throw new Error('Respuesta de identidad inválida');
+    }
+    this.accept(session);
+    return session;
+  }
   home(): string { return this.state() ? ROLE_PATH[this.state()!.rol] : '/login'; }
   validSession(): Session | null {
     const session = this.state();

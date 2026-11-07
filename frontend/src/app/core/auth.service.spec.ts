@@ -116,4 +116,10 @@ describe('Session and HTTP integration', () => {
     expect(auth.session()).toBeNull(); expect(localStorage.getItem(SESSION_KEY)).toBeNull();
     expect(TestBed.inject(Router).navigateByUrl).toHaveBeenCalledWith('/login');
   });
+  it('replaces and persists the new AuthResponse after credential changes', () => {
+    login(); const newer=testSession('PROFESOR',3601);
+    auth.replaceIdentity(newer);
+    expect(auth.session()?.token).toBe(newer.token);
+    expect(JSON.parse(localStorage.getItem(SESSION_KEY)!).rol).toBe('PROFESOR');
+  });
 });
