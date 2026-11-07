@@ -5,22 +5,41 @@ import { firstValueFrom } from 'rxjs';
 import { AdminApi } from './admin-api';
 import { DashboardAdmin } from './contracts';
 import { adminError, text } from './admin-utils';
-@Component({selector:'app-admin-dashboard',imports:[ReactiveFormsModule,RouterLink],templateUrl:'./dashboard.html'})
+@Component({
+  selector: 'app-admin-dashboard',
+  imports: [ReactiveFormsModule, RouterLink],
+  templateUrl: './dashboard.html',
+})
 export class Dashboard {
   private readonly api = inject(AdminApi);
-  readonly data = signal<DashboardAdmin|null>(null);
+  readonly data = signal<DashboardAdmin | null>(null);
   readonly loading = signal(false);
   readonly error = signal('');
-  readonly filters = inject(FormBuilder).nonNullable.group({desde:'',hasta:''});
+  readonly filters = inject(FormBuilder).nonNullable.group({ desde: '', hasta: '' });
   readonly text = text;
   private request = 0;
-  constructor() { void this.load(); }
+  constructor() {
+    void this.load();
+  }
   async load() {
-    const dates=this.filters.getRawValue();
-    if(dates.desde && dates.hasta && dates.desde>dates.hasta) {this.error.set('La fecha desde debe ser anterior o igual a hasta.');return;}
-    const version=++this.request;this.loading.set(true);this.error.set('');
-    try {const result=await firstValueFrom(this.api.dashboard(dates));if(version===this.request)this.data.set(result);}
-    catch(error) {if(version===this.request){this.data.set(null);this.error.set(adminError(error));}}
-    finally {if(version===this.request)this.loading.set(false);}
+    const dates = this.filters.getRawValue();
+    if (dates.desde && dates.hasta && dates.desde > dates.hasta) {
+      this.error.set('La fecha desde debe ser anterior o igual a hasta.');
+      return;
+    }
+    const version = ++this.request;
+    this.loading.set(true);
+    this.error.set('');
+    try {
+      const result = await firstValueFrom(this.api.dashboard(dates));
+      if (version === this.request) this.data.set(result);
+    } catch (error) {
+      if (version === this.request) {
+        this.data.set(null);
+        this.error.set(adminError(error));
+      }
+    } finally {
+      if (version === this.request) this.loading.set(false);
+    }
   }
 }

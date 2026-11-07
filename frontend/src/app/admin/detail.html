@@ -1,14 +1,103 @@
-<p><a class="admin-link" [routerLink]="['/admin',type]">← Volver a {{config.label.toLowerCase()}}</a></p><div class="admin-kicker page-intro"><h1>{{creating?'Nuevo registro':config.singular+' #'+id()}}</h1>@if(!creating){<button class="secondary" (click)="load()" [disabled]="loading()">Recargar datos</button>}</div>
-@if(loading()){<p class="notice" role="status">Cargando detalle…</p>}@if(error()){<p class="error-message" role="alert">{{error()}}</p>}@if(success()){<p class="notice" role="status">{{success()}}</p>}
-@if(!loading() && data();as d){<div class="admin-actions">
-@if(type==='usuarios'){<button class="secondary" (click)="open('state')">Activar / desactivar</button><button class="secondary" (click)="open('role')">Cambiar rol</button><button class="secondary" (click)="open('email')">Cambiar email</button><a class="secondary" routerLink="/admin/auditoria" [queryParams]="{usuarioId:id()}">Ver auditoría de la cuenta</a>@if(at(d,'alumnoId')){<a class="secondary" [routerLink]="['/admin/alumnos',at(d,'alumnoId')]">Perfil alumno</a>}@if(at(d,'profesorId')){<a class="secondary" [routerLink]="['/admin/profesores',at(d,'profesorId')]">Perfil profesor</a>}}
-@if(type==='alumnos'||type==='profesores'){<button class="secondary" (click)="open('profile')">Editar perfil</button>@if(at(d,'cuenta.id')){<a class="secondary" [routerLink]="['/admin/usuarios',at(d,'cuenta.id')]">Gestionar cuenta</a>}@else{<button class="secondary" (click)="open('account')">Crear cuenta del perfil</button>}}
-@if(type==='alumnos'){<a class="secondary" [routerLink]="['/admin/alumnos',id(),'profesores']">Profesores vinculados</a><a class="secondary" [routerLink]="['/admin/alumnos',id(),'historial']">Historial de asignaciones</a><a class="secondary" [routerLink]="['/admin/alumnos',id(),'sesiones']">Historial de sesiones</a><button class="secondary" (click)="open('link')">Vincular profesor</button><button class="secondary" (click)="open('replace')">Reemplazar profesor</button><button class="secondary" (click)="open('unlink')">Desvincular profesor</button>}
-@if(type==='profesores'){<a class="secondary" [routerLink]="['/admin/profesores',id(),'alumnos']">Alumnos vinculados</a>}
-@if(type==='rutinas'){<a class="secondary" [routerLink]="['/admin/rutinas',id(),'versiones']">Consultar versiones</a>}
-@if(type==='asignaciones'){<a class="secondary" [routerLink]="['/admin/alumnos',at(d,'alumnoId'),'historial']">Historial del alumno</a><a class="secondary" [routerLink]="['/admin/rutinas',at(d,'rutinaId'),'versiones']">Versión histórica de rutina</a>}
-@if(type==='sesiones'){<button class="secondary" (click)="loadAudit()">Ver auditoría del entrenamiento</button>}
-</div>}
-@if(operation();as op){<app-admin-editor [operation]="op" [type]="people" [id]="id()" [initial]="data()" (saved)="saved()" (cancelled)="cancel()"/>}
-@if(data()){<section class="admin-panel"><h2>Datos del registro</h2><app-record-view [value]="data()"/></section>}
-@if(audit();as events){<section class="admin-panel"><h2>Auditoría del entrenamiento</h2><app-record-view [value]="{eventos:events}"/></section>}
+<p>
+  <a class="admin-link" [routerLink]="['/admin', type]"
+    >← Volver a {{ config.label.toLowerCase() }}</a
+  >
+</p>
+<div class="admin-kicker page-intro">
+  <h1>{{ creating ? 'Nuevo registro' : config.singular + ' #' + id() }}</h1>
+  @if (!creating) {
+    <button class="secondary" (click)="load()" [disabled]="loading()">Recargar datos</button>
+  }
+</div>
+@if (loading()) {
+  <p class="notice" role="status">Cargando detalle…</p>
+}
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+@if (success()) {
+  <p class="notice" role="status">{{ success() }}</p>
+}
+@if (!loading() && data(); as d) {
+  <div class="admin-actions">
+    @if (type === 'usuarios') {
+      <button class="secondary" (click)="open('state')">Activar / desactivar</button
+      ><button class="secondary" (click)="open('role')">Cambiar rol</button
+      ><button class="secondary" (click)="open('email')">Cambiar email</button
+      ><a class="secondary" routerLink="/admin/auditoria" [queryParams]="{ usuarioId: id() }"
+        >Ver auditoría de la cuenta</a
+      >
+      @if (at(d, 'alumnoId')) {
+        <a class="secondary" [routerLink]="['/admin/alumnos', at(d, 'alumnoId')]">Perfil alumno</a>
+      }
+      @if (at(d, 'profesorId')) {
+        <a class="secondary" [routerLink]="['/admin/profesores', at(d, 'profesorId')]"
+          >Perfil profesor</a
+        >
+      }
+    }
+    @if (type === 'alumnos' || type === 'profesores') {
+      <button class="secondary" (click)="open('profile')">Editar perfil</button>
+      @if (at(d, 'cuenta.id')) {
+        <a class="secondary" [routerLink]="['/admin/usuarios', at(d, 'cuenta.id')]"
+          >Gestionar cuenta</a
+        >
+      } @else {
+        <button class="secondary" (click)="open('account')">Crear cuenta del perfil</button>
+      }
+    }
+    @if (type === 'alumnos') {
+      <a class="secondary" [routerLink]="['/admin/alumnos', id(), 'profesores']"
+        >Profesores vinculados</a
+      ><a class="secondary" [routerLink]="['/admin/alumnos', id(), 'historial']"
+        >Historial de asignaciones</a
+      ><a class="secondary" [routerLink]="['/admin/alumnos', id(), 'sesiones']"
+        >Historial de sesiones</a
+      ><button class="secondary" (click)="open('link')">Vincular profesor</button
+      ><button class="secondary" (click)="open('replace')">Reemplazar profesor</button
+      ><button class="secondary" (click)="open('unlink')">Desvincular profesor</button>
+    }
+    @if (type === 'profesores') {
+      <a class="secondary" [routerLink]="['/admin/profesores', id(), 'alumnos']"
+        >Alumnos vinculados</a
+      >
+    }
+    @if (type === 'rutinas') {
+      <a class="secondary" [routerLink]="['/admin/rutinas', id(), 'versiones']"
+        >Consultar versiones</a
+      >
+    }
+    @if (type === 'asignaciones') {
+      <a class="secondary" [routerLink]="['/admin/alumnos', at(d, 'alumnoId'), 'historial']"
+        >Historial del alumno</a
+      ><a class="secondary" [routerLink]="['/admin/rutinas', at(d, 'rutinaId'), 'versiones']"
+        >Versión histórica de rutina</a
+      >
+    }
+    @if (type === 'sesiones') {
+      <button class="secondary" (click)="loadAudit()">Ver auditoría del entrenamiento</button>
+    }
+  </div>
+}
+@if (operation(); as op) {
+  <app-admin-editor
+    [operation]="op"
+    [type]="people"
+    [id]="id()"
+    [initial]="data()"
+    (saved)="saved()"
+    (cancelled)="cancel()"
+  />
+}
+@if (data()) {
+  <section class="admin-panel">
+    <h2>Datos del registro</h2>
+    <app-record-view [value]="data()" />
+  </section>
+}
+@if (audit(); as events) {
+  <section class="admin-panel">
+    <h2>Auditoría del entrenamiento</h2>
+    <app-record-view [value]="{ eventos: events }" />
+  </section>
+}

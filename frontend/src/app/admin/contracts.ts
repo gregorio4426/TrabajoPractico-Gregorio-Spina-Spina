@@ -125,14 +125,14 @@ export interface ProfesorResponse {
 export interface EjercicioRequest {
   nombre: string;
   descripcion: string;
-  grupoMuscular: "PECHO" | "ESPALDA" | "PIERNAS" | "BRAZOS" | "HOMBROS" | "ABDOMINALES";
+  grupoMuscular: 'PECHO' | 'ESPALDA' | 'PIERNAS' | 'BRAZOS' | 'HOMBROS' | 'ABDOMINALES';
 }
 
 export interface EjercicioResponse {
   nombre?: string | null;
   descripcion?: string | null;
   id?: number | null;
-  grupoMuscular?: "PECHO" | "ESPALDA" | "PIERNAS" | "BRAZOS" | "HOMBROS" | "ABDOMINALES" | null;
+  grupoMuscular?: 'PECHO' | 'ESPALDA' | 'PIERNAS' | 'BRAZOS' | 'HOMBROS' | 'ABDOMINALES' | null;
 }
 
 export interface CambioPasswordRequest {
@@ -156,8 +156,8 @@ export interface AlumnoRequest {
   nombre: string;
   apellido: string;
   email?: string | null;
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA";
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA';
   emailContacto?: string | null;
   fechaDeNacimiento?: string | null;
 }
@@ -169,8 +169,8 @@ export interface AlumnoResponse {
   edad?: number | null;
   fechaNacimiento?: string | null;
   id?: number | null;
-  nivel?: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO" | null;
-  objetivo?: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA" | null;
+  nivel?: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO' | null;
+  objetivo?: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA' | null;
   profesores?: Array<ProfesorResumenResponse> | null;
   emailContacto?: string | null;
 }
@@ -187,13 +187,13 @@ export interface AlumnoDatos {
   apellido: string;
   edad: number;
   fechaNacimiento?: string | null;
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA";
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA';
   emailContacto?: string | null;
 }
 
 export interface CambioRol {
-  rol: "ALUMNO" | "PROFESOR" | "ADMIN";
+  rol: 'ALUMNO' | 'PROFESOR' | 'ADMIN';
   revision: number;
   motivo: string;
   alumno?: AlumnoDatos | null;
@@ -210,7 +210,7 @@ export interface ProfesorDatos {
 export interface UsuarioVista {
   id?: number | null;
   email?: string | null;
-  rol?: "ALUMNO" | "PROFESOR" | "ADMIN" | null;
+  rol?: 'ALUMNO' | 'PROFESOR' | 'ADMIN' | null;
   activo?: boolean | null;
   revision?: number | null;
   alumnoId?: number | null;
@@ -293,8 +293,8 @@ export interface RegisterAlumnoRequest {
   apellido: string;
   edad: number;
   fechaNacimiento?: string | null;
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA";
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA';
 }
 
 export interface LoginRequest {
@@ -305,7 +305,7 @@ export interface LoginRequest {
 export interface CrearUsuario {
   email: string;
   password: string;
-  rol: "ALUMNO" | "PROFESOR" | "ADMIN";
+  rol: 'ALUMNO' | 'PROFESOR' | 'ADMIN';
   alumno?: AlumnoDatos | null;
   profesor?: ProfesorDatos | null;
 }
@@ -334,8 +334,8 @@ export interface CorreccionSesionRequest {
 }
 
 export interface SeguimientoAlumnoRequest {
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA";
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA';
 }
 
 export interface AuditoriaEntrenamientoResponse {
@@ -350,8 +350,7 @@ export interface AuditoriaEntrenamientoResponse {
   creadaEn?: string | null;
 }
 
-export interface JsonNode {
-}
+export interface JsonNode {}
 
 export interface UltimoEjercicioResponse {
   sesionId?: number | null;

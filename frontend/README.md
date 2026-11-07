@@ -1,6 +1,6 @@
-# Impulso — frontend, etapa 1
+# Impulso — frontend, etapas 1 y 2
 
-Angular 22 standalone, Signals y TypeScript/plantillas estrictos. Solo autenticación y estructura: login único, JWT, interceptor limitado a la API, guards por rol, persistencia, vencimiento, logout y tres variantes responsive de sidebar/header. Las herramientas funcionales de ADMIN, PROFESOR y ALUMNO corresponden a etapas posteriores.
+Angular 22 standalone, Signals y TypeScript/plantillas estrictos. Autenticación y estructura: login único, JWT, interceptor limitado a la API, guards por rol, persistencia, vencimiento, logout y tres variantes responsive de sidebar/header. La etapa 2 incorpora el panel ADMIN completo sobre los endpoints existentes. PROFESOR y ALUMNO conservan únicamente la estructura aprobada de la etapa 1. Ver [funcionalidad administrativa](ETAPA-2-ADMIN.md).
 
 ## Desarrollo
 
@@ -26,6 +26,13 @@ npx playwright install chromium
 npm run e2e
 ```
 
-Si Chromium está instalado en el sistema, configurar `CHROMIUM_PATH` con su ruta. Las pruebas HTTP y de interfaz usan fixtures aislados exclusivamente en tests. Las pruebas adicionales contra el backend real se activan con `GYM_E2E_REAL_API=1`; crean un alumno de prueba en una base local exclusiva. Para probar ADMIN y PROFESOR, configurar `GYM_E2E_CREDENTIALS_FILE` con la ruta a un JSON privado externo al repositorio con las claves ADMIN y PROFESOR, cada una con email/password de cuentas de prueba existentes. No usar una base de producción. No versionar ese archivo ni capturas con credenciales. Sin estas opciones las pruebas reales correspondientes se omiten explícitamente.
+Si Chromium está instalado en el sistema, configurar `CHROMIUM_PATH` con su ruta. Las pruebas HTTP y de interfaz usan fixtures aislados exclusivamente en tests. Las pruebas adicionales contra el backend real se activan con `GYM_E2E_REAL_API=1`; crean cuentas, perfiles, vínculos, rutinas versionadas y sesiones de prueba en una base local exclusiva. Las pruebas administrativas también modifican estado, email y roles de esas cuentas de prueba. Para probar ADMIN y PROFESOR, configurar `GYM_E2E_CREDENTIALS_FILE` con la ruta a un JSON privado externo al repositorio con las claves ADMIN y PROFESOR, cada una con email/password de cuentas de prueba existentes. No usar una base de producción. No versionar ese archivo ni capturas con credenciales. Sin estas opciones las pruebas reales correspondientes se omiten explícitamente.
 
 Los archivos generados, node_modules, informes y secretos locales están excluidos de Git.
+
+Para regenerar los tipos desde el contrato local sin modificar el backend:
+
+```sh
+python3 scripts/generate-contracts.py
+npm exec -- prettier --write src/app/admin/contracts.ts
+```
