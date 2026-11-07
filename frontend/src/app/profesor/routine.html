@@ -1,6 +1,91 @@
-<p><a class="admin-link" routerLink="/profesor/rutinas">← Volver a rutinas</a></p><div class="page-intro admin-kicker"><h1>Rutina #{{id()}}{{selectedVersion()?' · versión '+selectedVersion():''}}</h1><button class="secondary" (click)="load()" [disabled]="loading()||pending()">Recargar rutina</button></div>@if(loading()){<p class="notice" role="status">Consultando rutina y versiones…</p>}@if(error()){<p class="error-message" role="alert">{{error()}}</p>}@if(success()){<p class="notice" role="status">{{success()}}</p>}
-@if(data();as r){<section class="admin-panel"><h2>{{r.nombre}}</h2><p>{{r.descripcion}}</p><p class="admin-help">Autor: {{r.profesor}} · {{own()?'Rutina propia':'Rutina de otro profesor, solo consulta'}} · {{r.archivada?'Archivada':'Disponible'}}. ID de versión exacta: {{r.rutinaVersionId}}.</p>
-@if(own()&&!r.archivada){<div class="admin-actions"><a class="primary" [routerLink]="['/profesor/rutinas',id(),'editar']">Editar última versión</a><button class="secondary" (click)="ask('archive')" [disabled]="pending()">Archivar rutina</button></div>}
-@if(own()&&!r.archivada&&selectedVersion()===null){<form class="admin-filters" [formGroup]="form" (ngSubmit)="ask('assign')"><label>Alumno vinculado<select formControlName="alumnoId"><option value="">Seleccionar alumno</option>@for(s of students();track s.id){<option [value]="s.id">#{{s.id}} · {{s.nombre}} {{s.apellido}} · {{s.email}}</option>}</select></label><button class="primary" [disabled]="pending()||students().length===0">Asignar última versión</button></form>@if(!students().length){<p class="admin-help">No hay alumnos vinculados disponibles para asignación.</p>}}
-<app-record-view [value]="r"/></section><section class="admin-panel"><h2>Versiones conservadas</h2><p class="admin-help">Editar crea una versión nueva si hay cambios. Archivar no elimina las versiones ni los resultados anteriores. La asignación siempre usa la última versión disponible.</p><div class="teacher-version-list">@for(v of versions();track v.rutinaVersionId){<a [routerLink]="['/profesor/rutinas',id(),'versiones',v.numeroVersion]">Versión {{v.numeroVersion}} · #{{v.rutinaVersionId}}</a>}</div><p><a class="admin-link" [routerLink]="['/profesor/rutinas',id()]">Consultar la última versión</a></p></section>}
-<app-teacher-confirm #confirmation [title]="action()==='archive'?'¿Archivar esta rutina?':'¿Asignar la última versión?'" [message]="action()==='archive'?'La familia #'+id()+' saldrá del catálogo activo. No se podrá editar ni asignar. Sus versiones e historiales se conservan.':'Se asignará la última versión de la rutina #'+id()+' al alumno #'+form.controls.alumnoId.value+'. Se desactivará su asignación anterior.'" (confirmed)="save()"/>
+<p><a class="admin-link" routerLink="/profesor/rutinas">← Volver a rutinas</a></p>
+<div class="page-intro admin-kicker">
+  <h1>Rutina #{{ id() }}{{ selectedVersion() ? ' · versión ' + selectedVersion() : '' }}</h1>
+  <button class="secondary" (click)="load()" [disabled]="loading() || pending()">
+    Recargar rutina
+  </button>
+</div>
+@if (loading()) {
+  <p class="notice" role="status">Consultando rutina y versiones…</p>
+}
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+@if (success()) {
+  <p class="notice" role="status">{{ success() }}</p>
+}
+@if (data(); as r) {
+  <section class="admin-panel">
+    <h2>{{ r.nombre }}</h2>
+    <p>{{ r.descripcion }}</p>
+    <p class="admin-help">
+      Autor: {{ r.profesor }} ·
+      {{ own() ? 'Rutina propia' : 'Rutina de otro profesor, solo consulta' }} ·
+      {{ r.archivada ? 'Archivada' : 'Disponible' }}. ID de versión exacta: {{ r.rutinaVersionId }}.
+    </p>
+    @if (own() && !r.archivada) {
+      <div class="admin-actions">
+        <a class="primary" [routerLink]="['/profesor/rutinas', id(), 'editar']"
+          >Editar última versión</a
+        ><button class="secondary" (click)="ask('archive')" [disabled]="pending()">
+          Archivar rutina
+        </button>
+      </div>
+    }
+    @if (own() && !r.archivada && selectedVersion() === null) {
+      <form class="admin-filters" [formGroup]="form" (ngSubmit)="ask('assign')">
+        <label
+          >Alumno vinculado<select formControlName="alumnoId">
+            <option value="">Seleccionar alumno</option>
+            @for (s of students(); track s.id) {
+              <option [value]="s.id">
+                #{{ s.id }} · {{ s.nombre }} {{ s.apellido }} · {{ s.email }}
+              </option>
+            }
+          </select></label
+        ><button class="primary" [disabled]="pending() || students().length === 0">
+          Asignar última versión
+        </button>
+      </form>
+      @if (!students().length) {
+        <p class="admin-help">No hay alumnos vinculados disponibles para asignación.</p>
+      }
+    }
+    <app-record-view [value]="r" />
+  </section>
+  <section class="admin-panel">
+    <h2>Versiones conservadas</h2>
+    <p class="admin-help">
+      Editar crea una versión nueva si hay cambios. Archivar no elimina las versiones ni los
+      resultados anteriores. La asignación siempre usa la última versión disponible.
+    </p>
+    <div class="teacher-version-list">
+      @for (v of versions(); track v.rutinaVersionId) {
+        <a [routerLink]="['/profesor/rutinas', id(), 'versiones', v.numeroVersion]"
+          >Versión {{ v.numeroVersion }} · #{{ v.rutinaVersionId }}</a
+        >
+      }
+    </div>
+    <p>
+      <a class="admin-link" [routerLink]="['/profesor/rutinas', id()]"
+        >Consultar la última versión</a
+      >
+    </p>
+  </section>
+}
+<app-teacher-confirm
+  #confirmation
+  [title]="action() === 'archive' ? '¿Archivar esta rutina?' : '¿Asignar la última versión?'"
+  [message]="
+    action() === 'archive'
+      ? 'La familia #' +
+        id() +
+        ' saldrá del catálogo activo. No se podrá editar ni asignar. Sus versiones e historiales se conservan.'
+      : 'Se asignará la última versión de la rutina #' +
+        id() +
+        ' al alumno #' +
+        form.controls.alumnoId.value +
+        '. Se desactivará su asignación anterior.'
+  "
+  (confirmed)="save()"
+/>

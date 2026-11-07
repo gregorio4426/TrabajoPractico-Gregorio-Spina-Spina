@@ -82,13 +82,15 @@ describe('ADMIN reactive forms', () => {
     expect(f.componentInstance.form.controls['fechaNacimiento']!.value).toBe('');
   });
   it('submits a standalone professor search without a browser reload', () => {
-    const f=create('link','alumnos');
+    const f = create('link', 'alumnos');
     f.componentInstance.lookup.setValue('docente@example.test');
-    const event=new Event('submit',{bubbles:true,cancelable:true});
+    const event = new Event('submit', { bubbles: true, cancelable: true });
     f.nativeElement.querySelector('form.admin-filters').dispatchEvent(event);
     expect(event.defaultPrevented).toBe(true);
-    const req=TestBed.inject(HttpTestingController).expectOne(r=>r.url==='/api/admin/profesores');
+    const req = TestBed.inject(HttpTestingController).expectOne(
+      (r) => r.url === '/api/admin/profesores',
+    );
     expect(req.request.params.get('q')).toBe('docente@example.test');
-    req.flush({contenido:[],pagina:0,tamanio:10,totalElementos:0,totalPaginas:0});
+    req.flush({ contenido: [], pagina: 0, tamanio: 10, totalElementos: 0, totalPaginas: 0 });
   });
 });

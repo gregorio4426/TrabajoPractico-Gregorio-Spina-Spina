@@ -95,7 +95,11 @@ test.describe('ADMIN · API real', () => {
     await confirm(page);
     await expect(page.getByText('Cambio guardado correctamente.')).toBeVisible();
     await page.getByRole('button', { name: 'Vincular profesor', exact: true }).click();
-    await page.getByLabel('ID del profesor *', { exact: true }).fill(String(profesor.id));
+    await page
+      .getByRole('searchbox', { name: 'Buscar profesor', exact: true })
+      .fill(profesor.email);
+    await page.getByRole('button', { name: 'Buscar profesores', exact: true }).click();
+    await page.getByRole('button', { name: `Seleccionar #${profesor.id}`, exact: true }).click();
     await reason(page, 'Vínculo de prueba de interfaz');
     await page.getByRole('button', { name: 'Reemplazar profesor', exact: true }).click();
     await page.getByLabel('ID del profesor anterior').fill(String(profesor.id));
@@ -118,6 +122,7 @@ test.describe('ADMIN · API real', () => {
     await login(page);
     const alumno = await createPerson(page, 'ALUMNO');
     await page.getByRole('link', { name: 'Gestionar cuenta', exact: true }).click();
+    await expect(page).toHaveURL(/\/admin\/usuarios\/\d+$/);
     const userId = Number(new URL(page.url()).pathname.split('/').pop());
     await page.getByRole('button', { name: 'Activar / desactivar', exact: true }).click();
     await reason(page, 'Desactivar para prueba');
@@ -139,6 +144,7 @@ test.describe('ADMIN · API real', () => {
     await expect(page.getByText(newEmail, { exact: true }).first()).toBeVisible();
     await page.goto(`/admin/auditoria?usuarioId=${userId}`);
     await expect(page.getByText(/registros encontrados/)).toBeVisible();
+    await expect(page.getByRole('cell', {name:'Cambio de rol para prueba',exact:true})).toBeVisible();
     await page
       .getByRole('button', { name: /Ver detalle #/ })
       .first()

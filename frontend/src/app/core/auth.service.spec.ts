@@ -13,12 +13,24 @@ describe('Session and HTTP integration', () => {
   let controller: HttpTestingController;
   beforeEach(() => {
     localStorage.clear();
-    TestBed.configureTestingModule({ providers: [provideRouter([]), provideHttpClient(withInterceptors([authInterceptor])), provideHttpClientTesting()] });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        provideHttpClient(withInterceptors([authInterceptor])),
+        provideHttpClientTesting(),
+      ],
+    });
     vi.spyOn(TestBed.inject(Router), 'navigateByUrl').mockResolvedValue(true);
     http = TestBed.inject(HttpClient);
     controller = TestBed.inject(HttpTestingController);
   });
-  afterEach(() => { controller.verify(); TestBed.resetTestingModule(); localStorage.clear(); vi.restoreAllMocks(); vi.useRealTimers(); });
+  afterEach(() => {
+    controller.verify();
+    TestBed.resetTestingModule();
+    localStorage.clear();
+    vi.restoreAllMocks();
+    vi.useRealTimers();
+  });
   function login() {
     auth = TestBed.inject(AuthService);
     auth.login({ email: 'test@example.test', password: 'test-only' }).subscribe();
@@ -36,7 +48,11 @@ describe('Session and HTTP integration', () => {
     const request = controller.expectOne('/api/alumnos/me');
     expect(request.request.headers.get('Authorization')).toBe(`Bearer ${auth.session()?.token}`);
     request.flush({});
-    for (const url of ['https://external.example/api/private', '/api-other/private', '/assets/logo.svg']) {
+    for (const url of [
+      'https://external.example/api/private',
+      '/api-other/private',
+      '/assets/logo.svg',
+    ]) {
       http.get(url).subscribe();
       const external = controller.expectOne(url);
       expect(external.request.headers.has('Authorization')).toBe(false);
@@ -64,19 +80,25 @@ describe('Session and HTTP integration', () => {
     expect(auth.notice()).toContain('venció');
   });
   it('clears the current session on 401 and propagates the error', () => {
-    login(); let status = 0;
-    http.get('/api/alumnos/me').subscribe({ error: e => { status = e.status; } });
+    login();
+    let status = 0;
+    http.get('/api/alumnos/me').subscribe({
+      error: (e) => {
+        status = e.status;
+      },
+    });
     controller.expectOne('/api/alumnos/me').flush({}, { status: 401, statusText: 'Unauthorized' });
-    expect(status).toBe(401); expect(auth.session()).toBeNull();
+    expect(status).toBe(401);
+    expect(auth.session()).toBeNull();
   });
   it('ignores a late 401 from an older session after a new login', () => {
     login();
-    http.get('/api/alumnos/me').subscribe({error: () => undefined});
+    http.get('/api/alumnos/me').subscribe({ error: () => undefined });
     const olderRequest = controller.expectOne('/api/alumnos/me');
-    auth.login({email:'test@example.test',password:'test-only'}).subscribe();
+    auth.login({ email: 'test@example.test', password: 'test-only' }).subscribe();
     const newer = testSession('PROFESOR', 3601);
     controller.expectOne('/api/auth/login').flush(newer);
-    olderRequest.flush({}, {status:401,statusText:'Unauthorized'});
+    olderRequest.flush({}, { status: 401, statusText: 'Unauthorized' });
     expect(auth.session()?.token).toBe(newer.token);
     expect(auth.home()).toBe('/profesor');
   });
@@ -89,35 +111,51 @@ describe('Session and HTTP integration', () => {
   it('does not send stale Authorization to login or registration', () => {
     login();
     for (const url of ['/api/auth/login', '/api/auth/register/alumno']) {
-      http.post(url, {}, { headers: { Authorization: 'Bearer obsolete' } }).subscribe({error: () => undefined});
+      http
+        .post(url, {}, { headers: { Authorization: 'Bearer obsolete' } })
+        .subscribe({ error: () => undefined });
       const request = controller.expectOne(url);
       expect(request.request.headers.has('Authorization')).toBe(false);
-      request.flush({}, {status:401,statusText:'Unauthorized'});
+      request.flush({}, { status: 401, statusText: 'Unauthorized' });
     }
     expect(auth.authenticated()).toBe(true);
   });
   it('rejects a malformed server response without creating a session', () => {
-    auth = TestBed.inject(AuthService); let failed = false;
-    auth.login({email:'test@example.test',password:'test-only'}).subscribe({error: () => {failed=true;}});
-    controller.expectOne('/api/auth/login').flush({token:'invalid',rol:'ADMIN'});
-    expect(failed).toBe(true); expect(auth.session()).toBeNull();
+    auth = TestBed.inject(AuthService);
+    let failed = false;
+    auth.login({ email: 'test@example.test', password: 'test-only' }).subscribe({
+      error: () => {
+        failed = true;
+      },
+    });
+    controller.expectOne('/api/auth/login').flush({ token: 'invalid', rol: 'ADMIN' });
+    expect(failed).toBe(true);
+    expect(auth.session()).toBeNull();
   });
   it('handles unavailable browser storage using an in-memory session', () => {
-    vi.spyOn(Storage.prototype,'setItem').mockImplementation(() => {throw new Error('blocked');});
-    login(); expect(auth.authenticated()).toBe(true); expect(auth.notice()).toContain('no permite');
+    vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('blocked');
+    });
+    login();
+    expect(auth.authenticated()).toBe(true);
+    expect(auth.notice()).toContain('no permite');
   });
   it('synchronizes logout from another tab', () => {
-    login(); localStorage.removeItem(SESSION_KEY);
-    window.dispatchEvent(new StorageEvent('storage', {key:SESSION_KEY}));
+    login();
+    localStorage.removeItem(SESSION_KEY);
+    window.dispatchEvent(new StorageEvent('storage', { key: SESSION_KEY }));
     expect(auth.session()).toBeNull();
   });
   it('logout clears storage and navigates to login', () => {
-    login(); auth.logout();
-    expect(auth.session()).toBeNull(); expect(localStorage.getItem(SESSION_KEY)).toBeNull();
+    login();
+    auth.logout();
+    expect(auth.session()).toBeNull();
+    expect(localStorage.getItem(SESSION_KEY)).toBeNull();
     expect(TestBed.inject(Router).navigateByUrl).toHaveBeenCalledWith('/login');
   });
   it('replaces and persists the new AuthResponse after credential changes', () => {
-    login(); const newer=testSession('PROFESOR',3601);
+    login();
+    const newer = testSession('PROFESOR', 3601);
     auth.replaceIdentity(newer);
     expect(auth.session()?.token).toBe(newer.token);
     expect(JSON.parse(localStorage.getItem(SESSION_KEY)!).rol).toBe('PROFESOR');

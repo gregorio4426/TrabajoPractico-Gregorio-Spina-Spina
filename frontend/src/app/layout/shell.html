@@ -44,8 +44,18 @@
           >
         }
       }
-    @if(auth.session()?.rol==='PROFESOR'){@for(item of teacherNavigation;track item.path){<a class="nav-link" [routerLink]="'/profesor/'+item.path" routerLinkActive="active" ariaCurrentWhenActive="page"><span aria-hidden="true"><app-icon name="grid"/></span>{{item.label}}</a>}}
-</nav>
+      @if (auth.session()?.rol === 'PROFESOR') {
+        @for (item of teacherNavigation; track item.path) {
+          <a
+            class="nav-link"
+            [routerLink]="'/profesor/' + item.path"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            ><span aria-hidden="true"><app-icon name="grid" /></span>{{ item.label }}</a
+          >
+        }
+      }
+    </nav>
     <div class="sidebar-note">
       <span class="eyebrow">TU PUNTO DE PARTIDA</span>
       <p>Un paso más cerca de tu mejor versión.</p>
