@@ -1,7 +1,8 @@
+import { PROGRESS_SOURCE, PROGRESS_ERROR } from './progress-source';
 import { Component, effect, inject, input, output, signal, untracked } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { ProfesorApi, StatPage } from './profesor-api';
+import { StatPage } from './profesor-api';
 import * as D from '../admin/contracts';
 import { Chart, ChartPoint } from './chart';
 import { isDenied, profesorError, text, validDates } from './utils';
@@ -11,7 +12,8 @@ import { isDenied, profesorError, text, validDates } from './utils';
   templateUrl: './progress.html',
 })
 export class Progress {
-  private readonly api = inject(ProfesorApi);
+  private readonly api = inject(PROGRESS_SOURCE);
+  private readonly failure = inject(PROGRESS_ERROR);
   readonly studentId = input<number | null>(null);
   readonly period = input<{ desde: string; hasta: string } | null>(null);
   readonly showDates = input(true);
@@ -69,7 +71,7 @@ export class Progress {
       this.exercises.set(exercises);
     } catch (e) {
       if (seq === this.seq) {
-        this.error.set(profesorError(e));
+        this.error.set(this.failure(e));
         if (isDenied(e)) this.denied.emit();
       }
     } finally {
@@ -129,7 +131,7 @@ export class Progress {
     }
   }
   private handle(e: unknown) {
-    this.error.set(profesorError(e));
+    this.error.set(this.failure(e));
     if (isDenied(e)) {
       ++this.seq;
       ++this.evoSeq;

@@ -19,13 +19,7 @@ export const routes: Routes = [
         ? adminRoutes
         : role === 'PROFESOR'
           ? profesorRoutes
-          : [
-              {
-                path: '',
-                loadComponent: () => import('./home/home').then((m) => m.Home),
-                title: `${role.charAt(0) + role.slice(1).toLowerCase()} · Impulso`,
-              },
-            ],
+          : [{path:'',loadComponent:()=>import('./alumno/dashboard').then(m=>m.StudentDashboard),title:'Alumno · Impulso'},{path:'progreso',loadComponent:()=>import('./alumno/progress').then(m=>m.StudentProgress),title:'Mi progreso · Impulso'}],
   })),
   {
     path: '',
