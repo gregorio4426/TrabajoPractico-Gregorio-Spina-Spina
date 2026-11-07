@@ -5,9 +5,9 @@
     <a class="brand" [routerLink]="auth.home()"><span class="brand-icon"><app-icon name="arrow" /></span> IMPULSO<span class="brand-dot">.</span></a>
     <div class="workspace-label">{{ config().workspace }}</div>
     @if(menuOpen()) { <button class="sidebar-close secondary" aria-label="Cerrar menú" (click)="closeMenu()">Cerrar menú ×</button> }
-    <nav><a class="nav-link" [routerLink]="auth.home()" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" ariaCurrentWhenActive="page"><span aria-hidden="true"><app-icon name="grid" /></span> Inicio <span class="nav-arrow" aria-hidden="true"><app-icon name="arrow" /></span></a></nav>
+    <nav><a class="nav-link" [routerLink]="auth.home()" routerLinkActive="active" [routerLinkActiveOptions]="{exact:true}" ariaCurrentWhenActive="page"><span aria-hidden="true"><app-icon name="grid" /></span> Inicio <span class="nav-arrow" aria-hidden="true"><app-icon name="arrow" /></span></a>@if(auth.session()?.rol==='ADMIN'){@for(item of adminNavigation;track item.path){<a class="nav-link" [routerLink]="'/admin/'+item.path" routerLinkActive="active" ariaCurrentWhenActive="page"><span aria-hidden="true"><app-icon name="grid"/></span>{{item.label}}</a>}}</nav>
     <div class="sidebar-note"><span class="eyebrow">TU PUNTO DE PARTIDA</span><p>Un paso más cerca de tu mejor versión.</p><span class="sidebar-art" aria-hidden="true"><app-icon name="arrow" /></span></div>
-    <div class="sidebar-user"><div class="avatar" aria-hidden="true">{{ auth.session()?.email?.charAt(0)?.toUpperCase() }}</div><div><strong>{{ config().label }}</strong><span>Sesión personal</span></div></div>
+    <div class="sidebar-user"><div class="avatar" aria-hidden="true">{{ auth.session()?.email?.charAt(0)?.toUpperCase() }}</div><div><strong>{{ config().label }}</strong><span [attr.title]="auth.session()?.email">{{auth.session()?.rol==='ADMIN'?auth.session()?.email:'Sesión personal'}}</span></div></div>
   </aside>
   <div class="workspace-body" [attr.inert]="menuOpen() ? '' : null"><header class="workspace-header">
     <div class="header-start"><button class="menu-toggle icon-button" (click)="openMenu()" [attr.aria-expanded]="menuOpen()" aria-controls="sidebar" aria-label="Abrir menú" #menuButton><app-icon name="menu" /></button><span class="breadcrumb">{{ config().label }} <span>/</span> <strong>Inicio</strong></span></div>

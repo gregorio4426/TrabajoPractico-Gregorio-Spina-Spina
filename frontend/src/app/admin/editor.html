@@ -1,0 +1,14 @@
+<section class="admin-panel"><div class="admin-kicker"><h2>{{titles[operation()]}}</h2><button class="secondary" (click)="cancelled.emit()" [disabled]="pending()">Cancelar</button></div>
+@if(['state','role','email'].includes(operation())){<p class="admin-help">Se usará la revisión de seguridad consultada. Un cambio efectivo revoca los accesos anteriores. Cambiar de rol conserva el historial y termina los vínculos del rol anterior; no los restaura automáticamente al volver.</p>}
+@if(['link','unlink','replace'].includes(operation())){<p class="admin-help">Consultá los profesores y sus IDs en el listado. Vincular requiere perfiles con los roles vigentes. Reemplazar conserva los demás profesores y todo el historial del alumno.</p>}
+@if(error()){<p class="error-message" role="alert">{{error()}}</p>}
+<form [formGroup]="form" (ngSubmit)="confirm()"><fieldset class="admin-form" [disabled]="pending()" style="border:0;padding:0;margin:0">
+@for(field of fields();track field.key){<label [class.wide]="field.type==='textarea'">{{field.label}} {{field.required?'*':'(opcional)'}}
+@if(field.options){<select [formControlName]="field.key"><option value="">Seleccionar</option>@for(option of field.options;track option){<option [value]="option">{{option==='true'?'Sí':option==='false'?'No':option.replaceAll('_',' ')}}</option>}</select>}
+@else if(field.type==='textarea'){<textarea [formControlName]="field.key" rows="3" [attr.maxlength]="field.max"></textarea>}
+@else{<input [type]="field.type" [formControlName]="field.key" [attr.maxlength]="field.max" [attr.min]="field.type==='number'?1:null" [attr.max]="field.key==='edad'?150:null" [attr.autocomplete]="field.type==='password'?'new-password':'off'">}
+@if(form.controls[field.key]?.touched && form.controls[field.key]?.invalid){<span class="validation">Revisá {{field.label.toLowerCase()}}: campo obligatorio o formato/límite no válido.</span>}
+</label>}
+<div class="wide admin-actions"><button type="submit" class="primary">{{pending()?'Guardando…':'Revisar y guardar'}}</button></div>
+</fieldset></form></section>
+<dialog #confirmationDialog class="dialog admin-confirm" aria-labelledby="admin-confirm-title"><h2 id="admin-confirm-title">¿Confirmar {{titles[operation()].toLowerCase()}}?</h2><p>Se aplicará el cambio {{id() ? 'al registro #'+id() : 'a una nueva cuenta'}}. Revisá los datos antes de continuar.</p><dl class="admin-details">@for(field of fields();track field.key){@if(field.key!=='password'){<div><dt>{{field.label}}</dt><dd>{{form.controls[field.key]?.value || 'Sin dato'}}</dd></div>}}</dl><p class="admin-help">Las modificaciones de seguridad pueden revocar sesiones. Las operaciones quedan registradas en la auditoría.</p><div class="dialog-actions"><button class="secondary" (click)="cancelConfirm()">Volver al formulario</button><button class="primary" (click)="submit()">Confirmar cambio</button></div></dialog>

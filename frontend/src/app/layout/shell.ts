@@ -8,6 +8,7 @@ import { ROLE_CONFIG } from './role-config';
 @Component({ selector: 'app-shell', imports: [RouterLink, RouterLinkActive, RouterOutlet, Icon], templateUrl: './shell.html' })
 export class Shell {
   readonly auth = inject(AuthService);
+  readonly adminNavigation = [{path:'usuarios',label:'Usuarios'},{path:'alumnos',label:'Alumnos'},{path:'profesores',label:'Profesores'},{path:'rutinas',label:'Rutinas'},{path:'asignaciones',label:'Asignaciones'},{path:'sesiones',label:'Sesiones'},{path:'auditoria',label:'Auditoría'}];
   private readonly media = window.matchMedia('(max-width: 760px)');
   readonly mobile = signal(this.media.matches);
   readonly menuOpen = signal(false);
