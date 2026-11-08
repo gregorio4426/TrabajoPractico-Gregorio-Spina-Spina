@@ -1,3 +1,4 @@
+import { alumnoRoutes } from './alumno/alumno.routes';
 import { profesorRoutes } from './profesor/profesor.routes';
 import { adminRoutes } from './admin/admin.routes';
 import { Routes } from '@angular/router';
@@ -19,7 +20,7 @@ export const routes: Routes = [
         ? adminRoutes
         : role === 'PROFESOR'
           ? profesorRoutes
-          : [{path:'',loadComponent:()=>import('./alumno/dashboard').then(m=>m.StudentDashboard),title:'Alumno · Impulso'},{path:'progreso',loadComponent:()=>import('./alumno/progress').then(m=>m.StudentProgress),title:'Mi progreso · Impulso'}],
+          : alumnoRoutes,
   })),
   {
     path: '',

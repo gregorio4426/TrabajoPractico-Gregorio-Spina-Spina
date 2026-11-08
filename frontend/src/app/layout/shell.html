@@ -55,7 +55,8 @@
           >
         }
       }
-    </nav>
+    @if(auth.session()?.rol==='ALUMNO'){@for(item of studentNavigation;track item.path){<a class="nav-link" [routerLink]="'/alumno/'+item.path" routerLinkActive="active" ariaCurrentWhenActive="page"><span aria-hidden="true"><app-icon name="grid"/></span>{{item.label}}</a>}}
+</nav>
     <div class="sidebar-note">
       <span class="eyebrow">TU PUNTO DE PARTIDA</span>
       <p>Un paso más cerca de tu mejor versión.</p>
@@ -68,7 +69,7 @@
       <div>
         <strong>{{ config().label }}</strong
         ><span [attr.title]="auth.session()?.email">{{
-          auth.session()?.rol !== 'ALUMNO' ? auth.session()?.email : 'Sesión personal'
+          auth.session()?.email
         }}</span>
       </div>
     </div>

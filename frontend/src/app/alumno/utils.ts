@@ -9,4 +9,7 @@ export function validSeries(s:D.SerieResponse){return !s.anulada&&!s.legadoExent
 export function nextSeriesNumber(rows:D.SerieResponse[],exerciseId:number){const used=new Set(rows.filter(s=>s.ejercicioId===exerciseId&&!s.anulada&&!s.legadoExento).map(s=>s.numeroSerie));let next=1;while(used.has(next))next++;return next;}
 export function localDate(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 export function utcDate(){return new Date().toISOString().slice(0,10);}
-export const pastOrToday:ValidatorFn=(c:AbstractControl)=>/^\d{4}-\d{2}-\d{2}$/.test(String(c.value))&&String(c.value)<=utcDate()?null:{date:true};
+export const pastOrToday:ValidatorFn=(c:AbstractControl)=>validCalendarDate(String(c.value))&&String(c.value)<=utcDate()?null:{date:true};
+
+export function validCalendarDate(value:string){if(!/^\d{4}-\d{2}-\d{2}$/.test(value))return false;const date=new Date(value+'T00:00:00Z');return Number.isFinite(date.getTime())&&date.toISOString().slice(0,10)===value;}
+export const optionalPast:ValidatorFn=(c:AbstractControl)=>!c.value||validCalendarDate(String(c.value))&&String(c.value)<utcDate()?null:{date:true};
