@@ -1,6 +1,6 @@
-# Impulso — frontend, etapas 1, 2 y 3
+# Impulso — frontend, etapas 1, 2, 3 y 4
 
-Angular 22 standalone, Signals y TypeScript/plantillas estrictos. Autenticación y estructura: login único, JWT, interceptor limitado a la API, guards por rol, persistencia, vencimiento, logout y tres variantes responsive de sidebar/header. La etapa 2 incorpora el panel ADMIN completo sobre los endpoints existentes. La etapa 3 incorpora el panel PROFESOR: alumnos vinculados, rutinas versionadas, ejercicios, gráficos, perfil y credenciales. ALUMNO conserva únicamente la estructura aprobada de la etapa 1; la etapa 4 no se implementó. Ver [funcionalidad del profesor](ETAPA-3-PROFESOR.md). Ver [funcionalidad administrativa](ETAPA-2-ADMIN.md).
+Angular 22 standalone, Signals y TypeScript/plantillas estrictos. Autenticación y estructura: login único, JWT, interceptor limitado a la API, guards por rol, persistencia, vencimiento, logout y tres variantes responsive de sidebar/header. La etapa 2 incorpora el panel ADMIN completo sobre los endpoints existentes. La etapa 3 incorpora el panel PROFESOR: alumnos vinculados, rutinas versionadas, ejercicios, gráficos, perfil y credenciales. La etapa 4 incorpora el panel ALUMNO: rutinas, entrenamientos recuperables, historial y correcciones, progreso, perfil y profesores. Ver [funcionalidad del alumno](ETAPA-4-ALUMNO.md). Ver [funcionalidad del profesor](ETAPA-3-PROFESOR.md). Ver [funcionalidad administrativa](ETAPA-2-ADMIN.md).
 
 ## Desarrollo
 

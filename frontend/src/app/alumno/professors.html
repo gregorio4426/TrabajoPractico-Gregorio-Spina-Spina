@@ -1,5 +1,122 @@
-<div class="page-intro admin-kicker"><div><span class="eyebrow muted">TU EQUIPO</span><h1>Mis profesores<span class="accent">.</span></h1></div><button class="secondary" (click)="load()" [disabled]="pending()||loading()">Recargar profesores</button></div>@if(error()){<p class="error-message" role="alert">{{error()}}</p>}@if(success()){<p class="notice" role="status">{{success()}}</p>}@if(loading()){<p class="notice" role="status">Consultando vínculos y directorio…</p>}
-@if(profile();as me){<section class="admin-panel"><h2>Profesores vinculados actualmente</h2><div class="student-professor-list">@for(p of me.profesores;track p.id){<article class="student-professor-card"><strong>{{p.nombre}} {{p.apellido}}</strong><p>{{p.especialidad}} · #{{p.id}}</p><button class="secondary" (click)="ask('unlink',p)" [disabled]="pending()">Desvincular profesor #{{p.id}}</button></article>}@empty{<p class="admin-empty">Todavía no tenés profesores vinculados.</p>}</div></section>
-@if(me.profesores?.length){<section class="admin-panel"><h2>Reemplazar un profesor</h2><p class="admin-help">Se reemplaza un vínculo sin terminar los demás. El servidor valida los roles y la disponibilidad del nuevo profesor.</p><form [formGroup]="form" (ngSubmit)="ask('replace')"><fieldset class="admin-form teacher-fieldset" [disabled]="pending()"><label>Profesor vinculado a reemplazar *<select formControlName="anterior"><option value="">Seleccionar</option>@for(p of me.profesores;track p.id){<option [value]="p.id">#{{p.id}} · {{p.nombre}} {{p.apellido}}</option>}</select></label><label>Nuevo profesor *<select formControlName="nuevo"><option value="">Seleccionar</option>@for(p of directory();track p.id){<option [value]="p.id">#{{p.id}} · {{p.nombre}} {{p.apellido}} · {{p.especialidad}}</option>}</select></label><div class="wide"><button class="primary">Reemplazar vínculo</button></div></fieldset></form></section>}
-<section class="admin-panel"><h2>Directorio de profesores</h2><p class="admin-help">El directorio no informa el estado de la cuenta ni su rol actual. Al vincular, el servidor comprueba que el profesor esté activo y vigente. La búsqueda y paginación son locales.</p><label class="admin-filters">Buscar profesor por nombre, email o especialidad<input type="search" [formControl]="search"></label><p class="admin-help">{{filtered().length}} perfiles encontrados.</p><div class="student-professor-list">@for(p of visible();track p.id){<article class="student-professor-card"><strong>{{p.nombre}} {{p.apellido}}</strong><p>{{p.especialidad}} · #{{p.id}}</p><p>{{p.email}}</p>@if(linked(p.id)){<span class="student-badge">Ya vinculado</span>}@else{<button class="primary" (click)="ask('link',p)" [disabled]="pending()">Vincular profesor #{{p.id}}</button>}</article>}@empty{<p class="admin-empty">No hay profesores con esa búsqueda.</p>}</div><nav class="admin-pagination" aria-label="Páginas del directorio"><span>Página {{pages()?page()+1:0}} de {{pages()}}</span><div><button class="secondary" (click)="page.set(page()-1)" [disabled]="page()===0">Anterior</button><button class="secondary" (click)="page.set(page()+1)" [disabled]="page()+1>=pages()">Siguiente</button></div></nav></section>}
-<app-teacher-confirm #confirmation [title]="action()==='replace'?'¿Reemplazar este vínculo?':action()==='link'?'¿Vincular este profesor?':'¿Desvincular este profesor?'" [message]="message()" (confirmed)="save()"/>
+<div class="page-intro admin-kicker">
+  <div>
+    <span class="eyebrow muted">TU EQUIPO</span>
+    <h1>Mis profesores<span class="accent">.</span></h1>
+  </div>
+  <button class="secondary" (click)="load()" [disabled]="pending() || loading()">
+    Recargar profesores
+  </button>
+</div>
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+@if (success()) {
+  <p class="notice" role="status">{{ success() }}</p>
+}
+@if (loading()) {
+  <p class="notice" role="status">Consultando vínculos y directorio…</p>
+}
+@if (profile(); as me) {
+  <section class="admin-panel">
+    <h2>Profesores vinculados actualmente</h2>
+    <div class="student-professor-list">
+      @for (p of me.profesores; track p.id) {
+        <article class="student-professor-card">
+          <strong>{{ p.nombre }} {{ p.apellido }}</strong>
+          <p>{{ p.especialidad }} · #{{ p.id }}</p>
+          <button class="secondary" (click)="ask('unlink', p)" [disabled]="pending()">
+            Desvincular profesor #{{ p.id }}
+          </button>
+        </article>
+      } @empty {
+        <p class="admin-empty">Todavía no tenés profesores vinculados.</p>
+      }
+    </div>
+  </section>
+  @if (me.profesores?.length) {
+    <section class="admin-panel">
+      <h2>Reemplazar un profesor</h2>
+      <p class="admin-help">
+        Se reemplaza un vínculo sin terminar los demás. El servidor valida los roles y la
+        disponibilidad del nuevo profesor.
+      </p>
+      <form [formGroup]="form" (ngSubmit)="ask('replace')">
+        <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
+          <label
+            >Profesor vinculado a reemplazar *<select formControlName="anterior">
+              <option value="">Seleccionar</option>
+              @for (p of me.profesores; track p.id) {
+                <option [value]="p.id">#{{ p.id }} · {{ p.nombre }} {{ p.apellido }}</option>
+              }
+            </select></label
+          ><label
+            >Nuevo profesor *<select formControlName="nuevo">
+              <option value="">Seleccionar</option>
+              @for (p of directory(); track p.id) {
+                <option [value]="p.id">
+                  #{{ p.id }} · {{ p.nombre }} {{ p.apellido }} · {{ p.especialidad }}
+                </option>
+              }
+            </select></label
+          >
+          <div class="wide"><button class="primary">Reemplazar vínculo</button></div>
+        </fieldset>
+      </form>
+    </section>
+  }
+  <section class="admin-panel">
+    <h2>Directorio de profesores</h2>
+    <p class="admin-help">
+      El directorio no informa el estado de la cuenta ni su rol actual. Al vincular, el servidor
+      comprueba que el profesor esté activo y vigente. La búsqueda y paginación son locales.
+    </p>
+    <label class="admin-filters"
+      >Buscar profesor por nombre, email o especialidad<input type="search" [formControl]="search"
+    /></label>
+    <p class="admin-help">{{ filtered().length }} perfiles encontrados.</p>
+    <div class="student-professor-list">
+      @for (p of visible(); track p.id) {
+        <article class="student-professor-card">
+          <strong>{{ p.nombre }} {{ p.apellido }}</strong>
+          <p>{{ p.especialidad }} · #{{ p.id }}</p>
+          <p>{{ p.email }}</p>
+          @if (linked(p.id)) {
+            <span class="student-badge">Ya vinculado</span>
+          } @else {
+            <button class="primary" (click)="ask('link', p)" [disabled]="pending()">
+              Vincular profesor #{{ p.id }}
+            </button>
+          }
+        </article>
+      } @empty {
+        <p class="admin-empty">No hay profesores con esa búsqueda.</p>
+      }
+    </div>
+    <nav class="admin-pagination" aria-label="Páginas del directorio">
+      <span>Página {{ pages() ? page() + 1 : 0 }} de {{ pages() }}</span>
+      <div>
+        <button class="secondary" (click)="page.set(page() - 1)" [disabled]="page() === 0">
+          Anterior</button
+        ><button
+          class="secondary"
+          (click)="page.set(page() + 1)"
+          [disabled]="page() + 1 >= pages()"
+        >
+          Siguiente
+        </button>
+      </div>
+    </nav>
+  </section>
+}
+<app-teacher-confirm
+  #confirmation
+  [title]="
+    action() === 'replace'
+      ? '¿Reemplazar este vínculo?'
+      : action() === 'link'
+        ? '¿Vincular este profesor?'
+        : '¿Desvincular este profesor?'
+  "
+  [message]="message()"
+  (confirmed)="save()"
+/>

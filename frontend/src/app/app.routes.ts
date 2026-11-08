@@ -15,12 +15,7 @@ export const routes: Routes = [
     canActivate: [authGuard, roleGuard],
     data: { role },
     loadComponent: () => import('./layout/shell').then((m) => m.Shell),
-    children:
-      role === 'ADMIN'
-        ? adminRoutes
-        : role === 'PROFESOR'
-          ? profesorRoutes
-          : alumnoRoutes,
+    children: role === 'ADMIN' ? adminRoutes : role === 'PROFESOR' ? profesorRoutes : alumnoRoutes,
   })),
   {
     path: '',

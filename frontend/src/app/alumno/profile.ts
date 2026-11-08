@@ -4,8 +4,8 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AlumnoApi } from './alumno-api';
 import * as D from '../admin/contracts';
-import { LEVELS,OBJECTIVES } from '../admin/catalog';
-import { alumnoError,optionalPast } from './utils';
+import { LEVELS, OBJECTIVES } from '../admin/catalog';
+import { alumnoError, optionalPast } from './utils';
 import { AuthService } from '../core/auth.service';
 import { Confirm } from '../profesor/confirm';
 import { notBlank, passwordValidators } from '../profesor/utils';
@@ -27,11 +27,15 @@ export class StudentProfile {
   readonly error = signal('');
   readonly success = signal('');
   private seq = 0;
-  readonly levels=LEVELS;readonly objectives=OBJECTIVES;readonly age=signal<number|null>(null);
+  readonly levels = LEVELS;
+  readonly objectives = OBJECTIVES;
+  readonly age = signal<number | null>(null);
   readonly profile = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, notBlank, Validators.maxLength(20)]],
     apellido: ['', [Validators.required, notBlank, Validators.maxLength(20)]],
-    fechaDeNacimiento:['',optionalPast],nivel:['',Validators.required],objetivo:['',Validators.required],
+    fechaDeNacimiento: ['', optionalPast],
+    nivel: ['', Validators.required],
+    objetivo: ['', Validators.required],
     emailContacto: ['', [Validators.email, Validators.maxLength(150)]],
   });
   readonly email = this.fb.nonNullable.group({
@@ -65,10 +69,12 @@ export class StudentProfile {
       this.profile.setValue({
         nombre: p.nombre ?? '',
         apellido: p.apellido ?? '',
-        fechaDeNacimiento:p.fechaNacimiento??'',nivel:p.nivel??'',objetivo:p.objetivo??'',
+        fechaDeNacimiento: p.fechaNacimiento ?? '',
+        nivel: p.nivel ?? '',
+        objetivo: p.objetivo ?? '',
         emailContacto: p.emailContacto ?? '',
       });
-      this.age.set(p.edad??null);
+      this.age.set(p.edad ?? null);
       this.email.controls.email.setValue(this.auth.session()?.email ?? '');
       this.loaded.set(true);
     } catch (e) {
@@ -115,7 +121,9 @@ export class StudentProfile {
           this.api.updateProfile({
             nombre: p.nombre.trim(),
             apellido: p.apellido.trim(),
-            nivel:p.nivel as D.AlumnoRequest['nivel'],objetivo:p.objetivo as D.AlumnoRequest['objetivo'],...(p.fechaDeNacimiento?{fechaDeNacimiento:p.fechaDeNacimiento}:{}),
+            nivel: p.nivel as D.AlumnoRequest['nivel'],
+            objetivo: p.objetivo as D.AlumnoRequest['objetivo'],
+            ...(p.fechaDeNacimiento ? { fechaDeNacimiento: p.fechaDeNacimiento } : {}),
             emailContacto: p.emailContacto.trim(),
           }),
         );

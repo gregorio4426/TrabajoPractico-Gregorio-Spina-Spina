@@ -11,9 +11,21 @@ function session(rol: string, seconds = 3600) {
   };
 }
 test.beforeEach(async ({ page }) => {
-  await page.route('**/api/alumnos/me/dashboard*',route=>route.fulfill({json:{periodo:{},entrenamientos:{},frecuencia:{},rutinaActiva:null}}));
-  await page.route(/\/api\/alumnos\/me\/estadisticas(?:\/|\?|$)/,route=>route.fulfill({json:route.request().url().includes('/actividad')||route.request().url().includes('/ejercicios')?{contenido:[],pagina:0,totalPaginas:0,totalElementos:0,tamanio:20}:{periodo:{},datos:{},frecuencia:{}}}));
-  await page.route('**/api/sesiones/me/historial',route=>route.fulfill({json:[]}));
+  await page.route('**/api/alumnos/me/dashboard*', (route) =>
+    route.fulfill({
+      json: { periodo: {}, entrenamientos: {}, frecuencia: {}, rutinaActiva: null },
+    }),
+  );
+  await page.route(/\/api\/alumnos\/me\/estadisticas(?:\/|\?|$)/, (route) =>
+    route.fulfill({
+      json:
+        route.request().url().includes('/actividad') ||
+        route.request().url().includes('/ejercicios')
+          ? { contenido: [], pagina: 0, totalPaginas: 0, totalElementos: 0, tamanio: 20 }
+          : { periodo: {}, datos: {}, frecuencia: {} },
+    }),
+  );
+  await page.route('**/api/sesiones/me/historial', (route) => route.fulfill({ json: [] }));
 
   await page.route('**/api/profesores/me/dashboard*', (route) =>
     route.fulfill({ json: { periodo: {}, entrenamientos: {}, frecuencia: {} } }),

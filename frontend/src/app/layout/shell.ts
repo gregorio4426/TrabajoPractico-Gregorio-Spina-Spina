@@ -37,7 +37,14 @@ export class Shell {
     { path: 'progreso', label: 'Progreso' },
     { path: 'perfil', label: 'Mi perfil' },
   ];
-  readonly studentNavigation=[{path:'rutina',label:'Mi rutina'},{path:'rutinas',label:'Historial de rutinas'},{path:'sesiones',label:'Mis sesiones'},{path:'progreso',label:'Mi progreso'},{path:'perfil',label:'Mi perfil'},{path:'profesores',label:'Mis profesores'}];
+  readonly studentNavigation = [
+    { path: 'rutina', label: 'Mi rutina' },
+    { path: 'rutinas', label: 'Historial de rutinas' },
+    { path: 'sesiones', label: 'Mis sesiones' },
+    { path: 'progreso', label: 'Mi progreso' },
+    { path: 'perfil', label: 'Mi perfil' },
+    { path: 'profesores', label: 'Mis profesores' },
+  ];
   private readonly media = window.matchMedia('(max-width: 760px)');
   readonly mobile = signal(this.media.matches);
   readonly menuOpen = signal(false);
@@ -98,7 +105,11 @@ export class Shell {
         this.menuOpen.set(false);
         const parts = event.urlAfterRedirects.split('?')[0]?.split('/').filter(Boolean) ?? [];
         const section = (
-          parts[0] === 'profesor' ? this.teacherNavigation : parts[0] === 'alumno' ? this.studentNavigation : this.adminNavigation
+          parts[0] === 'profesor'
+            ? this.teacherNavigation
+            : parts[0] === 'alumno'
+              ? this.studentNavigation
+              : this.adminNavigation
         ).find((item) => item.path === parts[1]);
         this.currentPage.set(
           section

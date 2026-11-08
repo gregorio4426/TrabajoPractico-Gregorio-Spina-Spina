@@ -55,8 +55,18 @@
           >
         }
       }
-    @if(auth.session()?.rol==='ALUMNO'){@for(item of studentNavigation;track item.path){<a class="nav-link" [routerLink]="'/alumno/'+item.path" routerLinkActive="active" ariaCurrentWhenActive="page"><span aria-hidden="true"><app-icon name="grid"/></span>{{item.label}}</a>}}
-</nav>
+      @if (auth.session()?.rol === 'ALUMNO') {
+        @for (item of studentNavigation; track item.path) {
+          <a
+            class="nav-link"
+            [routerLink]="'/alumno/' + item.path"
+            routerLinkActive="active"
+            ariaCurrentWhenActive="page"
+            ><span aria-hidden="true"><app-icon name="grid" /></span>{{ item.label }}</a
+          >
+        }
+      }
+    </nav>
     <div class="sidebar-note">
       <span class="eyebrow">TU PUNTO DE PARTIDA</span>
       <p>Un paso más cerca de tu mejor versión.</p>
@@ -68,9 +78,7 @@
       </div>
       <div>
         <strong>{{ config().label }}</strong
-        ><span [attr.title]="auth.session()?.email">{{
-          auth.session()?.email
-        }}</span>
+        ><span [attr.title]="auth.session()?.email">{{ auth.session()?.email }}</span>
       </div>
     </div>
   </aside>
