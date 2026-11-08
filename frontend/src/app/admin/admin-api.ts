@@ -38,6 +38,24 @@ export class AdminApi {
   dashboard(query: Query = {}) {
     return this.get<D.DashboardAdmin>('dashboard', query);
   }
+  private statsPath(studentId: number | null) {
+    return studentId === null ? 'estadisticas' : `alumnos/${studentId}/estadisticas`;
+  }
+  summary(studentId: number | null, query: Query = {}) {
+    return this.get<D.ResumenEstadistico>(this.statsPath(studentId), query);
+  }
+  activity(studentId: number | null, query: Query = {}) {
+    return this.get<Page<D.ActividadDia>>(this.statsPath(studentId) + '/actividad', query);
+  }
+  exerciseStats(studentId: number | null, query: Query = {}) {
+    return this.get<Page<D.EjercicioEstadistica>>(this.statsPath(studentId) + '/ejercicios', query);
+  }
+  evolution(studentId: number | null, exerciseId: number, query: Query = {}) {
+    return this.get<Page<D.EvolucionEjercicio>>(
+      `${this.statsPath(studentId)}/ejercicios/${exerciseId}/evolucion`,
+      query,
+    );
+  }
   createUser(body: D.CrearUsuario) {
     return this.http.post<D.UsuarioVista>(this.base + '/usuarios', body);
   }

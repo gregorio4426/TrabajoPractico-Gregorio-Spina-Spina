@@ -1,10 +1,14 @@
+import { RouterLink } from '@angular/router';
 import { Component, computed, input } from '@angular/core';
 export interface ChartPoint {
   label: string;
   value: string | number | null | undefined;
+  link?: string;
+  note?: string;
 }
 export function chartNumber(value: ChartPoint['value']): number | null {
   if (value === null || value === undefined || value === '') return null;
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(String(value))) return null;
   const digits = String(value)
     .replace(/[.\-+]/g, '')
     .replace(/^0+/, '');
@@ -15,50 +19,58 @@ export function chartNumber(value: ChartPoint['value']): number | null {
 }
 @Component({
   selector: 'app-progress-chart',
+  imports: [RouterLink],
   template: `<section class="teacher-chart">
     <h3>{{ title() }}</h3>
     @if (points().length) {
-      <svg
-        viewBox="0 0 640 220"
-        role="img"
-        [attr.aria-label]="title() + ' · representación aproximada; valores exactos en la tabla'"
+      <div
+        class="teacher-chart-scroll"
+        tabindex="0"
+        role="region"
+        [attr.aria-label]="title() + ' · desplazamiento horizontal'"
       >
-        <path d="M45 15V180H625" class="chart-axis" />
-        <text x="20" y="182">{{ axisText(0) }}</text>
-        <text x="6" y="20">{{ axisText(scale()) }}</text>
-        @if (kind() === 'line') {
-          @for (line of segments(); track $index) {
-            <polyline [attr.points]="line" class="chart-line" />
-          }
-        }
-        @for (point of plotted(); track $index) {
-          @if (point.y !== null) {
-            @if (kind() === 'bar') {
-              <rect
-                [attr.x]="point.x - 12"
-                [attr.y]="point.y"
-                width="24"
-                [attr.height]="180 - point.y"
-                class="chart-bar"
-              >
-                <title>{{ point.label }}: {{ point.value }}</title>
-              </rect>
-            } @else {
-              <circle [attr.cx]="point.x" [attr.cy]="point.y" r="4" class="chart-dot">
-                <title>{{ point.label }}: {{ point.value }}</title>
-              </circle>
+        <svg
+          viewBox="0 0 640 220"
+          role="img"
+          [attr.aria-label]="title() + ' · representación aproximada; valores exactos en la tabla'"
+        >
+          <path d="M45 15V180H625" class="chart-axis" />
+          <text x="20" y="182">{{ axisText(0) }}</text>
+          <text x="6" y="20">{{ axisText(scale()) }}</text>
+          @if (kind() === 'line') {
+            @for (line of segments(); track $index) {
+              <polyline [attr.points]="line" class="chart-line" />
             }
           }
-        }
-        @if (points().length === 1) {
-          <text x="335" y="205" text-anchor="middle">{{ shortLabel(points()[0]!.label) }}</text>
-        } @else {
-          <text x="55" y="205">{{ shortLabel(points()[0]!.label) }}</text>
-          <text x="605" y="205" text-anchor="end">
-            {{ shortLabel(points()[points().length - 1]!.label) }}
-          </text>
-        }
-      </svg>
+          @for (point of plotted(); track $index) {
+            @if (point.y !== null) {
+              @if (kind() === 'bar' && point.y !== 180) {
+                <rect
+                  [attr.x]="point.x - 12"
+                  [attr.y]="point.y"
+                  width="24"
+                  [attr.height]="180 - point.y"
+                  class="chart-bar"
+                >
+                  <title>{{ point.label }}: {{ point.value }}</title>
+                </rect>
+              } @else {
+                <circle [attr.cx]="point.x" [attr.cy]="point.y" r="4" class="chart-dot">
+                  <title>{{ point.label }}: {{ point.value }}</title>
+                </circle>
+              }
+            }
+          }
+          @if (points().length === 1) {
+            <text x="335" y="205" text-anchor="middle">{{ shortLabel(points()[0]!.label) }}</text>
+          } @else {
+            <text x="55" y="205">{{ shortLabel(points()[0]!.label) }}</text>
+            <text x="605" y="205" text-anchor="end">
+              {{ shortLabel(points()[points().length - 1]!.label) }}
+            </text>
+          }
+        </svg>
+      </div>
       <details>
         <summary>Ver valores exactos de {{ title().toLowerCase() }}</summary>
         <div class="admin-table-wrap">
@@ -72,7 +84,21 @@ export function chartNumber(value: ChartPoint['value']): number | null {
             <tbody>
               @for (point of points(); track $index) {
                 <tr>
-                  <td>{{ point.label }}</td>
+                  <td>
+                    @if (point.link) {
+                      <a
+                        class="admin-link"
+                        [routerLink]="point.link"
+                        [attr.aria-label]="'Ver entrenamiento: ' + point.label"
+                        >{{ point.label }}</a
+                      >
+                    } @else {
+                      {{ point.label }}
+                    }
+                    @if (point.note) {
+                      <p class="chart-coverage">{{ point.note }}</p>
+                    }
+                  </td>
                   <td>
                     {{
                       point.value === null || point.value === undefined ? 'Sin dato' : point.value

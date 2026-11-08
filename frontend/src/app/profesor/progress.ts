@@ -1,11 +1,22 @@
+import { volumeCoverage } from '../shared/statistics-values';
+import { statisticsPeriodError } from '../shared/statistics-period';
 import { PROGRESS_SOURCE, PROGRESS_ERROR } from './progress-source';
-import { Component, effect, inject, input, output, signal, untracked } from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  output,
+  signal,
+  untracked,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { StatPage } from './profesor-api';
 import * as D from '../admin/contracts';
 import { Chart, ChartPoint } from './chart';
-import { isDenied, profesorError, text, validDates } from './utils';
+import { isDenied, text } from './utils';
 @Component({
   selector: 'app-teacher-progress',
   imports: [ReactiveFormsModule, Chart],
@@ -17,15 +28,28 @@ export class Progress {
   readonly studentId = input<number | null>(null);
   readonly period = input<{ desde: string; hasta: string } | null>(null);
   readonly showDates = input(true);
+  readonly sessionBase = input('/profesor/sesiones');
   readonly denied = output<void>();
   readonly form = inject(FormBuilder).nonNullable.group({ desde: '', hasta: '' });
   readonly text = text;
+  readonly volumeCoverage = volumeCoverage;
   readonly summary = signal<D.ResumenEstadistico | null>(null);
   readonly activity = signal<StatPage<D.ActividadDia> | null>(null);
   readonly exercises = signal<StatPage<D.EjercicioEstadistica> | null>(null);
   readonly evolution = signal<StatPage<D.EvolucionEjercicio> | null>(null);
   readonly selected = signal<number | null>(null);
-  readonly loading = signal(false);
+  private readonly pending = signal(new Set<string>());
+  readonly loading = computed(() => this.pending().size > 0);
+  private activitySeq = 0;
+  private exerciseSeq = 0;
+  private busy(key: string, value: boolean) {
+    this.pending.update((current) => {
+      const next = new Set(current);
+      if (value) next.add(key);
+      else next.delete(key);
+      return next;
+    });
+  }
   readonly error = signal('');
   private seq = 0;
   private evoSeq = 0;
@@ -42,13 +66,14 @@ export class Progress {
   }
   async load(id = this.studentId()) {
     const query = this.form.getRawValue();
-    if (!validDates(query.desde, query.hasta)) {
-      this.error.set('La fecha desde debe ser anterior o igual a hasta.');
+    const periodError = statisticsPeriodError(query.desde, query.hasta);
+    if (periodError) {
+      this.error.set(periodError);
       return;
     }
     const seq = ++this.seq;
     ++this.evoSeq;
-    this.loading.set(true);
+    this.pending.set(new Set(['load']));
     this.error.set('');
     this.summary.set(null);
     this.activity.set(null);
@@ -75,48 +100,51 @@ export class Progress {
         if (isDenied(e)) this.denied.emit();
       }
     } finally {
-      if (seq === this.seq) this.loading.set(false);
+      if (seq === this.seq) this.busy('load', false);
     }
   }
   async activityPage(page: number) {
-    this.loading.set(true);
+    this.busy('activity', true);
     this.error.set('');
-    const seq = this.seq;
+    const seq = this.seq,
+      request = ++this.activitySeq;
     try {
       const value = await firstValueFrom(
         this.api.activity(this.studentId(), { ...this.applied, pagina: page, tamanio: 30 }),
       );
-      if (seq === this.seq) this.activity.set(value);
+      if (seq === this.seq && request === this.activitySeq) this.activity.set(value);
     } catch (e) {
-      this.handle(e);
+      if (seq === this.seq && request === this.activitySeq) this.handle(e);
     } finally {
-      this.loading.set(false);
+      if (seq === this.seq && request === this.activitySeq) this.busy('activity', false);
     }
   }
   async exercisePage(page: number) {
-    this.loading.set(true);
+    this.busy('exercise', true);
     this.error.set('');
-    const seq = this.seq;
+    const seq = this.seq,
+      request = ++this.exerciseSeq;
     try {
       const value = await firstValueFrom(
         this.api.exerciseStats(this.studentId(), { ...this.applied, pagina: page, tamanio: 20 }),
       );
-      if (seq === this.seq) {
+      if (seq === this.seq && request === this.exerciseSeq) {
         this.exercises.set(value);
         this.selected.set(null);
         this.evolution.set(null);
         ++this.evoSeq;
+        this.busy('evolution', false);
       }
     } catch (e) {
-      this.handle(e);
+      if (seq === this.seq && request === this.exerciseSeq) this.handle(e);
     } finally {
-      this.loading.set(false);
+      if (seq === this.seq && request === this.exerciseSeq) this.busy('exercise', false);
     }
   }
   async chooseExercise(id: number, page = 0) {
     this.selected.set(id);
     this.evolution.set(null);
-    this.loading.set(true);
+    this.busy('evolution', true);
     this.error.set('');
     const seq = ++this.evoSeq;
     try {
@@ -127,7 +155,7 @@ export class Progress {
     } catch (e) {
       if (seq === this.evoSeq) this.handle(e);
     } finally {
-      if (seq === this.evoSeq) this.loading.set(false);
+      if (seq === this.evoSeq) this.busy('evolution', false);
     }
   }
   private handle(e: unknown) {
@@ -139,6 +167,8 @@ export class Progress {
       this.activity.set(null);
       this.exercises.set(null);
       this.evolution.set(null);
+      this.pending.set(new Set());
+      this.selected.set(null);
       this.denied.emit();
     }
   }
@@ -146,6 +176,7 @@ export class Progress {
     return (this.activity()?.contenido ?? []).map((p) => ({
       label: p.fecha ?? 'Sin fecha',
       value: p.datos?.entrenamientosConDatosValidos,
+      note: `Sesiones abiertas: ${text(p.datos?.sesionesAbiertas)} · Finalizadas sin datos válidos: ${text(p.datos?.sesionesFinalizadasSinDatosValidos)}`,
     }));
   }
   frequencyPoints(): ChartPoint[] {
@@ -161,8 +192,17 @@ export class Progress {
     metric: 'pesoMaximo' | 'repeticionesTotales' | 'volumenRegistrado',
   ): ChartPoint[] {
     return (this.evolution()?.contenido ?? []).map((p) => ({
-      label: `${p.fechaEfectiva} · sesión #${p.sesionId} · ${p.nombreHistorico}`,
+      label: `${p.fechaEfectiva} · sesión #${p.sesionId} · alumno #${p.alumnoId} · ${p.nombreHistorico}`,
       value: p.datos?.[metric],
+      link: p.sesionId ? `${this.sessionBase()}/${p.sesionId}` : undefined,
+      note: [
+        p.fechaOriginal && p.fechaOriginal !== p.fechaEfectiva
+          ? `Fecha original: ${p.fechaOriginal}`
+          : '',
+        metric === 'volumenRegistrado' ? volumeCoverage(p.datos) : '',
+      ]
+        .filter(Boolean)
+        .join(' · '),
     }));
   }
 }

@@ -22,6 +22,7 @@ import { ROLE_CONFIG } from './role-config';
 export class Shell {
   readonly auth = inject(AuthService);
   readonly adminNavigation = [
+    { path: 'estadisticas', label: 'Estadísticas' },
     { path: 'usuarios', label: 'Usuarios' },
     { path: 'alumnos', label: 'Alumnos' },
     { path: 'profesores', label: 'Profesores' },

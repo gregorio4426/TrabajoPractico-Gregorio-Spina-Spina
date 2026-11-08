@@ -2,6 +2,9 @@
   <h2>Progreso registrado</h2>
   @if (showDates()) {
     <form class="admin-filters" [formGroup]="form" (ngSubmit)="load()">
+      <p class="admin-help">
+        Período de 1 a 366 días inclusivos. Sin fechas: últimos 30 días hasta hoy UTC.
+      </p>
       <label>Desde<input type="date" formControlName="desde" /></label
       ><label>Hasta<input type="date" formControlName="hasta" /></label
       ><button class="primary" [disabled]="loading()">Consultar progreso</button>
@@ -31,7 +34,7 @@
         <dt>Volumen registrado</dt>
         <dd>
           {{ text(s.datos?.volumenRegistrado) }}
-          {{ s.datos?.volumenCompleto ? '(completo)' : '(parcial o sin pesos)' }}
+          {{ volumeCoverage(s.datos) }}
         </dd>
       </div>
       <div>
@@ -60,6 +63,10 @@
         [points]="frequencyPoints()"
       />
     </div>
+    <p class="admin-help">
+      Las sesiones finalizadas parciales con series válidas también cuentan como entrenamientos.
+      Series anuladas o exentas quedan excluidas; los datos históricos ausentes no se reconstruyen.
+    </p>
     <p class="admin-help">
       La frecuencia no es asistencia ni cumplimiento. El volumen se expresa en unidad de peso
       registrada × repeticiones; no se asume kg ni se comparan máquinas equivalentes.

@@ -192,3 +192,30 @@
   font-size: 0.7rem;
   padding: 12px;
 }
+
+.teacher-chart-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+.teacher-chart-scroll svg {
+  min-width: 560px;
+}
+.teacher-chart-scroll:focus-visible {
+  outline: 2px solid #197d72;
+  outline-offset: 3px;
+}
+.teacher-chart .chart-coverage {
+  font-size: 0.8rem;
+  margin: 8px 0 0;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.teacher-chart summary {
+  min-height: 44px;
+  font-size: 0.85rem;
+}
+.teacher-chart .admin-help {
+  font-size: 0.75rem;
+  line-height: 1.6;
+}

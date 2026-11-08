@@ -47,6 +47,9 @@
       }
     }
     @if (type === 'alumnos') {
+      <a class="secondary" [routerLink]="['/admin/alumnos', id(), 'estadisticas']"
+        >Estadísticas del alumno</a
+      >
       <a class="secondary" [routerLink]="['/admin/alumnos', id(), 'profesores']"
         >Profesores vinculados</a
       ><a class="secondary" [routerLink]="['/admin/alumnos', id(), 'historial']"

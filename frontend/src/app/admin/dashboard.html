@@ -86,6 +86,12 @@
         <dd>{{ text(d.frecuencia?.entrenamientosPorSemana) }}</dd>
       </div>
     </dl>
+    <a
+      class="primary"
+      routerLink="/admin/estadisticas"
+      [queryParams]="{ desde: d.periodo?.desde, hasta: d.periodo?.hasta }"
+      >Ver gráficos e historial del período</a
+    >
     <p class="stage-note">
       El volumen usa la unidad de peso registrada × repeticiones. Finalizar una sesión no implica
       cumplir el día. La frecuencia no representa asistencia.

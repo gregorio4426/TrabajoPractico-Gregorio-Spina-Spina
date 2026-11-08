@@ -4,6 +4,16 @@ const browser = () => import('./browser').then((m) => m.Browser);
 const detail = () => import('./detail').then((m) => m.Detail);
 export const adminRoutes: Routes = [
   {
+    path: 'estadisticas',
+    loadComponent: () => import('./progress').then((m) => m.AdminProgress),
+    title: 'Estadísticas · ADMIN',
+  },
+  {
+    path: 'alumnos/:id/estadisticas',
+    loadComponent: () => import('./progress').then((m) => m.AdminProgress),
+    title: 'Progreso del alumno · ADMIN',
+  },
+  {
     path: '',
     loadComponent: () => import('./dashboard').then((m) => m.Dashboard),
     title: 'Dashboard ADMIN · Impulso',

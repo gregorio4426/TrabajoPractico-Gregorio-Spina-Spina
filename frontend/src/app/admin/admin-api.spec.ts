@@ -30,6 +30,22 @@ describe('ADMIN HTTP contracts', () => {
     localStorage.clear();
     vi.restoreAllMocks();
   });
+  it('uses real ADMIN aggregate and per-student statistics endpoints', () => {
+    api.summary(null, { desde: '2026-11-01', hasta: '2026-11-07' }).subscribe();
+    const summary = http.expectOne((r) => r.url === '/api/admin/estadisticas');
+    expect(summary.request.params.get('desde')).toBe('2026-11-01');
+    summary.flush({});
+    api.activity(9, { pagina: 2, tamanio: 30 }).subscribe();
+    const activity = http.expectOne((r) => r.url === '/api/admin/alumnos/9/estadisticas/actividad');
+    expect(activity.request.params.get('pagina')).toBe('2');
+    activity.flush({ contenido: [] });
+    api.exerciseStats(null).subscribe();
+    http.expectOne('/api/admin/estadisticas/ejercicios').flush({ contenido: [] });
+    api.evolution(9, 17, { hasta: '2026-11-07' }).subscribe();
+    http
+      .expectOne((r) => r.url === '/api/admin/alumnos/9/estadisticas/ejercicios/17/evolucion')
+      .flush({ contenido: [] });
+  });
   it('sends exact backend pagination and filters, preserving false and literal search', () => {
     api
       .list('usuarios', {

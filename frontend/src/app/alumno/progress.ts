@@ -10,7 +10,11 @@ import { alumnoError } from './utils';
     { provide: PROGRESS_SOURCE, useExisting: AlumnoApi },
     { provide: PROGRESS_ERROR, useValue: alumnoError },
   ],
-  template: `<app-teacher-progress [period]="period()" [showDates]="showDates()" />`,
+  template: `<app-teacher-progress
+    sessionBase="/alumno/sesiones"
+    [period]="period()"
+    [showDates]="showDates()"
+  />`,
 })
 export class StudentProgress {
   readonly period = input<{ desde: string; hasta: string } | null>(null);

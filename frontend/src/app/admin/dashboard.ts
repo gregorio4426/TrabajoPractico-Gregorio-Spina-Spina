@@ -1,3 +1,4 @@
+import { statisticsPeriodError } from '../shared/statistics-period';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -23,13 +24,15 @@ export class Dashboard {
   }
   async load() {
     const dates = this.filters.getRawValue();
-    if (dates.desde && dates.hasta && dates.desde > dates.hasta) {
-      this.error.set('La fecha desde debe ser anterior o igual a hasta.');
+    const periodError = statisticsPeriodError(dates.desde, dates.hasta);
+    if (periodError) {
+      this.error.set(periodError);
       return;
     }
     const version = ++this.request;
     this.loading.set(true);
     this.error.set('');
+    this.data.set(null);
     try {
       const result = await firstValueFrom(this.api.dashboard(dates));
       if (version === this.request) this.data.set(result);

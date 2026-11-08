@@ -1,10 +1,11 @@
+import { statisticsPeriodError } from '../shared/statistics-period';
 import { Component, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
 import { ProfesorApi } from './profesor-api';
 import { DashboardProfesor } from '../admin/contracts';
-import { profesorError, text, validDates } from './utils';
+import { profesorError, text } from './utils';
 import { Progress } from './progress';
 @Component({
   selector: 'app-teacher-dashboard',
@@ -68,8 +69,9 @@ export class TeacherDashboard {
   }
   async load() {
     const query = this.form.getRawValue();
-    if (!validDates(query.desde, query.hasta)) {
-      this.error.set('La fecha desde debe ser anterior o igual a hasta.');
+    const periodError = statisticsPeriodError(query.desde, query.hasta);
+    if (periodError) {
+      this.error.set(periodError);
       return;
     }
     const seq = ++this.seq;
