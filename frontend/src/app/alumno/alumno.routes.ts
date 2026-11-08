@@ -38,7 +38,7 @@ export const alumnoRoutes: Routes = [
   },
   {
     path: 'progreso',
-    loadComponent: () => import('./progress').then((m) => m.StudentProgress),
+    loadComponent: () => import('./progress').then((m) => m.StudentProgressPage),
     title: 'Mi progreso · Impulso',
   },
 ];

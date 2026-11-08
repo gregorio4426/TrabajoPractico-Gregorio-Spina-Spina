@@ -22,6 +22,9 @@ export function chartNumber(value: ChartPoint['value']): number | null {
   imports: [RouterLink],
   template: `<section class="teacher-chart">
     <h3>{{ title() }}</h3>
+    <p class="chart-scroll-help">
+      Desplazá horizontalmente el gráfico o la tabla si no entran en pantalla.
+    </p>
     @if (points().length) {
       <div
         class="teacher-chart-scroll"

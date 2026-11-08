@@ -57,7 +57,7 @@ export const profesorRoutes: Routes = [
   },
   {
     path: 'progreso',
-    loadComponent: () => import('./progress').then((m) => m.Progress),
+    loadComponent: () => import('./progress-page').then((m) => m.TeacherProgressPage),
     title: 'Progreso · Profesor',
   },
 ];

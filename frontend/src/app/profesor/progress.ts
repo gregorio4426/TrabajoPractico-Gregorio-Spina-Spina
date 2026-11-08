@@ -59,6 +59,15 @@ export class Progress {
       const id = this.studentId(),
         period = this.period();
       untracked(() => {
+        // A scope change must clear earlier protected results even when the next filter is invalid.
+        ++this.seq;
+        ++this.evoSeq;
+        this.pending.set(new Set());
+        this.summary.set(null);
+        this.activity.set(null);
+        this.exercises.set(null);
+        this.evolution.set(null);
+        this.selected.set(null);
         if (period) this.form.setValue(period);
         void this.load(id);
       });

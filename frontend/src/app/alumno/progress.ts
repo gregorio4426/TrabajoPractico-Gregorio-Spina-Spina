@@ -20,3 +20,11 @@ export class StudentProgress {
   readonly period = input<{ desde: string; hasta: string } | null>(null);
   readonly showDates = input(true);
 }
+
+/** Keep router query binding separate from the reusable component's internal inputs. */
+@Component({
+  selector: 'app-student-progress-page',
+  imports: [StudentProgress],
+  template: '<app-student-progress />',
+})
+export class StudentProgressPage {}

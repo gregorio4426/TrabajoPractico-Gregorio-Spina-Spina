@@ -76,9 +76,7 @@
         <dt>Volumen registrado</dt>
         <dd>
           {{ text(d.entrenamientos?.volumenRegistrado) }}
-          <small>{{
-            d.entrenamientos?.volumenCompleto ? '(completo)' : '(parcial o sin pesos)'
-          }}</small>
+          <small>{{ volumeCoverage(d.entrenamientos) }}</small>
         </dd>
       </div>
       <div>

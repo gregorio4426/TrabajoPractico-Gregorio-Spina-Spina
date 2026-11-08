@@ -219,3 +219,23 @@
   font-size: 0.75rem;
   line-height: 1.6;
 }
+app-progress-chart {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+}
+.teacher-chart .admin-table {
+  min-width: 480px;
+  table-layout: fixed;
+}
+.teacher-chart .admin-table th {
+  white-space: normal;
+}
+.teacher-chart .admin-table th:first-child {
+  width: 62%;
+}
+.chart-scroll-help {
+  font-size: 0.75rem;
+  line-height: 1.6;
+  color: var(--muted);
+}

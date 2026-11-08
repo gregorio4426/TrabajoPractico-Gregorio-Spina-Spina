@@ -1,3 +1,4 @@
+import { volumeCoverage } from '../shared/statistics-values';
 import { statisticsPeriodError } from '../shared/statistics-period';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +19,7 @@ export class Dashboard {
   readonly error = signal('');
   readonly filters = inject(FormBuilder).nonNullable.group({ desde: '', hasta: '' });
   readonly text = text;
+  readonly volumeCoverage = volumeCoverage;
   private request = 0;
   constructor() {
     void this.load();

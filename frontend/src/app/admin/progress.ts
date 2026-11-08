@@ -24,10 +24,7 @@ import { adminError } from './admin-utils';
     @if (invalid()) {
       <p class="error-message" role="alert">El ID del alumno no es válido.</p>
     } @else {
-      <a
-        class="admin-link"
-        routerLink="/admin/sesiones"
-        [queryParams]="{ alumnoId: studentId(), desde: period().desde, hasta: period().hasta }"
+      <a class="admin-link" routerLink="/admin/sesiones" [queryParams]="{ alumnoId: studentId() }"
         >Consultar historial de sesiones</a
       >
       <app-teacher-progress
