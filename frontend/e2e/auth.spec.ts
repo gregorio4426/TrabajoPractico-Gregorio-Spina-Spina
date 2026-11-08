@@ -11,6 +11,10 @@ function session(rol: string, seconds = 3600) {
   };
 }
 test.beforeEach(async ({ page }) => {
+  await page.route('**/api/alumnos/me/dashboard*',route=>route.fulfill({json:{periodo:{},entrenamientos:{},frecuencia:{},rutinaActiva:null}}));
+  await page.route(/\/api\/alumnos\/me\/estadisticas(?:\/|\?|$)/,route=>route.fulfill({json:route.request().url().includes('/actividad')||route.request().url().includes('/ejercicios')?{contenido:[],pagina:0,totalPaginas:0,totalElementos:0,tamanio:20}:{periodo:{},datos:{},frecuencia:{}}}));
+  await page.route('**/api/sesiones/me/historial',route=>route.fulfill({json:[]}));
+
   await page.route('**/api/profesores/me/dashboard*', (route) =>
     route.fulfill({ json: { periodo: {}, entrenamientos: {}, frecuencia: {} } }),
   );
@@ -54,7 +58,7 @@ for (const role of ['ADMIN', 'PROFESOR', 'ALUMNO']) {
             ? 'El pulso de tu equipo.'
             : role === 'PROFESOR'
               ? 'Acompañá cada avance.'
-              : 'Tu cuenta, en su lugar.',
+              : 'Tu próximo paso empieza acá.',
       }),
     ).toBeVisible();
     await page.goto(role === 'ADMIN' ? '/profesor' : '/admin');
@@ -133,7 +137,7 @@ test('login and all workspaces have no horizontal overflow at 360px', async ({ p
             ? 'El pulso de tu equipo.'
             : role === 'PROFESOR'
               ? 'Acompañá cada avance.'
-              : 'Tu cuenta, en su lugar.',
+              : 'Tu próximo paso empieza acá.',
       }),
     ).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
