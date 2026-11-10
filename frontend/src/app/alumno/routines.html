@@ -1,0 +1,108 @@
+<section class="page-intro admin-kicker">
+  <div>
+    <span class="eyebrow muted">TU PLAN DE ENTRENAMIENTO</span>
+    <h1>{{ historyMode ? 'Historial de rutinas' : 'Mi rutina activa' }}</h1>
+  </div>
+  <button class="secondary" (click)="load()" [disabled]="loading() || pending()">
+    Recargar rutina
+  </button>
+</section>
+<nav class="admin-nav" aria-label="Consulta de rutinas">
+  <a routerLink="/alumno/rutina">Rutina activa</a
+  ><a routerLink="/alumno/rutinas">Historial de asignaciones</a
+  ><a routerLink="/alumno/sesiones">Mis sesiones abiertas e historial</a>
+</nav>
+@if (loading()) {
+  <p class="notice" role="status">Consultando tus rutinas y sesiones…</p>
+}
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+@if (!loading() && !error()) {
+  @if (!historyMode) {
+    @if (active(); as r) {
+      <section class="admin-panel">
+        <h2>{{ r.nombre }}</h2>
+        <p class="admin-help">
+          {{ r.descripcion }} · Versión {{ r.numeroVersion }} · Asignación #{{ r.asignacionId }}.
+          Las series y pesos sugeridos no son resultados realizados.
+        </p>
+        <form class="admin-filters" [formGroup]="form">
+          <label
+            >Fecha del entrenamiento<input type="date" formControlName="fecha" [max]="today"
+          /></label>
+        </form>
+        @for (d of r.dias ?? []; track d.id) {
+          <section class="student-day-card">
+            <h3>{{ d.nombre }}</h3>
+            @for (e of d.ejercicios ?? []; track e.id) {
+              <div class="student-prescription">
+                <strong>{{ e.ejercicioNombre }}</strong>
+                <p>
+                  {{ e.seriesSugeridas }} series · {{ e.repsSugeridas }} repeticiones · Peso
+                  sugerido: {{ text(e.pesoSugerido) }} (unidad registrada)
+                </p>
+              </div>
+            }
+            <div class="admin-actions">
+              @for (s of openForDay(d.id); track s.id) {
+                <a class="primary" [routerLink]="['/alumno/sesiones', s.id]"
+                  >Continuar sesión #{{ s.id }}</a
+                >
+              }
+              <button class="secondary" (click)="ask(d)" [disabled]="pending()">
+                Iniciar {{ openForDay(d.id).length ? 'otra sesión de ' : '' }}{{ d.nombre }}
+              </button>
+            </div>
+          </section>
+        }
+      </section>
+    } @else {
+      <p class="admin-empty">
+        No tenés una rutina activa. Podés consultar tu historial o gestionar tus profesores.
+      </p>
+      <a class="primary" routerLink="/alumno/profesores">Mis profesores</a>
+    }
+  } @else {
+    <p class="admin-help">
+      Todas tus asignaciones: activas y anteriores. Consultar una versión antigua no la convierte en
+      tu rutina activa.
+    </p>
+    <div class="teacher-history-list">
+      @for (r of history(); track r.asignacionId) {
+        <div>
+          <strong>{{ r.nombre }} · versión {{ r.numeroVersion }}</strong>
+          <p>
+            Asignación #{{ r.asignacionId }} · {{ r.fechaInicio }} →
+            {{ r.fechaFin ?? 'Sin cierre' }} · {{ r.activa ? 'Activa' : 'Anterior' }}
+          </p>
+          <button class="secondary" (click)="selected.set(r)">
+            Ver asignación #{{ r.asignacionId }}
+          </button>
+        </div>
+      } @empty {
+        <p class="admin-empty">No hay asignaciones registradas.</p>
+      }
+    </div>
+    @if (selected(); as r) {
+      <section class="admin-panel">
+        <h2>{{ r.nombre }} · versión histórica {{ r.numeroVersion }}</h2>
+        <app-student-prescription [routine]="r" />
+      </section>
+    }
+  }
+}
+<app-teacher-confirm
+  #confirmation
+  title="¿Iniciar este entrenamiento?"
+  [message]="
+    'Rutina ' +
+    active()?.nombre +
+    ', ' +
+    day()?.nombre +
+    ', fecha ' +
+    form.controls.fecha.value +
+    '. Se creará una sesión nueva. Si ya hay una abierta, podés cancelarlo y continuarla desde el historial.'
+  "
+  (confirmed)="start()"
+/>

@@ -1,0 +1,132 @@
+<p><a class="admin-link" routerLink="/profesor/rutinas">← Volver a rutinas</a></p>
+<section class="page-intro">
+  <h1>{{ editing ? 'Editar última versión' : 'Crear rutina propia' }}</h1>
+  <p>
+    {{
+      editing
+        ? 'Al guardar cambios se crea una nueva versión. Las asignaciones y sesiones previas conservan la versión que usaron.'
+        : 'Definí días, ejercicios y prescripción usando el catálogo real.'
+    }}
+  </p>
+</section>
+@if (loading()) {
+  <p class="notice" role="status">Cargando rutina y catálogo…</p>
+}
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+@if (!ready() && !loading()) {
+  <button class="secondary" (click)="load()">Reintentar carga</button>
+}
+@if (ready() && !exercises().length) {
+  <p class="notice">
+    No hay ejercicios en el catálogo.
+    <a class="admin-link" routerLink="/profesor/ejercicios"
+      >Crear un ejercicio antes de armar la rutina</a
+    >.
+  </p>
+}
+@if (ready()) {
+  <form [formGroup]="form" (ngSubmit)="confirm()">
+    <fieldset [disabled]="pending()" class="teacher-fieldset">
+      <section class="admin-panel admin-form">
+        <label>Nombre de rutina *<input formControlName="nombre" maxlength="255" /></label
+        ><label
+          >Descripción de rutina *<textarea
+            formControlName="descripcion"
+            maxlength="255"
+            rows="3"
+          ></textarea>
+        </label>
+      </section>
+      <div formArrayName="dias">
+        @for (day of days.controls; track day; let di = $index) {
+          <section class="teacher-day" [formGroupName]="di">
+            <div class="admin-kicker">
+              <h2>Día {{ di + 1 }}</h2>
+              <button type="button" class="secondary" (click)="removeDay(di)">
+                Quitar día {{ di + 1 }}
+              </button>
+            </div>
+            <div class="admin-form">
+              <label
+                >Nombre del día {{ di + 1 }} *<input
+                  formControlName="nombre"
+                  maxlength="255" /></label
+              ><label
+                >Orden del día {{ di + 1 }} *<input
+                  type="number"
+                  min="1"
+                  step="1"
+                  formControlName="numeroOrden"
+              /></label>
+            </div>
+            <div formArrayName="ejercicios">
+              @for (exercise of day.controls.ejercicios.controls; track exercise; let ei = $index) {
+                <div class="teacher-exercise-row" [formGroupName]="ei">
+                  <label
+                    >Ejercicio día {{ di + 1 }}, fila {{ ei + 1 }} *<select
+                      formControlName="ejercicioId"
+                    >
+                      <option [ngValue]="null">Seleccionar ejercicio</option>
+                      @for (item of exercises(); track item.id) {
+                        <option [ngValue]="item.id">
+                          #{{ item.id }} · {{ item.nombre }} · {{ item.grupoMuscular }}
+                        </option>
+                      }
+                    </select></label
+                  ><label
+                    >Series día {{ di + 1 }}, fila {{ ei + 1 }} *<input
+                      type="number"
+                      min="1"
+                      step="1"
+                      formControlName="seriesSugeridas" /></label
+                  ><label
+                    >Repeticiones día {{ di + 1 }}, fila {{ ei + 1 }} *<input
+                      type="number"
+                      min="1"
+                      step="1"
+                      formControlName="repsSugeridas" /></label
+                  ><label
+                    >Peso sugerido día {{ di + 1 }}, fila {{ ei + 1
+                    }}<input
+                      type="number"
+                      min="0"
+                      step="any"
+                      formControlName="pesoSugerido" /></label
+                  ><button type="button" class="secondary" (click)="removeExercise(di, ei)">
+                    Quitar ejercicio {{ ei + 1 }} del día {{ di + 1 }}
+                  </button>
+                </div>
+              }
+            </div>
+            <button type="button" class="secondary" (click)="addExercise(di)">
+              Agregar ejercicio al día {{ di + 1 }}
+            </button>
+          </section>
+        }
+      </div>
+      @if (days.hasError('duplicateOrder')) {
+        <p class="teacher-form-error">Los números de orden de los días no se pueden repetir.</p>
+      }
+      <div class="admin-actions">
+        <button type="button" class="secondary" (click)="addDay()">Agregar día</button
+        ><button class="primary" type="submit">
+          {{ pending() ? 'Guardando…' : editing ? 'Guardar nueva versión' : 'Crear rutina' }}
+        </button>
+      </div>
+    </fieldset>
+  </form>
+}
+<app-teacher-confirm
+  #confirmation
+  [title]="editing ? '¿Guardar una nueva versión?' : '¿Crear esta rutina?'"
+  [message]="
+    'Rutina: ' +
+    form.controls.nombre.value +
+    '. Se guardarán ' +
+    days.length +
+    ' días con la prescripción indicada. Los pesos son sugeridos, no resultados realizados.'
+  "
+  (confirmed)="save()"
+/>

@@ -1,5 +1,8 @@
 # 🏋️ Simulacro — API REST Gestión de Gimnasio
 
+El frontend Angular 22 está en [`frontend/`](frontend/README.md). Ver allí la guía completa de ejecución local, pruebas y producción del sistema y el [informe de revisión final](frontend/ETAPA-6-FINAL.md).
+
+
 REST API para la gestión integral de un gimnasio, desarrollada con **Java 21** y **Spring Boot 3**.
 Permite administrar alumnos, profesores, ejercicios, rutinas y sesiones de entrenamiento, con autenticación **JWT** y autorización por roles.
 

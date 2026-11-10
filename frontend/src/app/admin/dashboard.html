@@ -1,0 +1,124 @@
+<section class="page-intro">
+  <span class="eyebrow muted">CONTROL DEL GIMNASIO</span>
+  <h1>El pulso de tu equipo<span class="accent">.</span></h1>
+  <p>Personas, organización y entrenamiento. Datos del gimnasio, en un solo lugar.</p>
+</section>
+<form class="admin-filters" [formGroup]="filters" (ngSubmit)="load()">
+  <label>Desde<input type="date" formControlName="desde" /></label
+  ><label>Hasta<input type="date" formControlName="hasta" /></label
+  ><button class="primary" [disabled]="loading()">Actualizar período</button>
+</form>
+@if (error()) {
+  <div class="error-message" role="alert">
+    {{ error() }} <button class="secondary" (click)="load()">Reintentar</button>
+  </div>
+}
+@if (loading()) {
+  <p class="notice" role="status">Cargando estadísticas reales…</p>
+}
+@if (data(); as d) {
+  <section class="admin-metrics" aria-label="Estado actual del gimnasio">
+    <a routerLink="/admin/usuarios"
+      ><span>Cuentas activas</span><strong>{{ text(d.estadoActual?.cuentasActivas) }}</strong
+      ><small>{{ text(d.estadoActual?.cuentasInactivas) }} inactivas</small></a
+    >
+    <a routerLink="/admin/alumnos"
+      ><span>Cuentas de alumnos</span><strong>{{ text(d.estadoActual?.alumnosVigentes) }}</strong
+      ><small>Incluye cuentas inactivas</small></a
+    >
+    <a routerLink="/admin/profesores"
+      ><span>Cuentas de profesores</span
+      ><strong>{{ text(d.estadoActual?.profesoresVigentes) }}</strong
+      ><small>{{ text(d.estadoActual?.vinculaciones) }} vínculos actuales</small></a
+    >
+    <a routerLink="/admin/rutinas"
+      ><span>Familias de rutinas</span><strong>{{ text(d.estadoActual?.rutinas) }}</strong
+      ><small>{{ text(d.estadoActual?.rutinasArchivadas) }} archivadas</small></a
+    >
+  </section>
+  <section class="admin-panel">
+    <div class="section-heading">
+      <h2>Entrenamiento del período</h2>
+      <span class="session-badge">{{ d.periodo?.desde }} → {{ d.periodo?.hasta }}</span>
+    </div>
+    <p class="muted">
+      Fechas de referencia UTC. Las cuentas y vínculos de arriba son recuentos actuales.
+    </p>
+    <dl class="admin-facts">
+      <div>
+        <dt>Sesiones registradas</dt>
+        <dd>{{ text(d.entrenamientos?.sesionesRegistradas) }}</dd>
+      </div>
+      <div>
+        <dt>Sesiones abiertas</dt>
+        <dd>{{ text(d.entrenamientos?.sesionesAbiertas) }}</dd>
+      </div>
+      <div>
+        <dt>Sesiones finalizadas</dt>
+        <dd>{{ text(d.entrenamientos?.sesionesFinalizadas) }}</dd>
+      </div>
+      <div>
+        <dt>Entrenamientos con datos válidos</dt>
+        <dd>{{ text(d.entrenamientos?.entrenamientosConDatosValidos) }}</dd>
+      </div>
+      <div>
+        <dt>Series válidas / excluidas</dt>
+        <dd>
+          {{ text(d.entrenamientos?.seriesValidas) }} /
+          {{ text(d.entrenamientos?.seriesExcluidas) }}
+        </dd>
+      </div>
+      <div>
+        <dt>Repeticiones registradas</dt>
+        <dd>{{ text(d.entrenamientos?.repeticionesTotales) }}</dd>
+      </div>
+      <div>
+        <dt>Volumen registrado</dt>
+        <dd>
+          {{ text(d.entrenamientos?.volumenRegistrado) }}
+          <small>{{ volumeCoverage(d.entrenamientos) }}</small>
+        </dd>
+      </div>
+      <div>
+        <dt>Frecuencia observada semanal</dt>
+        <dd>{{ text(d.frecuencia?.entrenamientosPorSemana) }}</dd>
+      </div>
+    </dl>
+    <a
+      class="primary"
+      routerLink="/admin/estadisticas"
+      [queryParams]="{ desde: d.periodo?.desde, hasta: d.periodo?.hasta }"
+      >Ver gráficos e historial del período</a
+    >
+    <p class="stage-note">
+      El volumen usa la unidad de peso registrada × repeticiones. Finalizar una sesión no implica
+      cumplir el día. La frecuencia no representa asistencia.
+    </p>
+    @if (d.entrenamientos?.sesionesRegistradas === 0) {
+      <p class="notice">No hay sesiones en este período. Probá otro rango de fechas.</p>
+    }
+  </section>
+  <section class="admin-panel">
+    <h2>Organización actual</h2>
+    <dl class="admin-facts">
+      <div>
+        <dt>Administradores activos</dt>
+        <dd>{{ text(d.estadoActual?.administradoresActivos) }}</dd>
+      </div>
+      <div>
+        <dt>Perfiles sin cuenta</dt>
+        <dd>{{ text(d.estadoActual?.perfilesSinCuenta) }}</dd>
+      </div>
+      <div>
+        <dt>Versiones de rutinas</dt>
+        <dd>{{ text(d.estadoActual?.versionesRutina) }}</dd>
+      </div>
+      <div>
+        <dt>Asignaciones activas / totales</dt>
+        <dd>
+          {{ text(d.estadoActual?.asignacionesActivas) }} / {{ text(d.estadoActual?.asignaciones) }}
+        </dd>
+      </div>
+    </dl>
+  </section>
+}

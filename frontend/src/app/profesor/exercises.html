@@ -1,0 +1,130 @@
+<div class="page-intro admin-kicker">
+  <div>
+    <span class="eyebrow muted">CATÁLOGO COMPARTIDO</span>
+    <h1>Ejercicios<span class="accent">.</span></h1>
+  </div>
+  <button class="primary" (click)="open(null)" [disabled]="pending()">Crear ejercicio</button>
+</div>
+<p class="admin-help">
+  Los profesores pueden administrar el catálogo común. No se elimina un ejercicio referenciado por
+  rutinas o historial; los resultados históricos conservan sus nombres y prescripciones.
+</p>
+<form class="admin-filters" [formGroup]="filters" (ngSubmit)="load()">
+  <label>Nombre del ejercicio<input type="search" formControlName="nombre" /></label
+  ><label
+    >Grupo muscular<select formControlName="grupoMuscular">
+      <option value="">Todos</option>
+      @for (group of groups; track group) {
+        <option [value]="group">{{ text(group) }}</option>
+      }
+    </select></label
+  ><button class="secondary" [disabled]="loading()">Buscar ejercicios</button>
+</form>
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+@if (success()) {
+  <p class="notice" role="status">{{ success() }}</p>
+}
+@if (loading()) {
+  <p class="notice" role="status">Cargando catálogo de ejercicios…</p>
+}
+@if (editing()) {
+  <section class="admin-panel">
+    <h2>{{ selected() ? 'Editar ejercicio #' + selected()?.id : 'Nuevo ejercicio' }}</h2>
+    <form [formGroup]="form" (ngSubmit)="ask('save')">
+      <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
+        <label>Nombre del catálogo *<input formControlName="nombre" maxlength="60" /></label
+        ><label
+          >Descripción del catálogo *<textarea
+            formControlName="descripcion"
+            maxlength="255"
+          ></textarea></label
+        ><label
+          >Grupo muscular del catálogo *<select formControlName="grupoMuscular">
+            <option value="">Seleccionar</option>
+            @for (group of groups; track group) {
+              <option [value]="group">{{ text(group) }}</option>
+            }
+          </select></label
+        >
+        <div class="wide admin-actions">
+          <button class="primary">Guardar ejercicio</button
+          ><button class="secondary" type="button" (click)="editing.set(false)">
+            Cancelar edición
+          </button>
+        </div>
+      </fieldset>
+    </form>
+  </section>
+}
+@if (!loading() && (data().length || !error())) {
+  <p class="admin-help">
+    {{ visible().length }} ejercicios. Cuando se combinan filtros, el grupo se consulta al servidor
+    y el nombre se filtra en la lista recibida. Paginación local.
+  </p>
+  <div
+    class="admin-table-wrap"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla de resultados, desplazamiento horizontal"
+  >
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Ejercicio</th>
+          <th>Grupo muscular</th>
+          <th>Descripción</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (e of rows(); track e.id) {
+          <tr>
+            <td>#{{ e.id }} · {{ e.nombre }}</td>
+            <td>{{ text(e.grupoMuscular) }}</td>
+            <td>{{ e.descripcion }}</td>
+            <td>
+              <button class="secondary" (click)="open(e)" [disabled]="pending()">
+                Editar ejercicio #{{ e.id }}
+              </button>
+              <button class="secondary" (click)="ask('delete', e)" [disabled]="pending()">
+                Eliminar ejercicio #{{ e.id }}
+              </button>
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="4">No hay ejercicios con estos filtros.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+  <nav class="admin-pagination" aria-label="Páginas del catálogo de ejercicios">
+    <span>Página {{ pages() ? page() + 1 : 0 }} de {{ pages() }}</span>
+    <div>
+      <button class="secondary" (click)="page.set(page() - 1)" [disabled]="page() === 0">
+        Anterior</button
+      ><button class="secondary" (click)="page.set(page() + 1)" [disabled]="page() + 1 >= pages()">
+        Siguiente
+      </button>
+    </div>
+  </nav>
+}
+<app-teacher-confirm
+  #confirmation
+  [title]="action() === 'delete' ? '¿Eliminar este ejercicio?' : '¿Guardar el ejercicio?'"
+  [message]="
+    action() === 'delete'
+      ? 'Ejercicio #' +
+        selected()?.id +
+        ': ' +
+        selected()?.nombre +
+        '. Solo se podrá eliminar si no está referenciado.'
+      : 'Se actualizará el catálogo compartido con el ejercicio ' +
+        form.controls.nombre.value +
+        '. No se reescriben resultados históricos.'
+  "
+  (confirmed)="save()"
+/>
