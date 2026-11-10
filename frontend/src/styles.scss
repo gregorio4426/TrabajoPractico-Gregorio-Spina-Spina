@@ -14,3 +14,25 @@
 
 app-icon{display:inline-flex;width:1em;height:1em;vertical-align:middle;flex-shrink:0}app-icon svg{width:100%;height:100%;display:block}.hero-signoff{display:inline-flex;align-items:center;gap:8px}.hero-art{display:flex}.menu-toggle app-icon{vertical-align:baseline}.login-submit>span app-icon{width:18px;height:18px}
 .foundations{grid-template-columns:repeat(3,minmax(0,1fr))}.foundations h3{min-width:0;overflow-wrap:anywhere}@media(max-width:760px){.foundations>div>span:last-child{display:none}}
+
+/* Shared interaction rules preserve the role palettes and existing layouts. */
+select:focus-visible, textarea:focus-visible, summary:focus-visible,
+[tabindex='0']:focus-visible {
+  outline: 3px solid #527719;
+  outline-offset: 3px;
+}
+.admin-table-wrap { max-width: 100%; overscroll-behavior-x: contain; }
+.admin-filters input, .admin-filters select,
+.admin-form input, .admin-form select, .admin-form textarea,
+.secondary, .text-button, .teacher-tabs button { min-height: 44px; }
+.primary, .secondary, .admin-link { overflow-wrap: anywhere; }
+@media (max-width: 760px) {
+  .admin-form input, .admin-form select, .admin-form textarea,
+  .admin-filters input, .admin-filters select,
+  .teacher-exercise-row input, .teacher-exercise-row select { font-size: 1rem; }
+  .student-series-form input { font-size: 1.25rem; }
+  .student-sticky-actions { padding-bottom: max(15px, env(safe-area-inset-bottom)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}

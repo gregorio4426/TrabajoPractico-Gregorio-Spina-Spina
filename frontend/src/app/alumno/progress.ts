@@ -25,6 +25,7 @@ export class StudentProgress {
 @Component({
   selector: 'app-student-progress-page',
   imports: [StudentProgress],
-  template: '<app-student-progress />',
+  template:
+    '<section class="page-intro"><h1>Mi progreso.</h1><p>Consultá tus resultados y el historial de cada entrenamiento.</p></section><app-student-progress />',
 })
 export class StudentProgressPage {}

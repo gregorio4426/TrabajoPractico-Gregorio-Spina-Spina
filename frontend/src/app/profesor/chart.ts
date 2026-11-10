@@ -76,7 +76,12 @@ export function chartNumber(value: ChartPoint['value']): number | null {
       </div>
       <details>
         <summary>Ver valores exactos de {{ title().toLowerCase() }}</summary>
-        <div class="admin-table-wrap">
+        <div
+          class="admin-table-wrap"
+          tabindex="0"
+          role="region"
+          aria-label="Tabla de resultados, desplazamiento horizontal"
+        >
           <table class="admin-table">
             <thead>
               <tr>

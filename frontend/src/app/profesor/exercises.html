@@ -63,7 +63,12 @@
     {{ visible().length }} ejercicios. Cuando se combinan filtros, el grupo se consulta al servidor
     y el nombre se filtra en la lista recibida. Paginación local.
   </p>
-  <div class="admin-table-wrap">
+  <div
+    class="admin-table-wrap"
+    tabindex="0"
+    role="region"
+    aria-label="Tabla de resultados, desplazamiento horizontal"
+  >
     <table class="admin-table">
       <thead>
         <tr>

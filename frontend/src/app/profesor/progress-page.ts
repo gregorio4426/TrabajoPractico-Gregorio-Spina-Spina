@@ -4,6 +4,7 @@ import { Progress } from './progress';
 @Component({
   selector: 'app-teacher-progress-page',
   imports: [Progress],
-  template: '<app-teacher-progress />',
+  template:
+    '<section class="page-intro"><h1>Progreso de mis alumnos.</h1><p>Consultá el entrenamiento registrado de tus alumnos vinculados.</p></section><app-teacher-progress />',
 })
 export class TeacherProgressPage {}

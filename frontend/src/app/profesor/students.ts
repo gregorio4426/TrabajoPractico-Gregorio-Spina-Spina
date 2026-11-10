@@ -45,7 +45,12 @@ import { profesorError, text } from './utils';
         recibida del servidor.
       </p>
       @if (filtered().length) {
-        <div class="admin-table-wrap">
+        <div
+          class="admin-table-wrap"
+          tabindex="0"
+          role="region"
+          aria-label="Tabla de resultados, desplazamiento horizontal"
+        >
           <table class="admin-table">
             <thead>
               <tr>

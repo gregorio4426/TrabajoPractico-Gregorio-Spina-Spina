@@ -3,6 +3,8 @@ import {
   Component,
   DestroyRef,
   ElementRef,
+  Injector,
+  afterNextRender,
   afterRenderEffect,
   computed,
   inject,
@@ -21,6 +23,7 @@ import { ROLE_CONFIG } from './role-config';
 })
 export class Shell {
   readonly auth = inject(AuthService);
+  private readonly injector = inject(Injector);
   readonly adminNavigation = [
     { path: 'estadisticas', label: 'Estadísticas' },
     { path: 'usuarios', label: 'Usuarios' },
@@ -104,6 +107,11 @@ export class Shell {
       )
       .subscribe((event) => {
         this.menuOpen.set(false);
+        // Move keyboard/screen-reader orientation out of a menu that just became inert.
+        afterNextRender(
+          () => document.getElementById('main-content')?.focus({ preventScroll: true }),
+          { injector: this.injector },
+        );
         const parts = event.urlAfterRedirects.split('?')[0]?.split('/').filter(Boolean) ?? [];
         const section = (
           parts[0] === 'profesor'
