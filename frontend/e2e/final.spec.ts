@@ -198,6 +198,9 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
               `/admin/alumnos/${student.perfilId}/historial`,
               `/admin/alumnos/${student.perfilId}/sesiones`,
               `/admin/alumnos/${student.perfilId}/estadisticas`,
+              '/admin/profesores',
+              `/admin/alumnos/${student.perfilId}/profesores`,
+              `/admin/profesores/${teacher.perfilId}/alumnos`,
               '/admin/profesores/nuevo',
               `/admin/profesores/${teacher.perfilId}`,
               '/admin/rutinas',
@@ -290,6 +293,49 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
       }
       expect(problems).toEqual([]);
     });
+  test('PROFESOR asigna una nueva versión: ALUMNO y ADMIN ven el cambio sin alterar la sesión anterior', async ({
+    browser,
+    request,
+  }) => {
+    const tc = await browser.newContext(),
+      sc = await browser.newContext(),
+      ac = await browser.newContext();
+    const tp = await tc.newPage(),
+      sp = await sc.newPage(),
+      ap = await ac.newPage();
+    const issues = [watch(tp), watch(sp), watch(ap)];
+    const name = routine.nombre + ' v2';
+    try {
+      await enter(tp, teacher, `/profesor/rutinas/${routine.id}/editar`);
+      await tp.getByLabel('Nombre de rutina *', { exact: true }).fill(name);
+      await tp.getByLabel('Repeticiones día 1, fila 1 *', { exact: true }).fill('12');
+      await tp.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
+      await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
+      await expect(tp).toHaveURL(/guardada=2$/);
+      await tp
+        .getByRole('combobox', { name: 'Alumno vinculado', exact: true })
+        .selectOption(String(student.perfilId));
+      await tp.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
+      await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
+      await expect(tp.getByText(/Asignación #.*guardada: versión 2/)).toBeVisible();
+      await enter(sp, student, '/alumno/rutina');
+      await expect(sp.getByRole('heading', { name, exact: true })).toBeVisible();
+      await expect(sp.locator('main')).toContainText('Versión 2');
+      await sp.goto(`/alumno/sesiones/${open.id}`);
+      await expect(sp.locator('.student-session-status')).toContainText('Versión 1');
+      await expect(sp.locator('.student-prescription')).toContainText('10 repeticiones');
+      await enter(ap, admin, `/admin/alumnos/${student.perfilId}/historial`);
+      await expect(ap.locator('main')).toContainText(name);
+      const active = await api(request, 'get', '/api/rutinas/me/activa', student);
+      expect(active.numeroVersion).toBe(2);
+      expect(active.nombre).toBe(name);
+      const preserved = await api(request, 'get', `/api/sesiones/${open.id}`, student);
+      expect(preserved.numeroVersion).toBe(1);
+      expect(issues.flat()).toEqual([]);
+    } finally {
+      await Promise.all([tc.close(), sc.close(), ac.close()]);
+    }
+  });
   test('ADMIN → PROFESOR → ALUMNO: perfil, asignación y entrenamiento visibles entre interfaces', async ({
     browser,
     request,
@@ -399,6 +445,64 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     expect(await page.evaluate(() => localStorage.getItem('gym.session.v1'))).toBeNull();
     await page.goto('/alumno/sesiones');
     await expect(page).toHaveURL(/\/login$/);
+  });
+  test('400 real: un filtro inválido muestra la validación y permite volver a consultar', async ({
+    page,
+  }) => {
+    const failed = page.waitForResponse(
+      (r) => new URL(r.url()).pathname === '/api/admin/sesiones' && r.status() === 400,
+    );
+    await enter(page, admin, '/admin/sesiones?orden=campo-inexistente');
+    expect((await failed).status()).toBe(400);
+    await expect(page.getByRole('alert')).toContainText('Orden no permitido');
+    await page.getByRole('combobox', { name: 'Ordenar por', exact: true }).selectOption('id');
+    await page.getByRole('button', { name: 'Aplicar filtros', exact: true }).click();
+    await expect(page.getByRole('alert')).toHaveCount(0);
+    await expect(page.locator('.admin-table')).toBeVisible();
+    expect(await page.evaluate(() => localStorage.getItem('gym.session.v1') !== null)).toBe(true);
+  });
+  test('409 real: profesor inactivo se rechaza sin perder la sesión del alumno', async ({
+    page,
+    request,
+  }) => {
+    const account = {
+      email: 'final-inactivo-' + unique() + '@example.test',
+      password: randomBytes(20).toString('base64url'),
+    };
+    const created = await api(
+      request,
+      'post',
+      '/api/admin/profesores',
+      admin,
+      {
+        ...account,
+        perfil: { nombre: 'TutorInactivo', apellido: 'Prueba', especialidad: 'Movilidad' },
+      },
+      201,
+    );
+    await api(request, 'put', `/api/admin/usuarios/${created.cuenta.id}/estado`, admin, {
+      activo: false,
+      revision: created.cuenta.revision,
+      motivo: 'Prueba de validación de vínculos',
+    });
+    await enter(page, student, '/alumno/profesores');
+    await page.getByLabel('Buscar profesor por nombre, email o especialidad').fill(account.email);
+    await page
+      .getByRole('button', { name: 'Vincular profesor #' + created.perfil.id, exact: true })
+      .click();
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        (r) =>
+          r.url().endsWith(`/api/alumnos/me/profesores/${created.perfil.id}`) &&
+          r.request().method() === 'POST',
+      ),
+      page.getByRole('button', { name: 'Confirmar cambio', exact: true }).click(),
+    ]);
+    expect(response.status()).toBe(409);
+    await expect(page.getByRole('alert')).toContainText('vínculo');
+    await expect(page.getByRole('alert')).not.toContainText('número de serie');
+    await expect(page).toHaveURL(/\/alumno\/profesores$/);
+    expect(await page.evaluate(() => localStorage.getItem('gym.session.v1') !== null)).toBe(true);
   });
   test('404 y revocación 401 reales permiten recuperar navegación sin datos protegidos', async ({
     page,

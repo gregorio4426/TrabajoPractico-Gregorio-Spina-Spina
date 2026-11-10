@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -116,7 +117,11 @@ export class Professors {
       if (!this.error())
         this.success.set('Vinculación actualizada. Tus rutinas y entrenamientos se conservan.');
     } catch (e) {
-      this.error.set(alumnoError(e));
+      this.error.set(
+        e instanceof HttpErrorResponse && e.status === 409
+          ? 'No se pudo actualizar el vínculo. Revisá que el profesor esté activo y vigente y recargá tus profesores antes de reintentar.'
+          : alumnoError(e),
+      );
     } finally {
       this.pending.set(false);
     }
