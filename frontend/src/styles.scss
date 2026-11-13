@@ -1,3 +1,4 @@
+@use './app/shared/neon-theme';
 @use 'sass:color';
 @use './app/admin/admin';
 @use './app/profesor/profesor';
@@ -36,3 +37,5 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+@include neon-theme.apply;

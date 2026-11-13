@@ -2,6 +2,8 @@
 
 Aplicación standalone con Signals, formularios reactivos, JWT y TypeScript/plantillas estrictos. Login único y espacios responsive ADMIN, PROFESOR y ALUMNO conectados exclusivamente al backend de este repositorio. No contiene datos simulados en producción.
 
+Identidad visual: negro y gris carbón con amarillo fluorescente (`#e6ff00`) para acciones, foco y gráficos. La paleta común se centraliza en `src/app/shared/neon-theme.scss`; avisos y errores conservan colores semánticos diferenciados.
+
 [Revisión final y límites](ETAPA-6-FINAL.md) · [ADMIN](ETAPA-2-ADMIN.md) · [PROFESOR](ETAPA-3-PROFESOR.md) · [ALUMNO](ETAPA-4-ALUMNO.md) · [Estadísticas](ETAPA-5-ESTADISTICAS.md).
 
 ## Requisitos
