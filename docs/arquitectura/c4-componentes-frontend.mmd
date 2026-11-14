@@ -1,0 +1,24 @@
+flowchart TB
+  user["Usuario ADMIN / PROFESOR / ALUMNO"]
+  subgraph angular["Frontend Angular 22"]
+    routes["app.routes<br/>login + selección de espacio por rol"]
+    guards["core/auth.guards<br/>autenticación y autorización"]
+    auth["core/auth.service + interceptor"]
+    shell["layout/shell"]
+    admin["admin<br/>dashboard, recursos, estadísticas"]
+    teacher["profesor<br/>alumnos, rutinas, ejercicios, progreso"]
+    student["alumno<br/>rutinas, sesiones, perfil, progreso"]
+    api["core/api<br/>cliente HTTP"]
+  end
+  backend["API REST Spring Boot"]
+  user --> routes
+  routes --> guards
+  guards --> auth
+  routes --> shell
+  shell --> admin
+  shell --> teacher
+  shell --> student
+  admin --> api
+  teacher --> api
+  student --> api
+  api -->|"HTTP /api + JWT"| backend

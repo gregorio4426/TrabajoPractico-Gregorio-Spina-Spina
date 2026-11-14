@@ -1,0 +1,28 @@
+flowchart TB
+  client["Frontend Angular"]
+  subgraph api["Backend Spring Boot"]
+    security["security<br/>JWT, filtros, autorización, CORS"]
+    auth["AuthController / AuthService"]
+    controllers["Controllers<br/>Alumno, Profesor, Ejercicio, Rutina, Sesion"]
+    admin["AdminController"]
+    stats["Módulo estadisticas<br/>controllers, service, repository, DTOs"]
+    services["Servicios de dominio<br/>Alumno, Profesor, Ejercicio,<br/>Rutina, Sesion, Identidad"]
+    mappers["Mappers<br/>MapStruct"]
+    repos["Repositories<br/>Spring Data JPA"]
+    model["Modelo y DTOs<br/>entidades, request, response"]
+    errors["exception<br/>GlobalExceptionHandler y excepciones"]
+  end
+  db[("MySQL")]
+  client -->|"REST + JWT"| security
+  security --> auth
+  security --> controllers
+  security --> admin
+  security --> stats
+  controllers --> services
+  admin --> services
+  stats --> repos
+  services --> mappers
+  services --> repos
+  services --> model
+  repos --> db
+  controllers -.-> errors

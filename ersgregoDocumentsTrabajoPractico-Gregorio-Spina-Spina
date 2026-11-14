@@ -1,0 +1,20 @@
+9f1b029 | nicolas spina | 2026-11-10 | Merge pull request #11 from gregorio4426/codex/frontend-etapa-6-final
+5d8bd2c | Nicolas Spina | 2026-11-10 | feat(final): cerrar validación optimizada y documentar ejecución completa
+0c4aacb | Nicolas Spina | 2026-11-10 | fix(final): mejorar accesibilidad y validar integración real entre roles
+96b18d1 | Nicolas Spina | 2026-11-10 | docs(final): iniciar revisión integral desde la etapa 5 aprobada
+a4167d7 | Nicolas Spina | 2026-11-08 | fix(estadisticas): restaurar filtros de progreso y validar regresión real
+451dd0a | Nicolas Spina | 2026-11-08 | feat(estadisticas): reutilizar progreso en ADMIN y mejorar coherencia histórica
+0c59716 | Nicolas Spina | 2026-11-08 | docs(estadisticas): auditar gráficos y contratos de los tres roles
+3dac5be | Nicolas Spina | 2026-11-08 | feat(alumno): finalizar experiencia móvil y documentar validación completa
+7aab1e1 | Nicolas Spina | 2026-11-08 | test(alumno): validar recuperación, revisiones, permisos y flujos móviles reales
+c6c4a08 | Nicolas Spina | 2026-11-08 | feat(alumno): implementar registro móvil, sesiones, perfil y profesores
+33a518d | Nicolas Spina | 2026-11-07 | feat(alumno): agregar dashboard propio, estadísticas y cliente de entrenamientos
+fd1eb64 | Nicolas Spina | 2026-11-07 | feat(profesor): finalizar panel con 66 pruebas y 27 escenarios Chromium
+fa3f01a | Nicolas Spina | 2026-11-07 | test(profesor): validar flujos reales, seguridad, gráficos y rotación de JWT
+551a534 | Nicolas Spina | 2026-11-07 | feat(profesor): completar alumnos, rutinas, ejercicios y credenciales propias
+f75a933 | Nicolas Spina | 2026-11-07 | feat(profesor): agregar dashboard, estadísticas y gráficos con contratos reales
+9f595ae | Nicolas Spina | 2026-11-07 | feat(admin): completar panel validado con 47 pruebas y 18 escenarios Chromium
+12e9eda | Nicolas Spina | 2026-11-07 | test(admin): validar flujos reales, vínculos e historial versionado en Chromium
+56b321a | Nicolas Spina | 2026-11-07 | feat(admin): implementar gestión de cuentas, perfiles, vínculos e historial
+a502460 | Nicolas Spina | 2026-11-07 | feat(admin): agregar contratos tipados y dashboard con estadísticas reales
+1c9905f | Nicolas Spina | 2026-11-07 | fix(frontend): validar sesión y responsive con Chromium y API real

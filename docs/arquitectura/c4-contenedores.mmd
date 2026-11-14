@@ -1,0 +1,14 @@
+flowchart TB
+  admin["Administrador"]
+  profesor["Profesor"]
+  alumno["Alumno"]
+  subgraph sistema["Sistema Impulso"]
+    web["Frontend web<br/>Angular 22 / TypeScript<br/>(ng serve + proxy.conf.json en desarrollo)"]
+    api["API REST<br/>Java 21 / Spring Boot 3.4.5<br/>springdoc OpenAPI"]
+    db[("Base de datos<br/>MySQL 8+ (InnoDB)")]
+  end
+  admin --> web
+  profesor --> web
+  alumno --> web
+  web -->|"HTTP JSON /api (mismo origen vía proxy); JWT Bearer"| api
+  api -->|"Spring Data JPA / Hibernate"| db

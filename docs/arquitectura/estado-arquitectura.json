@@ -1,0 +1,17 @@
+{
+  "schema_version": 2,
+  "repository": "https://github.com/gregorio4426/TrabajoPractico-Gregorio-Spina-Spina",
+  "last_analyzed_commit": "9f1b0290598449b795b4c8214b48b7207443cf0d",
+  "analysis_basis": "git ls-tree/git diff del commit indicado; elementos verificados contra código y configuración.",
+  "history": [
+    {"sha":"b638109fa33825f1382fabea1acfa64bc2e6cb7c","date":"2026-09-14","tipo":"linea-base","resumen":"Backend con JWT, roles y sesiones; sin frontend."},
+    {"sha":"addc535db337c3b15c557056a90490c828f31315","date":"2026-10-31","tipo":"actualizacion","resumen":"Backend etapas 1-7: seguridad, administración, auditoría y estadísticas."},
+    {"sha":"9f1b0290598449b795b4c8214b48b7207443cf0d","date":"2026-11-10","tipo":"actualizacion","resumen":"Frontend Angular 22 por rol (admin, profesor, alumno) consumiendo /api."}
+  ],
+  "diagrams": ["c4-contexto.mmd","c4-contenedores.mmd","c4-componentes-backend.mmd","c4-componentes-frontend.mmd"],
+  "notes": [
+    "La arquitectura es lógica; la topología productiva no fue verificada (no hay TLS, reverse proxy ni despliegue en el repo).",
+    "Se quitó 'MySQL 8.4' y 'HTTPS' de la versión heredada del ZIP: el código solo respalda MySQL 8+ y HTTP vía proxy de desarrollo.",
+    "El historial incluye análisis retroactivos sobre commits reales ya existentes."
+  ]
+}
