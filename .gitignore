@@ -1,0 +1,5 @@
+# Local Compose configuration and secrets
+.env
+.env.*
+!.env.example
+/docker/backups/
