@@ -7,9 +7,9 @@ COPY frontend/ ./
 RUN npm run build
 
 FROM nginx:stable-alpine
-COPY docker/nginx.conf /etc/nginx/nginx.conf
-COPY --from=build /app/dist/frontend/browser/ /usr/share/nginx/html/
+COPY --chmod=644 docker/nginx.conf /etc/nginx/nginx.conf
+COPY --from=build --chown=nginx:nginx /app/dist/frontend/browser/ /usr/share/nginx/html/
 USER nginx
 EXPOSE 8080
-HEALTHCHECK --interval=15s --timeout=5s --start-period=5s --retries=5 CMD wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1
+HEALTHCHECK --interval=15s --timeout=5s --start-period=5s --retries=5 CMD wget -Y off -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1
 ENTRYPOINT ["nginx", "-g", "daemon off;"]

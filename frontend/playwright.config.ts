@@ -7,7 +7,7 @@ export default defineConfig({
   reporter: 'list',
   timeout: 30000,
   use: {
-    baseURL: 'http://127.0.0.1:4200',
+    baseURL: process.env['GYM_E2E_BASE_URL'] || 'http://127.0.0.1:4200',
     trace: 'off',
     screenshot: 'off',
     launchOptions: process.env['CHROMIUM_PATH']
@@ -15,12 +15,14 @@ export default defineConfig({
       : {},
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: {
-    command:
-      'npm start -- --host 127.0.0.1' +
-      (process.env['GYM_E2E_PRODUCTION'] ? ' --configuration production' : ''),
-    url: 'http://127.0.0.1:4200',
-    reuseExistingServer: !process.env['CI'] && !process.env['GYM_E2E_PRODUCTION'],
-    timeout: 60000,
-  },
+  webServer: process.env['GYM_E2E_BASE_URL']
+    ? undefined
+    : {
+        command:
+          'npm start -- --host 127.0.0.1' +
+          (process.env['GYM_E2E_PRODUCTION'] ? ' --configuration production' : ''),
+        url: 'http://127.0.0.1:4200',
+        reuseExistingServer: !process.env['CI'] && !process.env['GYM_E2E_PRODUCTION'],
+        timeout: 60000,
+      },
 });

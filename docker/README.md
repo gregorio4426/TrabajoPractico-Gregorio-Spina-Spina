@@ -23,7 +23,7 @@ Después del primer login, cambiar `GYM_BOOTSTRAP_ADMIN_ENABLED=false`, vaciar l
 
 ## Base de datos y persistencia
 
-En un volumen nuevo, la imagen oficial de MySQL ejecuta los scripts originales 001–005 del repositorio en orden. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
+En un volumen nuevo, la imagen derivada de MySQL ejecuta los scripts originales 001–005 del repositorio en orden. Se copian sin cambios a la imagen con permisos de lectura; no depende de permisos ni rutas de montaje del host. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
 
 `docker compose stop`, `start`, `restart` y `down` conservan datos. **`docker compose down -v` elimina el volumen y sus datos**: usarlo únicamente para descartar una base de pruebas. Cambiar contraseñas de `.env` no cambia las de un MySQL ya inicializado. No regenerar `.env` para un volumen existente.
 
@@ -53,6 +53,15 @@ chmod 600 docker/backups/gimnasio.sql
 Copiar el backup a almacenamiento externo protegido. Los backups también pueden contener datos personales y hashes de contraseñas. El volumen no reemplaza un backup. Probar restauraciones en una base separada antes de depender de este procedimiento para producción.
 
 ## Pruebas y límites
+
+Para ejecutar la suite existente contra este stack, con cuentas de prueba ADMIN/PROFESOR en un archivo privado externo:
+
+```sh
+cd frontend
+GYM_E2E_BASE_URL=http://127.0.0.1:8088 GYM_E2E_CREDENTIALS_FILE=/ruta/privada/cuentas.json CHROMIUM_PATH=/usr/bin/chromium npm run e2e:real
+```
+
+`GYM_E2E_BASE_URL` evita arrancar `ng serve`: las pruebas usan los archivos optimizados de Nginx y la API de Compose. Ejecutar únicamente contra un stack de pruebas, porque la suite crea/modifica cuentas y entrenamientos.
 
 La API del navegador sigue siendo `/api` del mismo origen. Ver [`frontend/README.md`](../frontend/README.md) para pruebas unitarias/HTTP/Chromium; sus comandos ordinarios usan un backend local de pruebas y puerto 4200. La validación del stack debe comprobar además `http://localhost:8088/healthz`, login, rutas profundas y consultas reales a través de Nginx.
 

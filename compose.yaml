@@ -1,6 +1,8 @@
 services:
   db:
-    image: mysql:8.4
+    build:
+      context: .
+      dockerfile: docker/db.Dockerfile
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: gimnasio
@@ -9,7 +11,6 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Falta MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./simulacro_nombreAlumno/src/main/resources/db/mysql:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -ugym gimnasio -Nse "SELECT COUNT(*) FROM gimnasio_schema_migrations" >/dev/null']
       interval: 10s
