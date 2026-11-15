@@ -68,3 +68,5 @@ La API del navegador sigue siendo `/api` del mismo origen. Ver [`frontend/README
 Por defecto la aplicación se publica sólo en loopback. Para otros equipos configurar explícitamente `GYM_BIND_ADDRESS`, firewall y HTTPS/reverse proxy. Esta configuración local no instala certificados, backups programados ni un gestor de secretos de producción. MySQL se conecta sin TLS únicamente por la red privada de Compose; un despliegue con requisitos de cifrado interno deberá configurar certificados y JDBC conforme a su infraestructura.
 
 Las imágenes usan tags de versión mantenidos. Para una entrega inmutable registrar/pinear sus digests y conservar imágenes por versión. Los servicios son de una sola instancia; no se incluye alta disponibilidad. No hace merge ni despliegue remoto automático.
+
+Ver [resultados de validación](VALIDACION.md) de construcción, Chromium, persistencia y recuperación.
