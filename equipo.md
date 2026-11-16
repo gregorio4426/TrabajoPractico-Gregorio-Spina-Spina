@@ -23,3 +23,24 @@ Giorgio Napoli reemplaza a Tomás Spina como integrante actual del equipo. Esta 
 - API key: configurar localmente en `PLANE_API_KEY`; nunca guardar el token en este repositorio.
 
 No inventar IDs de tareas, responsables, estimaciones, fechas ni estados. Obtenerlos desde Plane en cada ejecución.
+
+## Dedicación
+- Facu: 8 horas por semana
+- Nico: 15 horas por semana
+- Giorgio: 6 horas por semana
+
+## Costo por integrante
+- USD 3.000 por mes por integrante (160 h al mes = USD 18,75 por hora)
+
+## Objetivos
+- Entregar el sistema IMPULSO (gestión de gimnasio) con backend Spring Boot y frontend Angular por rol (ADMIN, PROFESOR, ALUMNO)
+- Mantener el tablero de Plane actualizado y correr las 3 skills de gestión cada semana
+- Mantener actualizado el diagrama C4 de arquitectura
+
+## Fechas
+- Inicio del proyecto: 2026-05-19
+- Entrega final: [fecha que diga el profe]
+- Ciclo actual: 2026-11-09 a 2026-11-22
+
+## Infraestructura
+- Sin costos de infraestructura (todo local o gratuito: MySQL local, GitHub y Plane en plan gratuito)
