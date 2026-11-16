@@ -1,0 +1,395 @@
+{
+  "schema_version": 1,
+  "fuente": "Export CSV de Plane (workspace facu-nico-gio, proyecto IMP)",
+  "semana": "2026-W46",
+  "periodo": [
+    "2026-11-09",
+    "2026-11-15"
+  ],
+  "zona_horaria": "America/Argentina/Buenos_Aires",
+  "generado": "2026-11-15",
+  "total_tareas": 13,
+  "notas": [
+    "IMP-1 fue eliminado por el equipo (informado por el usuario); el export arranca en IMP-2.",
+    "Tercera corrida: export con Assignees y etiquetas completos; las asignaciones se cargaron el 15/11 (sin historial de asignación).",
+    "El export no incluye URL; url=null.",
+    "subscribers = suscriptores; NO equivale a responsable."
+  ],
+  "tareas": [
+    {
+      "id": "IMP-2",
+      "title": "Crear entidades, repositorios y enums del dominio",
+      "state": "Done",
+      "assignee": "Facu",
+      "subscribers": [
+        "Facu"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 5,
+      "start_date": "2026-05-19",
+      "due_date": "2026-05-19",
+      "created_at": "2026-11-15T20:56:02-03:00",
+      "completed_at": "2026-11-15T20:56:12-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-3",
+      "title": "Implementar ejercicioService y alumnoService",
+      "state": "Done",
+      "assignee": "Facu",
+      "subscribers": [
+        "Facu"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 5,
+      "start_date": "2026-06-06",
+      "due_date": "2026-06-06",
+      "created_at": "2026-11-15T20:57:16-03:00",
+      "completed_at": "2026-11-15T20:57:16-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-4",
+      "title": "Actualizar perfil del alumno y repositorio de asignacion de rutina",
+      "state": "Done",
+      "assignee": "Facu",
+      "subscribers": [
+        "Facu"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 3,
+      "start_date": "2026-06-06",
+      "due_date": "2026-06-06",
+      "created_at": "2026-11-15T20:58:42-03:00",
+      "completed_at": "2026-11-15T20:58:42-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-5",
+      "title": "Primeros avances de seguridad (autenticacion JWT)",
+      "state": "Done",
+      "assignee": "Facu",
+      "subscribers": [
+        "Facu"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 3,
+      "start_date": "2026-06-15",
+      "due_date": "2026-06-15",
+      "created_at": "2026-11-15T20:59:35-03:00",
+      "completed_at": "2026-11-15T20:59:35-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-6",
+      "title": "Endpoints de registro de alumno y profesor, y busqueda por id",
+      "state": "Done",
+      "assignee": "Giorgio",
+      "subscribers": [
+        "Facu",
+        "Giorgio"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 3,
+      "start_date": "2026-06-06",
+      "due_date": "2026-06-06",
+      "created_at": "2026-11-15T21:00:30-03:00",
+      "completed_at": "2026-11-15T21:00:29-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-7",
+      "title": "Endpoints CRUD de ejercicio (crear, actualizar, eliminar)",
+      "state": "Done",
+      "assignee": "Giorgio",
+      "subscribers": [
+        "Facu",
+        "Giorgio"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 5,
+      "start_date": "2026-06-06",
+      "due_date": "2026-06-06",
+      "created_at": "2026-11-15T21:01:04-03:00",
+      "completed_at": "2026-11-15T21:01:04-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-8",
+      "title": "Endpoints de rutina: actualizar, eliminar, asignar, rutina activa e historial",
+      "state": "Done",
+      "assignee": "Giorgio",
+      "subscribers": [
+        "Giorgio",
+        "Facu"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 8,
+      "start_date": "2026-06-06",
+      "due_date": "2026-06-06",
+      "created_at": "2026-11-15T21:01:45-03:00",
+      "completed_at": "2026-11-15T21:01:45-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-9",
+      "title": "Integrar Spring Security en services y controllers (usuario en Alumno)",
+      "state": "Done",
+      "assignee": "Giorgio",
+      "subscribers": [
+        "Facu",
+        "Giorgio"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 5,
+      "start_date": "2026-06-15",
+      "due_date": "2026-06-15",
+      "created_at": "2026-11-15T21:02:31-03:00",
+      "completed_at": "2026-11-15T21:02:31-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-10",
+      "title": "Backend etapas 1-7: seguridad, roles, historial, administracion y dashboards",
+      "state": "Done",
+      "assignee": "Nico",
+      "subscribers": [
+        "Facu",
+        "Nico"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 13,
+      "start_date": "2026-10-01",
+      "due_date": "2026-10-30",
+      "created_at": "2026-11-15T21:03:41-03:00",
+      "completed_at": "2026-11-15T21:03:41-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "ESTIMACION_ALTA",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-11",
+      "title": "Frontend Angular 22: autenticacion JWT, rutas por rol y layout",
+      "state": "Done",
+      "assignee": "Nico",
+      "subscribers": [
+        "Facu",
+        "Nico"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 8,
+      "start_date": "2026-11-07",
+      "due_date": "2026-11-07",
+      "created_at": "2026-11-15T21:04:14-03:00",
+      "completed_at": "2026-11-15T21:04:14-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-12",
+      "title": "Paneles ADMIN y PROFESOR: cuentas, vinculos, rutinas, ejercicios y graficos",
+      "state": "Done",
+      "assignee": "Nico",
+      "subscribers": [
+        "Facu",
+        "Nico"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 13,
+      "start_date": "2026-11-07",
+      "due_date": "2026-11-07",
+      "created_at": "2026-11-15T21:04:48-03:00",
+      "completed_at": "2026-11-15T21:04:48-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "ESTIMACION_ALTA",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-13",
+      "title": "Panel ALUMNO movil: sesiones, perfil, profesores y dashboard",
+      "state": "Done",
+      "assignee": "Nico",
+      "subscribers": [
+        "Facu",
+        "Nico"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 8,
+      "start_date": "2026-11-07",
+      "due_date": "2026-11-07",
+      "created_at": "2026-11-15T21:05:29-03:00",
+      "completed_at": "2026-11-15T21:05:29-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    },
+    {
+      "id": "IMP-14",
+      "title": "Estadisticas por rol y validacion final de integracion",
+      "state": "Done",
+      "assignee": "Nico",
+      "subscribers": [
+        "Facu",
+        "Nico"
+      ],
+      "cycle": "Sprint 1",
+      "cycle_start": "2026-11-09",
+      "cycle_end": "2026-11-23",
+      "estimate": 8,
+      "start_date": "2026-11-08",
+      "due_date": "2026-11-10",
+      "created_at": "2026-11-15T21:06:02-03:00",
+      "completed_at": "2026-11-15T21:06:02-03:00",
+      "module": null,
+      "priority": "none",
+      "url": null,
+      "quality_flags": [
+        "SIN_DESCRIPCION",
+        "SIN_CRITERIOS_ACEPTACION",
+        "SIN_MODULO",
+        "SIN_PRIORIDAD",
+        "COMPLETADA_AL_CREAR",
+        "SIN_HORAS_REGISTRADAS"
+      ]
+    }
+  ]
+}

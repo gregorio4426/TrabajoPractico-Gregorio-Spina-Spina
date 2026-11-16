@@ -1,4 +1,31 @@
 {
   "schema_version": 1,
-  "entries": []
+  "entries": [
+    {
+      "week": "2026-W46",
+      "periodo": [
+        "2026-11-09",
+        "2026-11-15"
+      ],
+      "generado": "2026-11-15",
+      "fuente": "Plane CSV + equipo.md",
+      "tareas": 13,
+      "puntos_totales": 87,
+      "puntos_terminados": 87,
+      "tareas_sin_responsable": 0,
+      "puntos_sin_responsable": 0,
+      "puntos_por_responsable": {
+        "Facu": 16,
+        "Giorgio": 21,
+        "Nico": 50
+      },
+      "horas_registradas": 0,
+      "tarifa_hora_usd": 18.75,
+      "costo_semanal_dedicacion_usd": 543.75,
+      "costo_referencia_equipo_usd": 2076.92,
+      "capacidad_no_utilizada_usd": 1533.17,
+      "infraestructura_usd": 0,
+      "confiabilidad": "baja: carga retroactiva del tablero"
+    }
+  ]
 }

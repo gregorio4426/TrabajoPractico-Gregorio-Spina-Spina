@@ -1,4 +1,28 @@
 {
   "schema_version": 1,
-  "entries": []
+  "entries": [
+    {
+      "week": "2026-W46",
+      "periodo": [
+        "2026-11-09",
+        "2026-11-15"
+      ],
+      "generado": "2026-11-15",
+      "semaforo": "verde_no_concluyente",
+      "puntos_pendientes": 0,
+      "velocidad_promedio": null,
+      "semanas_hasta_entrega": 1.14,
+      "entrega": "2026-11-23",
+      "tareas_terminadas": 13,
+      "tareas_pendientes": 0,
+      "wip": 0,
+      "canales_comunicacion": 3,
+      "bus_factor_git_28d": 1,
+      "commits_28d": {
+        "Nico": 21
+      },
+      "alertas_tablero_quieto": 0,
+      "confiabilidad": "baja: carga retroactiva del tablero"
+    }
+  ]
 }
