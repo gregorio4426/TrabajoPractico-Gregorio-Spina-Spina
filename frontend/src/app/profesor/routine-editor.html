@@ -163,7 +163,11 @@
                     <button
                       type="button"
                       class="secondary"
-                      [disabled]="ei === 0"
+                      [disabled]="
+                        ei === 0 ||
+                        exercise.controls.bloqueOrden.value !==
+                          day.controls.ejercicios.at(ei - 1).controls.bloqueOrden.value
+                      "
                       (click)="moveExercise(di, ei, -1)"
                     >
                       Subir ejercicio {{ ei + 1 }} del día {{ di + 1 }}
@@ -171,7 +175,11 @@
                     <button
                       type="button"
                       class="secondary"
-                      [disabled]="ei + 1 === day.controls.ejercicios.length"
+                      [disabled]="
+                        ei + 1 === day.controls.ejercicios.length ||
+                        exercise.controls.bloqueOrden.value !==
+                          day.controls.ejercicios.at(ei + 1).controls.bloqueOrden.value
+                      "
                       (click)="moveExercise(di, ei, 1)"
                     >
                       Bajar ejercicio {{ ei + 1 }} del día {{ di + 1 }}

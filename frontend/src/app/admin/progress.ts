@@ -15,7 +15,7 @@ import { adminError } from './admin-utils';
   ],
   template: `<section class="page-intro">
       <span class="eyebrow muted">ENTRENAMIENTO REGISTRADO</span>
-      <h1>Estadísticas{{ studentId() ? ' del alumno #' + studentId() : ' del gimnasio' }}.</h1>
+      <h1>Estadísticas{{ studentId() ? ' del alumno seleccionado' : ' del gimnasio' }}.</h1>
       <p>
         Resultados del backend por fecha efectiva. Consultá cada sesión desde los valores exactos de
         su evolución.

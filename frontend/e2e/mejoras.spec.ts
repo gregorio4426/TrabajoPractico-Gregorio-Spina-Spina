@@ -90,7 +90,12 @@ test.describe('Mejoras funcionales · persistencia real', () => {
     ]);
     expect(groupResponse.status()).toBe(201);
     await expect(page.getByText('Grupo muscular guardado.', { exact: true })).toBeVisible();
-    const catalogue=await request.get('/api/grupos-musculares',{headers});expect(catalogue.status()).toBe(200);const group=(await catalogue.json() as Array<{id:number;nombre:string}>).find(g=>g.nombre===muscle)!;expect(group).toBeDefined();
+    const catalogue = await request.get('/api/grupos-musculares', { headers });
+    expect(catalogue.status()).toBe(200);
+    const group = ((await catalogue.json()) as Array<{ id: number; nombre: string }>).find(
+      (g) => g.nombre === muscle,
+    )!;
+    expect(group).toBeDefined();
     await page.getByRole('searchbox', { name: 'Buscar grupo muscular', exact: true }).fill(muscle);
     await expect(page.getByRole('button', { name: 'Editar ' + muscle, exact: true })).toBeVisible();
     const exercise = 'Ejercicio bloques ' + unique();
@@ -132,6 +137,13 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       .getByLabel('Descanso después del ejercicio (segundos)', { exact: true })
       .nth(1)
       .fill('20');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
+    await page.screenshot({
+      path: '/tmp/gym-mejoras-editor-mobile.png',
+      fullPage: true,
+      animations: 'disabled',
+    });
     await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
     const [saved] = await Promise.all([
       page.waitForResponse(
@@ -141,8 +153,9 @@ test.describe('Mejoras funcionales · persistencia real', () => {
     ]);
     expect(saved.status()).toBe(201);
     await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=/);
-    const routineId=Number(new URL(page.url()).pathname.split('/').at(-1));
-    const persisted=await request.get(`/api/rutinas/${routineId}`,{headers});expect(persisted.status()).toBe(200);
+    const routineId = Number(new URL(page.url()).pathname.split('/').at(-1));
+    const persisted = await request.get(`/api/rutinas/${routineId}`, { headers });
+    expect(persisted.status()).toBe(200);
     const routine = await persisted.json();
     expect(
       routine.dias[0].ejercicios.map(
@@ -213,7 +226,12 @@ test.describe('Mejoras funcionales · persistencia real', () => {
         confirm(studentPage),
       ]);
       expect(closed.status()).toBe(200);
-      const persistedSession=await request.get(`/api/sesiones/${sessionId}`,{headers:{Authorization:'Bearer '+who.token}});expect((await persistedSession.json()).comentario).toBe('Me costó la segunda vuelta, sin dolor.');
+      const persistedSession = await request.get(`/api/sesiones/${sessionId}`, {
+        headers: { Authorization: 'Bearer ' + who.token },
+      });
+      expect((await persistedSession.json()).comentario).toBe(
+        'Me costó la segunda vuelta, sin dolor.',
+      );
       await studentPage.reload();
       await expect(
         studentPage.getByText('Me costó la segunda vuelta, sin dolor.', { exact: true }),

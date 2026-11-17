@@ -67,7 +67,7 @@ import { profesorError, text } from './utils';
                   <td>{{ student.nombre }} {{ student.apellido }}</td>
                   <td>{{ student.email }}</td>
                   <td>{{ text(student.nivel) }}</td>
-                  <td>{{ text(student.objetivo) }}</td>
+                  <td>{{ student.objetivoPersonalizado || text(student.objetivo) }}</td>
                   <td>
                     <a [routerLink]="['/profesor/alumnos', student.id]"
                       >Ver {{ student.nombre }} {{ student.apellido }}</a

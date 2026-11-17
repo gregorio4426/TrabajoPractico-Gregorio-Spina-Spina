@@ -16,8 +16,13 @@ export const passwordValidators = [
     new TextEncoder().encode(String(c.value ?? '')).length <= 72 ? null : { bytes: true },
 ];
 export function profesorError(error: unknown) {
-  if (error instanceof HttpErrorResponse && error.status === 409)
-    return 'Los datos cambiaron o existe un conflicto de identidad. Recargá los datos antes de volver a intentar.';
+  if (error instanceof HttpErrorResponse && error.status === 409) {
+    const body: unknown = error.error;
+    const message = body && typeof body === 'object' && 'mensaje' in body ? body.mensaje : null;
+    return typeof message === 'string' && message.length <= 600
+      ? message
+      : 'Los datos cambiaron o existe un conflicto. Recargá los datos antes de volver a intentar.';
+  }
   return error instanceof HttpErrorResponse && error.status === 403
     ? 'No tenés acceso vigente a este recurso. Revisá la autoría de la rutina o las vinculaciones actuales y recargá los datos.'
     : adminError(error);

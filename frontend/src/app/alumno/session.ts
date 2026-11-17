@@ -84,7 +84,9 @@ export class StudentSession {
   });
   constructor() {
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((p) => {
-      this.id.set(Number(p.get('id')));
+      const id = Number(p.get('id'));
+      if (id !== this.id()) this.comment.reset();
+      this.id.set(id);
       void this.load();
     });
   }

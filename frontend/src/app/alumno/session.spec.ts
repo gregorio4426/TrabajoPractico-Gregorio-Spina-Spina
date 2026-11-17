@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { ActivatedRoute, convertToParamMap, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { afterEach, beforeEach, describe, it, expect } from 'vitest';
 import { StudentSession } from './session';
 import { SESSION_KEY } from '../core/auth.service';
@@ -33,7 +33,9 @@ const row = {
 };
 describe('ALUMNO session recovery and revisions', () => {
   let http: HttpTestingController;
+  let params: BehaviorSubject<ReturnType<typeof convertToParamMap>>;
   beforeEach(() => {
+    params = new BehaviorSubject(convertToParamMap({ id: '7' }));
     localStorage.setItem(SESSION_KEY, JSON.stringify(testSession('ALUMNO')));
     TestBed.configureTestingModule({
       imports: [StudentSession],
@@ -41,7 +43,7 @@ describe('ALUMNO session recovery and revisions', () => {
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: ActivatedRoute, useValue: { paramMap: of(convertToParamMap({ id: '7' })) } },
+        { provide: ActivatedRoute, useValue: { paramMap: params } },
       ],
     });
     http = TestBed.inject(HttpTestingController);
@@ -52,7 +54,7 @@ describe('ALUMNO session recovery and revisions', () => {
     localStorage.clear();
   });
   async function flushSession(data = seed) {
-    http.expectOne('/api/sesiones/7').flush(data);
+    http.expectOne('/api/sesiones/' + data.id).flush(data);
     await Promise.resolve();
     if (data.alumnoId === 1) {
       http.expectOne('/api/rutinas/3/versiones/2').flush({
@@ -73,7 +75,7 @@ describe('ALUMNO session recovery and revisions', () => {
           },
         ],
       });
-      http.expectOne('/api/sesiones/7/auditoria').flush([]);
+      http.expectOne('/api/sesiones/' + data.id + '/auditoria').flush([]);
     }
     await Promise.resolve();
   }
@@ -166,5 +168,19 @@ describe('ALUMNO session recovery and revisions', () => {
       fixture.nativeElement.querySelectorAll('button'),
     ) as HTMLButtonElement[];
     expect(buttons.find((b) => b.textContent?.includes('Anular serie 1'))?.disabled).toBe(true);
+  });
+  it('keeps an unsaved comment within its session and clears it when navigating to another session', async () => {
+    const fixture = await setup(),
+      component = fixture.componentInstance;
+    component.comment.setValue('Solo para la sesión actual');
+    const reload = component.load();
+    await flushSession();
+    await reload;
+    expect(component.comment.value).toBe('Solo para la sesión actual');
+    params.next(convertToParamMap({ id: '8' }));
+    expect(component.comment.value).toBe('');
+    await flushSession({ ...seed, id: 8 });
+    await fixture.whenStable();
+    expect(component.data()?.id).toBe(8);
   });
 });

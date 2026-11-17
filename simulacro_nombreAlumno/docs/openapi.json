@@ -7,8 +7,8 @@
   },
   "servers": [
     {
-      "url": "http://127.0.0.1:8080",
-      "description": "Generated server url"
+      "url": "/",
+      "description": "Mismo origen; configurar URL según el entorno"
     }
   ],
   "security": [

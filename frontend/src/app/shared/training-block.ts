@@ -5,7 +5,7 @@ import { DiaEjercicioResponse } from '../admin/contracts';
   selector: 'app-training-block',
   template: `@if (row().bloqueOrden != null) {
     <div class="training-block-header">
-      <h4>{{ row().bloqueNombre || type() }} · {{ type() }}</h4>
+      <h4>{{ row().bloqueNombre || type() }}{{ row().bloqueNombre ? ' · ' + type() : '' }}</h4>
       <p>
         {{ row().vueltas }} vueltas · Descanso entre vueltas:
         {{

@@ -2,7 +2,7 @@
 
 Aplicación standalone con Signals, formularios reactivos, JWT y TypeScript/plantillas estrictos. Login único y espacios responsive ADMIN, PROFESOR y ALUMNO conectados exclusivamente al backend de este repositorio. No contiene datos simulados en producción.
 
-Mejoras de selección y edición de rutinas: ver [alcance implementado, pruebas y funcionalidades pendientes](MEJORAS-FUNCIONALES.md).
+Mejoras de selección y edición de rutinas: ver [alcance implementado y pruebas](MEJORAS-FUNCIONALES.md).
 
 Identidad visual: negro y gris carbón con amarillo fluorescente (`#e6ff00`) para acciones, foco y gráficos. La paleta común se centraliza en `src/app/shared/neon-theme.scss`; avisos y errores conservan colores semánticos diferenciados.
 
@@ -16,7 +16,7 @@ Identidad visual: negro y gris carbón con amarillo fluorescente (`#e6ff00`) par
 
 ## 1. Preparar el backend local
 
-Desde la raíz del repositorio, crear una base MySQL **vacía y exclusiva de desarrollo**, por ejemplo `APPgimnasioBD`, y un usuario con acceso a ella. Aplicar en orden los cinco scripts existentes:
+Desde la raíz del repositorio, crear una base MySQL **vacía y exclusiva de desarrollo**, por ejemplo `APPgimnasioBD`, y un usuario con acceso a ella. Aplicar en orden los seis scripts existentes:
 
 ```sh
 cd simulacro_nombreAlumno
@@ -25,10 +25,11 @@ mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/002_histor
 mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/003_consistencia_entrenamientos.sql
 mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/004_seguridad_identidad.sql
 mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/005_administracion.sql
+mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/006_mejoras_funcionales.sql
 cp .env.example .env
 ```
 
-En una base existente **no volver a aplicar 001**: seguir las [instrucciones de migración del backend](../simulacro_nombreAlumno/docs/etapa-6-administracion.md). Los comandos anteriores requieren que la base ya exista; reemplazar `USUARIO_LOCAL` por el usuario configurado.
+Para actualizar desde 005, aplicar únicamente [006](../simulacro_nombreAlumno/docs/mejoras-funcionales.md), con backup y la API detenida. En una base existente **no volver a aplicar 001**: seguir las [instrucciones de migración del backend](../simulacro_nombreAlumno/docs/etapa-6-administracion.md). Los comandos anteriores requieren que la base ya exista; reemplazar `USUARIO_LOCAL` por el usuario configurado.
 
 Completar el `.env` local, ignorado por Git:
 

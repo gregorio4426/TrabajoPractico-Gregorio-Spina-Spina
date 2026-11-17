@@ -130,14 +130,7 @@ export class Editor implements OnInit {
           this.field('fechaNacimiento', 'Fecha de nacimiento', 'date', false),
           this.field('nivel', 'Nivel', 'select', true, undefined, LEVELS),
           this.field('objetivoPersonalizado', 'Objetivo del alumno', 'textarea', false, 2000),
-          this.field(
-            'objetivo',
-            'Categoría de objetivo (opcional)',
-            'select',
-            false,
-            undefined,
-            OBJECTIVES,
-          ),
+          this.field('objetivo', 'Categoría de objetivo', 'select', false, undefined, OBJECTIVES),
         );
       else fields.push(this.field('especialidad', 'Especialidad', 'text', true, 100));
       fields.push(this.field('emailContacto', 'Email de contacto', 'email', false, 150));

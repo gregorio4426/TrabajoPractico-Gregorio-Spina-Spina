@@ -20,6 +20,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@org.springframework.transaction.annotation.Transactional
 public class EjercicioService {
 
     private final EjercicioMapper ejercicioMapper;
@@ -40,9 +41,12 @@ public class EjercicioService {
 
     private void preparar(Ejercicio ejercicio,EjercicioRequest datos) {
         String normalizado=GrupoMuscularService.normalizar(datos.getNombre());
-        if(ejercicioRepository.findAll().stream().anyMatch(e->!java.util.Objects.equals(e.getId(),ejercicio.getId()) && GrupoMuscularService.normalizar(e.getNombre()).equals(normalizado)))
+        boolean legadoSinRenombrar=ejercicio.getId()!=null && ejercicio.getNombreNormalizado()==null && normalizado.equals(GrupoMuscularService.normalizar(ejercicio.getNombre()));
+        if(!legadoSinRenombrar && ejercicioRepository.findAll().stream().anyMatch(e->!java.util.Objects.equals(e.getId(),ejercicio.getId()) && GrupoMuscularService.normalizar(e.getNombre()).equals(normalizado)))
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT,"Ya existe un ejercicio con ese nombre");
-        ejercicio.setNombre(datos.getNombre().strip());ejercicio.setNombreNormalizado(normalizado);
+        ejercicio.setNombre(datos.getNombre().strip());
+        if(!legadoSinRenombrar)ejercicio.setNombreNormalizado(normalizado);
+        ejercicio.setDescripcion(datos.getDescripcion());ejercicio.setGrupoMuscular(datos.getGrupoMuscular());
         if(datos.getGrupoId()!=null) {
             var grupo=grupos.buscar(datos.getGrupoId());ejercicio.setGrupoPersonalizado(grupo);
             ejercicio.setGrupoMuscular(java.util.Arrays.stream(GrupoMuscular.values()).filter(v->GrupoMuscularService.normalizar(v.name()).equals(grupo.getNormalizado())).findFirst().orElse(null));
@@ -57,9 +61,6 @@ public class EjercicioService {
     @PreAuthorize("hasRole('PROFESOR')")
     public EjercicioResponse updateEjercicio(Long id, EjercicioRequest request) {
         Ejercicio ejercicio = findEntityById(id);
-        ejercicio.setNombre(request.getNombre());
-        ejercicio.setDescripcion(request.getDescripcion());
-        ejercicio.setGrupoMuscular(request.getGrupoMuscular());
         preparar(ejercicio,request);
         ejercicioRepository.save(ejercicio);
         return ejercicioMapper.toDto(ejercicio);
@@ -75,7 +76,7 @@ public class EjercicioService {
 
     public Ejercicio findEntityById(long id) {
         return ejercicioRepository.findById(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException("Rutina no encontrada"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("Ejercicio no encontrado"));
     }
     public List<EjercicioResponse> listarPorGrupoMuscular(GrupoMuscular grupoMuscular) {
         List<Ejercicio> ejercicios = ejercicioRepository.findByGrupoMuscular(grupoMuscular);

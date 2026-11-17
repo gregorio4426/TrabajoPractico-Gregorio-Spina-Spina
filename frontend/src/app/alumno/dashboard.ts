@@ -36,7 +36,7 @@ import { alumnoError, isClosed, text } from './utils';
           <p>
             {{
               d.rutinaActiva
-                ? 'Versión ' + d.rutinaActiva.numeroVersion + ' · Asignación #' + d.rutinaActiva.id
+                ? 'Versión ' + d.rutinaActiva.numeroVersion
                 : 'Vinculate con un profesor para organizar tu entrenamiento.'
             }}
           </p>

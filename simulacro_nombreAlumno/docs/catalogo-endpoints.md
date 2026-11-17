@@ -1,6 +1,6 @@
 # Catálogo de endpoints del backend
 
-Generado desde OpenAPI 3.0.1: **108 operaciones HTTP en 90 rutas**. Incluye las 24 consultas nuevas de dashboards y estadísticas.
+Generado desde OpenAPI 3.0.1: **112 operaciones HTTP en 92 rutas**. Incluye las 24 consultas nuevas de dashboards y estadísticas.
 
 El rol listado no sustituye las verificaciones de propiedad, vínculos vigentes, autoría y estado. Ver [informe de etapa 7](etapa-7-dashboards.md) y [contrato completo con DTOs y parámetros](openapi.json). El servidor del contrato exportado se normaliza a `/`; al generar un cliente externo configurar la URL de la API, por ejemplo `http://localhost:8080`.
 
@@ -114,3 +114,14 @@ El rol listado no sustituye las verificaciones de propiedad, vínculos vigentes,
 | DELETE | `/api/sesiones/{id}/series/{serieId}` | ALUMNO | 200 | anularSerie |
 | PATCH | `/api/sesiones/{id}/series/{serieId}` | ALUMNO | 200 | corregirSerie |
 | PUT | `/api/sesiones/{id}/series/{serieId}/restaurar` | ALUMNO | 200 | restaurarSerie |
+
+## Mejoras funcionales: bloques, objetivos y comentarios
+
+| Método | Ruta | Roles HTTP | Éxito | Operación |
+| --- | --- | --- | --- | --- |
+| GET | `/api/grupos-musculares` | ADMIN, PROFESOR, ALUMNO | 200 | Catálogo reutilizable |
+| POST | `/api/grupos-musculares` | PROFESOR | 201 | Crear o reutilizar por nombre normalizado |
+| PUT | `/api/grupos-musculares/{id}` | PROFESOR | 200 | Renombrar grupo personalizado conservando referencias |
+| DELETE | `/api/grupos-musculares/{id}` | PROFESOR | 204 | Eliminar solo grupos personalizados sin ejercicios |
+
+Se amplían los DTOs existentes de rutinas, ejercicios, perfil/seguimiento y finalización de sesiones, sin retirar las rutas ni campos anteriores. Ver [contratos, compatibilidad y migración 006](mejoras-funcionales.md). Conflictos de catálogo responden 409; datos inválidos 400 y permisos insuficientes 403.

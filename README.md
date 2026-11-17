@@ -256,7 +256,7 @@ Crear la base de datos en MySQL antes de levantar la aplicación:
 CREATE DATABASE APPgimnasioBD;
 ```
 
-> El arranque valida el esquema (`ddl-auto: validate`). En una base vacía, ejecutar los scripts 001, 002, 003, 004 y 005 de `simulacro_nombreAlumno/src/main/resources/db/mysql/` en orden. En una base existente, aplicar únicamente las migraciones pendientes, con backup y la aplicación detenida. Ver [versionado y recuperación](simulacro_nombreAlumno/docs/etapa-3-historial.md) y [consistencia, correcciones y migración 003](simulacro_nombreAlumno/docs/etapa-4-consistencia.md).
+> El arranque valida el esquema (`ddl-auto: validate`). En una base vacía, ejecutar los scripts 001, 002, 003, 004, 005 y 006 de `simulacro_nombreAlumno/src/main/resources/db/mysql/` en orden. En una base existente, aplicar únicamente las migraciones pendientes, con backup y la aplicación detenida. Ver [versionado y recuperación](simulacro_nombreAlumno/docs/etapa-3-historial.md) y [consistencia, correcciones y migración 003](simulacro_nombreAlumno/docs/etapa-4-consistencia.md).
 
 ### `application.yaml`
 
@@ -308,3 +308,5 @@ http://localhost:8080/swagger-ui/index.html
 La administración general está documentada en [etapa 6: endpoints ADMIN, cambios de rol y migración 005](simulacro_nombreAlumno/docs/etapa-6-administracion.md).
 
 La entrega del backend y sus dashboards están documentados en [etapa 7: estadísticas, contrato OpenAPI y ejecución local](simulacro_nombreAlumno/docs/etapa-7-dashboards.md). El frontend todavía no está implementado.
+
+Las [mejoras funcionales](simulacro_nombreAlumno/docs/mejoras-funcionales.md) incorporan bloques versionados, grupos personalizados, objetivos libres y comentarios de sesión. Aplicar migración 006 antes de iniciar esta versión con un volumen existente. Ver [actualización Docker sin perder datos](docker/README.md#actualizar-un-volumen-existente-a-las-mejoras-funcionales).

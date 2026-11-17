@@ -79,7 +79,7 @@ public class AlumnoService {
             throw new ReglaNegocioException("Nivel y objetivo requeridos");
         }
         alumno.setNivel(request.getNivel());
-        if(request.getObjetivo()!=null) alumno.setObjetivo(request.getObjetivo());
+        if(request.getObjetivo()!=null || (request.getObjetivoPersonalizado()!=null && !request.getObjetivoPersonalizado().isBlank())) alumno.setObjetivo(request.getObjetivo());
         if(request.getObjetivoPersonalizado()!=null) alumno.setObjetivoPersonalizado(request.getObjetivoPersonalizado().strip());
         return alumnoMapper.toDto(alumnoRepository.save(alumno));
     }
@@ -217,7 +217,7 @@ public class AlumnoService {
             alumno.setEdad(Period.between(alumno.getFechaNacimiento(), LocalDate.now()).getYears());
         }
         alumno.setNivel(request.getNivel());
-        if(request.getObjetivo()!=null) alumno.setObjetivo(request.getObjetivo());
+        if(request.getObjetivo()!=null || (request.getObjetivoPersonalizado()!=null && !request.getObjetivoPersonalizado().isBlank())) alumno.setObjetivo(request.getObjetivo());
         if(request.getObjetivoPersonalizado()!=null) alumno.setObjetivoPersonalizado(request.getObjetivoPersonalizado().strip());
     }
 }

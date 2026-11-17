@@ -1,6 +1,6 @@
 # Arranque con Docker Compose
 
-Requiere Docker Engine/Desktop y Compose v2. Python 3 es opcional para generar configuración privada. Se conservan Angular 22, la paleta neón, Java 21 y MySQL 8.4. No se modifica lógica ni configuración fuente del backend.
+Requiere Docker Engine/Desktop y Compose v2. Python 3 es opcional para generar configuración privada. Se conservan Angular 22, la paleta neón, Java 21 y MySQL 8.4. La API incluye las mejoras funcionales y valida el esquema antes de iniciar.
 
 Desde la raíz del repositorio:
 
@@ -23,7 +23,7 @@ Después del primer login, cambiar `GYM_BOOTSTRAP_ADMIN_ENABLED=false`, vaciar l
 
 ## Base de datos y persistencia
 
-En un volumen nuevo, la imagen derivada de MySQL ejecuta los scripts originales 001–005 del repositorio en orden. Se copian sin cambios a la imagen con permisos de lectura; no depende de permisos ni rutas de montaje del host. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
+En un volumen nuevo, la imagen derivada de MySQL ejecuta los scripts 001–006 del repositorio en orden. Se copian sin cambios a la imagen con permisos de lectura; no depende de permisos ni rutas de montaje del host. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
 
 `docker compose stop`, `start`, `restart` y `down` conservan datos. **`docker compose down -v` elimina el volumen y sus datos**: usarlo únicamente para descartar una base de pruebas. Cambiar contraseñas de `.env` no cambia las de un MySQL ya inicializado. No regenerar `.env` para un volumen existente.
 
@@ -70,3 +70,31 @@ Por defecto la aplicación se publica sólo en loopback. Para otros equipos conf
 Las imágenes usan tags de versión mantenidos. Para una entrega inmutable registrar/pinear sus digests y conservar imágenes por versión. Los servicios son de una sola instancia; no se incluye alta disponibilidad. No hace merge ni despliegue remoto automático.
 
 Ver [resultados de validación](VALIDACION.md) de construcción, Chromium, persistencia y recuperación.
+
+## Actualizar un volumen existente a las mejoras funcionales
+
+Esta versión necesita **006**, después de 005. El build de una imagen no ejecuta migraciones sobre volúmenes ya inicializados. No regenerar `.env`, no ejecutar 001 y no eliminar el volumen. Desde la raíz de esta rama, con Docker Desktop iniciado:
+
+1. Detener los escritores: `docker compose stop frontend backend`.
+2. Crear un respaldo dentro del contenedor (evita conversiones de texto de PowerShell):
+
+```sh
+docker compose exec -T db sh -c 'MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysqldump -uroot --single-transaction --routines --triggers --no-tablespaces -r /tmp/gimnasio-antes-006.sql gimnasio'
+```
+
+Crear la carpeta `docker/backups` si no existe (PowerShell: `New-Item -ItemType Directory -Force docker/backups`; bash: `mkdir -p docker/backups`) y copiar el respaldo:
+
+```sh
+docker compose cp db:/tmp/gimnasio-antes-006.sql docker/backups/gimnasio-antes-006.sql
+```
+
+Conservar otra copia externa protegida y verificar su restauración en una base separada. Aplicar únicamente la migración pendiente:
+
+```sh
+docker compose cp simulacro_nombreAlumno/src/main/resources/db/mysql/006_mejoras_funcionales.sql db:/tmp/gym-006.sql
+docker compose exec -T db sh -c 'MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysql -uroot gimnasio < /tmp/gym-006.sql'
+docker compose up -d --build --wait --wait-timeout 300
+docker compose ps
+```
+
+Los comandos de `exec` anteriores funcionan también en PowerShell y no imprimen contraseñas. La migración es aditiva y repetible: conserva las rutinas/versiones actuales y sus sesiones; los campos nuevos son opcionales para registros anteriores. Si el SQL falla, dejar frontend/backend detenidos y revisar la causa antes de reintentar. No marcar manualmente 006 como aplicada.

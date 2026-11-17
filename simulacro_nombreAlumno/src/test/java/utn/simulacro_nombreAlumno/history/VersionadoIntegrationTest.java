@@ -250,6 +250,7 @@ class VersionadoIntegrationTest {
     void freeGoalsAndCommentsPersistAndRespectCurrentTeacherLinks() throws Exception {
         var profile=response(put("/api/alumnos/me"),student,"{\"nombre\":\"Luis\",\"apellido\":\"Rios\",\"nivel\":\"INTERMEDIO\",\"objetivoPersonalizado\":\"Volver a correr sin molestias\"}",200);
         assertThat(profile.get("objetivoPersonalizado").asText()).isEqualTo("Volver a correr sin molestias");
+        assertThat(profile.get("objetivo").isNull()).isTrue();
         response(patch("/api/alumnos/"+alumno.getId()+"/seguimiento"),next,"{\"nivel\":\"INTERMEDIO\",\"objetivoPersonalizado\":\"Otro\"}",403);
         // La sesión de la fixture está cerrada: no admite reescritura del comentario.
         response(put("/api/sesiones/"+sesion1+"/completar"),student,"{\"comentario\":\"No sobrescribir\"}",400);
@@ -277,6 +278,15 @@ class VersionadoIntegrationTest {
         response(put("/api/grupos-musculares/"+group.get("id").asLong()),teacher,"{\"nombre\":\"Nuevo "+UUID.randomUUID()+"\"}",200);
         assertThat(response(get(routinePath()),teacher,null,200).at("/dias/0/ejercicios/0/grupoMuscular").asText()).isEqualTo(label);
         response(delete("/api/grupos-musculares/"+group.get("id").asLong()),teacher,null,409);
+    }
+
+    @Test
+    void legacyDuplicateNamesRemainEditableWithoutCreatingNewDuplicatesOrChangingSnapshots() throws Exception {
+        ejercicios.save(Ejercicio.builder().nombre(ejercicio.getNombre()).descripcion("Duplicado legado").grupoMuscular(GrupoMuscular.PECHO).build());
+        var body=json.writeValueAsString(java.util.Map.of("nombre",ejercicio.getNombre(),"descripcion","Descripción actualizada","grupoMuscular","PECHO"));
+        response(put("/api/ejercicios/"+ejercicio.getId()),teacher,body,200);
+        response(post("/api/ejercicios"),teacher,body,409);
+        assertThat(response(get(routinePath()),teacher,null,200).at("/dias/0/ejercicios/0/ejercicioNombre").asText()).isEqualTo("Press original");
     }
 
     private JsonNode start(long day) throws Exception { return response(post("/api/sesiones"), student, startBody(day), 201); }

@@ -34,9 +34,9 @@ Los profesores administran grupos y ejercicios del catálogo compartido. Las nor
 
 ## Validación
 
-- Backend: 203 pruebas aprobadas (212 detectadas, 9 MySQL omitidas en la ejecución H2).
-- MySQL real: 9 pruebas adicionales aprobadas; migración repetida, preservación de sesiones/series y validación Hibernate.
-- Angular: compilación de producción y 112 pruebas unitarias/HTTP aprobadas.
-- Chromium: recorridos nuevos y regresión de los tres roles en curso; el resultado final se registrará al completar la ejecución.
+- Backend: 213 pruebas aprobadas sin omisiones, con `MYSQL_TEST_URL` configurado. Incluyen seguridad/JWT, permisos, concurrencia, contratos HTTP y las 9 pruebas de migración MySQL (006 repetida, preservación de registros y validación Hibernate).
+- Angular: compilación de producción y 113 pruebas unitarias/HTTP aprobadas.
+- Chromium: 55 pruebas aprobadas sin omisiones, con Angular en configuración de producción: 47 contra Spring Boot/MySQL reales y 8 de interfaz aislada. Incluyen ADMIN/PROFESOR/ALUMNO, perfiles, vinculaciones, versiones, sesiones, comentarios, estadísticas, permisos y errores 400/401/403/404/409. Revisión responsive en 1440/820/360 px y editor/entrenamiento a 390 px.
+- Docker: imágenes de backend, frontend y MySQL construidas; Compose válido. La adaptación privada de proxy Cloud permanece fuera del repositorio.
 
 No se hizo merge a master. Los backups, credenciales, dependencias y artefactos generados quedan fuera de Git.

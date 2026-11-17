@@ -26,3 +26,13 @@ Persistencia y recuperación comprobadas:
 - Prueba adicional tras ajustar la prioridad de la ubicación Nginx `/api/`: las rutas API con extensión no se confunden con recursos estáticos; mantienen el JSON y estado de autorización del backend. Nuevamente aprobados `nginx -t`, login y recarga de rutas profundas.
 
 El archivo de backup y las cuentas privadas de prueba se guardaron fuera del repositorio. Ninguna contraseña, JWT real, volumen, compilado o informe generado se incluye en Git.
+
+## Ampliación funcional: bloques, catálogo, objetivos y comentarios
+
+Se volvieron a construir las tres imágenes con el código actualizado y la migración 006. El entorno Cloud requirió la misma adaptación privada de proxy/certificados, más resolución del proxy para BuildKit; estos archivos siguen fuera del repositorio y los secretos no se copian a las imágenes de ejecución. `docker compose config --quiet` aprobado.
+
+Spring Boot aprobó 213 pruebas, sin omisiones, con MySQL de pruebas habilitado; Angular aprobó la compilación de producción y 113 pruebas unitarias/HTTP. La migración 006 se probó de manera repetible, conservando datos legados y validando Hibernate. Los recorridos nuevos usan el backend real y verifican comentarios, objetivos libres, biseries y nombres históricos de grupos.
+
+Esta validación construye las imágenes actualizadas; el stack Compose instalado anteriormente conserva su volumen. Para actualizarlo, aplicar [el procedimiento con backup y migración 006](README.md#actualizar-un-volumen-existente-a-las-mejoras-funcionales). No se hizo merge a master.
+
+La regresión Chromium final aprobó 55 pruebas sin omisiones, con Angular en configuración de producción y la API/MySQL locales reales: 47 recorridos reales y 8 de interfaz aislada. Esta corrida no usó el Nginx de Compose; las imágenes actualizadas se construyeron por separado.

@@ -39,7 +39,7 @@ test.describe('ADMIN · API real', () => {
         .getByRole('combobox', { name: 'Nivel *', exact: true })
         .selectOption('PRINCIPIANTE');
       await page
-        .getByRole('combobox', { name: 'Objetivo *', exact: true })
+        .getByRole('combobox', { name: 'Categoría de objetivo (opcional)', exact: true })
         .selectOption('MEJORAR_RESISTENCIA');
     } else await page.getByLabel('Especialidad').fill('Fuerza');
     await confirm(page);

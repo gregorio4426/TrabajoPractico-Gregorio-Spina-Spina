@@ -211,7 +211,7 @@ test.describe('PROFESOR · backend real', () => {
     await expect(page.getByRole('heading', { name: `${studentName} Prueba` })).toBeVisible();
     await page.getByRole('combobox', { name: 'Nivel', exact: true }).selectOption('AVANZADO');
     await page
-      .getByRole('combobox', { name: 'Objetivo', exact: true })
+      .getByRole('combobox', { name: 'Categoría de objetivo (opcional)', exact: true })
       .selectOption('GANAR_MASA_MUSCULAR');
     await page.getByRole('button', { name: 'Actualizar seguimiento', exact: true }).click();
     await confirm(page);
@@ -275,6 +275,7 @@ test.describe('PROFESOR · backend real', () => {
   });
   test('selects multiple exercises by name, reorders prescriptions and duplicates the routine', async ({
     page,
+    request,
   }) => {
     await login(page);
     await page.goto('/profesor/rutinas/nueva');
@@ -306,7 +307,13 @@ test.describe('PROFESOR · backend real', () => {
       confirm(page),
     ]);
     expect(saved.status()).toBe(201);
-    const original = await saved.json();
+    await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=/);
+    const originalId = Number(new URL(page.url()).pathname.split('/').at(-1));
+    const originalRead = await request.get(`/api/rutinas/${originalId}`, {
+      headers: { Authorization: 'Bearer ' + identity.token },
+    });
+    expect(originalRead.status()).toBe(200);
+    const original = await originalRead.json();
     expect(
       original.dias[0].ejercicios.map(
         (e: { repsSugeridas: number; pesoSugerido: number | null }) => [
@@ -330,7 +337,13 @@ test.describe('PROFESOR · backend real', () => {
       confirm(page),
     ]);
     expect(copied.status()).toBe(201);
-    const duplicate = await copied.json();
+    await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=/);
+    const duplicateId = Number(new URL(page.url()).pathname.split('/').at(-1));
+    const duplicateRead = await request.get(`/api/rutinas/${duplicateId}`, {
+      headers: { Authorization: 'Bearer ' + identity.token },
+    });
+    expect(duplicateRead.status()).toBe(200);
+    const duplicate = await duplicateRead.json();
     expect(duplicate.id).not.toBe(original.id);
     expect(duplicate.numeroVersion).toBe(1);
     expect(
