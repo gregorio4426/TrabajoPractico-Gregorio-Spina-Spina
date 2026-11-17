@@ -47,3 +47,6 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible,
 .entity-picker-option { display:flex; flex-direction:column; width:100%; padding:14px; text-align:left; background:var(--surface-raised);color:var(--ink);border-radius:8px;margin:8px 0;gap:6px; }
 .entity-picker-option small {color:var(--muted);overflow-wrap:anywhere;}
 .entity-picker-option:hover,.entity-picker-option[aria-pressed=true] {outline:1px solid var(--accent);}
+.teacher-exercise-row > app-entity-picker { display:block; min-width:0; }
+.teacher-exercise-row > .admin-actions { grid-column:1/-1; margin:0; }
+@media(max-width:760px) { .teacher-exercise-row > app-entity-picker {grid-column:1/-1;} }

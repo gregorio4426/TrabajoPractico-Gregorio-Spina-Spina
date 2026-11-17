@@ -27,3 +27,13 @@ La implementación se guarda por etapas en esta rama. Las pruebas y migraciones 
 El control automático rechazó dos veces ampliar el backend, citando la prohibición de las etapas anteriores y considerando insuficiente el adjunto como autorización confiable. Se pidió confirmación explícita en el chat. Los cambios de backend no publicados se retiraron del repositorio y se preservaron aparte; el backend de esta entrega permanece idéntico a la base.
 
 Por eso aún NO se implementaron bloques persistidos con rondas/descansos, grupos musculares nuevos, objetivo personalizado ni comentarios de sesión. No se simulan esos datos en HTML/localStorage ni se presentan campos que el servidor no pueda guardar. Tampoco se entregan ni aplican migraciones nuevas en esta primera parte. La ampliación completa del pedido continúa después de esa confirmación.
+
+## Validación de esta primera parte
+
+Compilación Angular de producción aprobada; 107 pruebas unitarias/HTTP en 19 archivos. Incluyen homónimos diferenciados por email, eliminación de selección, teclado del buscador sin enviar el formulario padre, orden de prescripciones y copia de una versión histórica como rutina nueva.
+
+La suite Chromium se adapta a nombres y selectores reales, manteniendo verificaciones de permisos y persistencia con identificadores sólo internos. Se añade un recorrido que crea varios ejercicios en un día, cambia su orden, comprueba repeticiones/peso cero/desconocido en la respuesta guardada y duplica la rutina como una familia nueva.
+
+El selector de ejercicios se revisó visualmente a 390 px y ocupa el ancho disponible sin desbordar la página. Se conservan los colores negro/amarillo y el stack Docker. El backend y las migraciones existentes permanecen sin modificaciones.
+
+Resultado Chromium final: **54 pruebas aprobadas, sin fallos ni omisiones**; 46 contra el backend real y 8 de interfaz aislada. Incluye regresión ADMIN/PROFESOR/ALUMNO y las operaciones nuevas del editor. Los archivos generados, credenciales y borradores no publicados del backend quedan fuera de los commits. No se hizo merge a master.
