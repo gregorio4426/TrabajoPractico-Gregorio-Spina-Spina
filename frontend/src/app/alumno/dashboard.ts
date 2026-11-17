@@ -59,7 +59,7 @@ import { alumnoError, isClosed, text } from './utils';
                   {{ s.fechaEfectiva ?? s.fecha }} · {{ s.seriesRealizadas }} series registradas
                 </p>
                 <a class="primary" [routerLink]="['/alumno/sesiones', s.id]"
-                  >Continuar sesión #{{ s.id }}</a
+                  >Continuar {{ s.diaRutinaNombre }} · {{ s.fechaEfectiva ?? s.fecha }}</a
                 >
               </div>
             }

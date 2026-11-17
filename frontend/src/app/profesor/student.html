@@ -1,6 +1,6 @@
 <p><a class="admin-link" routerLink="/profesor/alumnos">← Volver a alumnos vinculados</a></p>
 <div class="admin-kicker page-intro">
-  <h1>Alumno #{{ id() }}</h1>
+  <h1>Perfil del alumno</h1>
   <button class="secondary" (click)="load()" [disabled]="loading() || pending()">
     Recargar datos
   </button>
@@ -96,13 +96,13 @@
           <div>
             <strong>{{ r.nombre }} · versión {{ r.numeroVersion }}</strong>
             <p>
-              Asignación #{{ r.asignacionId }} · {{ r.fechaInicio }} →
-              {{ r.fechaFin ?? 'Sin fecha de cierre' }} · {{ r.activa ? 'Activa' : 'Histórica' }}
+              {{ r.fechaInicio }} → {{ r.fechaFin ?? 'Sin fecha de cierre' }} ·
+              {{ r.activa ? 'Activa' : 'Histórica' }}
             </p>
             <a
               class="admin-link"
               [routerLink]="['/profesor/rutinas', r.id, 'versiones', r.numeroVersion]"
-              >Ver versión histórica #{{ r.rutinaVersionId }}</a
+              >Ver versión {{ r.numeroVersion }}</a
             >
           </div>
         } @empty {
@@ -123,7 +123,7 @@
               {{ text(s.diaCumplido) }} · Series {{ s.seriesRealizadas }} / {{ s.seriesEsperadas }}
             </p>
             <a class="admin-link" [routerLink]="['/profesor/sesiones', s.id]"
-              >Ver entrenamiento #{{ s.id }}</a
+              >Ver {{ s.diaRutinaNombre }} · {{ s.fechaEfectiva ?? s.fecha }}</a
             >
           </div>
         } @empty {

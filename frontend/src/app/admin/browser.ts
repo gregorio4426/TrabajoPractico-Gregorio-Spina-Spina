@@ -39,6 +39,7 @@ export class Browser {
   readonly label = label;
   readonly at = at;
   readonly idOf = idOf;
+  readonly names = signal(new Map<string, string>());
   readonly id = signal(0);
   readonly page = signal(0);
   private request = 0;
@@ -90,13 +91,40 @@ export class Browser {
       }
     const request = ++this.request;
     this.data.set(null);
+    this.names.set(new Map());
     this.loading.set(true);
     this.error.set('');
     this.selected.set(null);
     try {
       const path = this.sub ? `${this.parent}/${this.id()}/${this.sub}` : this.type;
       const data = await firstValueFrom(this.api.get<Page<unknown>>(path, query));
-      if (request === this.request) this.data.set(data);
+      const names = new Map<string, string>();
+      await Promise.all(
+        data.contenido.flatMap((row) =>
+          ['alumnoId', 'usuarioId', 'actorId'].map(async (key) => {
+            const id = at(row, key);
+            if (!id) return;
+            const resource = key === 'alumnoId' ? 'alumnos' : 'usuarios';
+            const cacheKey = key + ':' + id;
+            if (names.has(cacheKey)) return;
+            try {
+              const person = await firstValueFrom(this.api.get<unknown>(resource + '/' + id));
+              const p = at(person, 'perfil') ?? person;
+              names.set(
+                cacheKey,
+                [at(p, 'nombre'), at(p, 'apellido')].filter(Boolean).join(' ') ||
+                  String(at(p, 'email') ?? 'Cuenta'),
+              );
+            } catch {
+              names.set(cacheKey, 'Registro no disponible');
+            }
+          }),
+        ),
+      );
+      if (request === this.request) {
+        this.names.set(names);
+        this.data.set(data);
+      }
     } catch (error) {
       if (request === this.request) {
         this.data.set(null);
@@ -111,6 +139,11 @@ export class Browser {
       relativeTo: this.route,
       queryParams: { ...this.form.getRawValue(), pagina: page },
     });
+  }
+  displayCell(row: unknown, key: string) {
+    return key.endsWith('Id')
+      ? (this.names().get(key + ':' + at(row, key)) ?? 'Registro')
+      : text(at(row, key));
   }
   rowKey(row: unknown): string {
     return this.sub === 'versiones' ? String(at(row, 'rutinaVersionId')) : String(idOf(row));

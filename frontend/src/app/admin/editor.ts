@@ -8,6 +8,7 @@ import {
   output,
   signal,
   viewChild,
+  viewChildren,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -51,13 +52,10 @@ export class Editor implements OnInit {
   readonly cancelled = output<void>();
   private readonly api = inject(AdminApi);
   private readonly auth = inject(AuthService);
-  readonly lookup = new FormControl('', { nonNullable: true });
-  readonly lookupData = signal<Page<D.ProfesorVista> | null>(null);
-  readonly lookupLoading = signal(false);
-  readonly lookupScope = signal<'actuales' | 'disponibles'>('disponibles');
   readonly form = new FormRecord<FormControl<string>>({});
   readonly fields = signal<Field[]>([]);
   readonly pending = signal(false);
+  readonly selections = viewChildren(EntityPicker);
   readonly error = signal('');
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('confirmationDialog');
   readonly titles: Record<Operation, string> = {
@@ -73,48 +71,6 @@ export class Editor implements OnInit {
   };
   ngOnInit() {
     this.configure(true);
-    if (['link', 'unlink', 'replace'].includes(this.operation())) {
-      this.lookupScope.set(this.operation() === 'link' ? 'disponibles' : 'actuales');
-      void this.searchProfessors();
-    }
-  }
-  async searchProfessors(page = 0) {
-    this.lookupLoading.set(true);
-    this.error.set('');
-    try {
-      const current = this.lookupScope() === 'actuales';
-      this.lookupData.set(
-        await firstValueFrom(
-          this.api.get<Page<D.ProfesorVista>>(
-            current ? `alumnos/${this.id()}/profesores` : 'profesores',
-            {
-              q: this.lookup.value,
-              pagina: page,
-              tamanio: 10,
-              ...(!current ? { activo: true, vigente: true } : {}),
-            },
-          ),
-        ),
-      );
-    } catch (error) {
-      this.error.set(adminError(error));
-      this.lookupData.set(null);
-    } finally {
-      this.lookupLoading.set(false);
-    }
-  }
-  chooseProfessor(professor: D.ProfesorVista) {
-    const key =
-      this.operation() === 'replace'
-        ? this.lookupScope() === 'actuales'
-          ? 'profesorAnteriorId'
-          : 'profesorNuevoId'
-        : 'profesorId';
-    this.form.controls[key]?.setValue(String(professor.perfil?.id ?? ''));
-  }
-  switchScope(scope: 'actuales' | 'disponibles') {
-    this.lookupScope.set(scope);
-    void this.searchProfessors();
   }
   private field(
     key: string,

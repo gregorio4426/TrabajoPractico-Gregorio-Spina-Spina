@@ -48,8 +48,8 @@ describe('Statistics pages with real router input binding', () => {
         harness.detectChanges();
         expect(harness.routeNativeElement?.textContent).toContain('Ejercicio');
       });
-      const pick = [...harness.routeNativeElement!.querySelectorAll('button')].find((b) =>
-        /Ejercicio\s*·\s*#7/.test(b.textContent ?? ''),
+      const pick = [...harness.routeNativeElement!.querySelectorAll('button')].find(
+        (b) => b.textContent?.trim() === 'Ejercicio',
       )!;
       pick.click();
       harness.detectChanges();

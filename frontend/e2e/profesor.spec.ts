@@ -1,3 +1,4 @@
+import { selectEntity } from './entity-picker';
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -179,9 +180,7 @@ test.describe('PROFESOR · backend real', () => {
   test('dashboard and real progress graphs preserve exact recorded values', async ({ page }) => {
     await login(page);
     await expect(page.getByRole('link', { name: /Alumnos vinculados/ })).toBeVisible();
-    await page
-      .getByRole('button', { name: `${exercise.nombre} · #${exercise.id}`, exact: true })
-      .click();
+    await page.getByRole('button', { name: exercise.nombre, exact: true }).click();
     await expect(
       page.getByRole('heading', { name: 'Peso máximo registrado por sesión' }),
     ).toBeVisible();
@@ -206,7 +205,9 @@ test.describe('PROFESOR · backend real', () => {
     await login(page);
     await page.getByRole('link', { name: 'Mis alumnos', exact: true }).click();
     await page.getByRole('searchbox', { name: 'Buscar alumno' }).fill(student.email);
-    await page.getByRole('link', { name: `Ver alumno #${student.perfilId}`, exact: true }).click();
+    await page
+      .getByRole('link', { name: `${'Ver ' + studentName + ' Prueba'}`, exact: true })
+      .click();
     await expect(page.getByRole('heading', { name: `${studentName} Prueba` })).toBeVisible();
     await page.getByRole('combobox', { name: 'Nivel', exact: true }).selectOption('AVANZADO');
     await page
@@ -219,9 +220,9 @@ test.describe('PROFESOR · backend real', () => {
     await expect(
       page.getByRole('link', { name: 'Consultar versión asignada', exact: true }),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: /Ver versión histórica/ })).toHaveCount(2);
+    await expect(page.getByRole('link', { name: /Ver versión [0-9]/ })).toHaveCount(2);
     await page.getByRole('button', { name: 'Entrenamientos', exact: true }).click();
-    await page.getByRole('link', { name: /Ver entrenamiento #/ }).click();
+    await page.getByRole('link', { name: /Ver .* · / }).click();
     await expect(page.getByRole('heading', { name: 'Resultados registrados' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Auditoría del entrenamiento' })).toBeVisible();
     await expect(page.getByRole('button', { name: /Registrar serie/ })).toHaveCount(0);
@@ -236,34 +237,28 @@ test.describe('PROFESOR · backend real', () => {
       .getByLabel('Descripción de rutina *', { exact: true })
       .fill('Dos días con prescripción real');
     await page.getByLabel('Nombre del día 1 *', { exact: true }).fill('Pecho');
-    await page
-      .getByRole('combobox', { name: 'Ejercicio día 1, fila 1 *', exact: true })
-      .selectOption({ label: `#${exercise.id} · ${exercise.nombre} · PECHO` });
+    await selectEntity(page, 'Ejercicio del día 1, fila 1', exercise.nombre);
     await page.getByLabel('Series día 1, fila 1 *', { exact: true }).fill('2');
     await page.getByLabel('Repeticiones día 1, fila 1 *', { exact: true }).fill('8');
     await page.getByLabel('Peso sugerido día 1, fila 1', { exact: true }).fill('0');
     await page.getByRole('button', { name: 'Agregar día', exact: true }).click();
     await page.getByLabel('Nombre del día 2 *', { exact: true }).fill('Técnica');
-    await page
-      .getByRole('combobox', { name: 'Ejercicio día 2, fila 1 *', exact: true })
-      .selectOption({ label: `#${exercise.id} · ${exercise.nombre} · PECHO` });
+    await selectEntity(page, 'Ejercicio del día 2, fila 1', exercise.nombre);
     await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
     await confirm(page);
     await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=1$/);
     const id = Number(new URL(page.url()).pathname.split('/').pop());
     await expect(page.getByText('Rutina guardada correctamente. Versión 1.')).toBeVisible();
-    await page
-      .getByRole('combobox', { name: 'Alumno vinculado', exact: true })
-      .selectOption(String(student.perfilId));
+    await selectEntity(page, 'Alumno vinculado', student.email);
     await page.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
     await confirm(page);
-    await expect(page.getByText(/Asignación #.*guardada: versión 1/)).toBeVisible();
+    await expect(page.getByText(/Rutina asignada: versión 1/)).toBeVisible();
     await page.getByRole('link', { name: 'Editar última versión', exact: true }).click();
     await page.getByLabel('Nombre de rutina *', { exact: true }).fill(name + ' v2');
     await page.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
     await confirm(page);
     await expect(page).toHaveURL(/guardada=2$/);
-    await page.getByRole('link', { name: /Versión 1 ·/ }).click();
+    await page.getByRole('link', { name: /^Versión 1$/ }).click();
     await expect(page.getByRole('heading', { name: name, exact: true })).toBeVisible();
     await page.goto(`/profesor/rutinas/${id}`);
     await page.getByRole('button', { name: 'Archivar rutina', exact: true }).click();
@@ -275,19 +270,82 @@ test.describe('PROFESOR · backend real', () => {
       page.getByRole('link', { name: 'Editar última versión', exact: true }),
     ).toHaveCount(0);
     await page.goto('/profesor/rutinas');
-    await page.getByLabel('Consultar ID de rutina', { exact: true }).fill(String(id));
-    await page.getByRole('button', { name: 'Consultar por ID', exact: true }).click();
-    await expect(page.getByText(/Archivada\s*\. ID de versión exacta/)).toBeVisible();
+    await page.goto(`/profesor/rutinas/${id}`);
+    await expect(page.locator('p.admin-help').filter({ hasText: 'Archivada' })).toBeVisible();
+  });
+  test('selects multiple exercises by name, reorders prescriptions and duplicates the routine', async ({
+    page,
+  }) => {
+    await login(page);
+    await page.goto('/profesor/rutinas/nueva');
+    const name = 'Rutina flexible ' + unique();
+    await page.getByLabel('Nombre de rutina *', { exact: true }).fill(name);
+    await page
+      .getByLabel('Descripción de rutina *', { exact: true })
+      .fill('Selección y orden reales');
+    await page.getByLabel('Nombre del día 1 *', { exact: true }).fill('Fuerza');
+    await selectEntity(page, 'Ejercicio del día 1, fila 1', exercise.nombre);
+    await page.getByLabel('Repeticiones día 1, fila 1 *', { exact: true }).fill('8');
+    await page.getByLabel('Peso sugerido día 1, fila 1', { exact: true }).fill('0');
+    await page.getByRole('button', { name: 'Agregar ejercicio al día 1', exact: true }).click();
+    await selectEntity(page, 'Ejercicio del día 1, fila 2', exercise.nombre);
+    await page.getByLabel('Repeticiones día 1, fila 2 *', { exact: true }).fill('12');
+    await page.getByRole('button', { name: 'Subir ejercicio 2 del día 1', exact: true }).click();
+    await expect(page.getByLabel('Repeticiones día 1, fila 1 *', { exact: true })).toHaveValue(
+      '12',
+    );
+    await expect(
+      page.getByRole('heading', { name: 'Vista previa de la rutina', exact: true }),
+    ).toBeVisible();
+    await expect(page.locator('input[formcontrolname="ejercicioId"]')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
+    const [saved] = await Promise.all([
+      page.waitForResponse(
+        (r) => new URL(r.url()).pathname === '/api/rutinas' && r.request().method() === 'POST',
+      ),
+      confirm(page),
+    ]);
+    expect(saved.status()).toBe(201);
+    const original = await saved.json();
+    expect(
+      original.dias[0].ejercicios.map(
+        (e: { repsSugeridas: number; pesoSugerido: number | null }) => [
+          e.repsSugeridas,
+          e.pesoSugerido,
+        ],
+      ),
+    ).toEqual([
+      [12, null],
+      [8, 0],
+    ]);
+    await page.getByRole('link', { name: 'Duplicar rutina', exact: true }).click();
+    await expect(page.getByLabel('Nombre de rutina *', { exact: true })).toHaveValue(
+      name + ' (copia)',
+    );
+    await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
+    const [copied] = await Promise.all([
+      page.waitForResponse(
+        (r) => new URL(r.url()).pathname === '/api/rutinas' && r.request().method() === 'POST',
+      ),
+      confirm(page),
+    ]);
+    expect(copied.status()).toBe(201);
+    const duplicate = await copied.json();
+    expect(duplicate.id).not.toBe(original.id);
+    expect(duplicate.numeroVersion).toBe(1);
+    expect(
+      duplicate.dias[0].ejercicios.map((e: { repsSugeridas: number }) => e.repsSugeridas),
+    ).toEqual([12, 8]);
   });
   test('shared exercises CRUD and protected deletion of referenced exercises', async ({ page }) => {
     await login(page);
     await page.goto('/profesor/ejercicios');
     const name = 'Catálogo UI ' + unique();
     await page.getByRole('button', { name: 'Crear ejercicio', exact: true }).click();
-    await page.getByLabel('Nombre del catálogo *', { exact: true }).fill(name);
-    await page.getByLabel('Descripción del catálogo *', { exact: true }).fill('Catálogo real');
+    await page.getByLabel('Nombre del ejercicio *', { exact: true }).fill(name);
+    await page.getByLabel('Descripción del ejercicio *', { exact: true }).fill('Catálogo real');
     await page
-      .getByRole('combobox', { name: 'Grupo muscular del catálogo *', exact: true })
+      .getByRole('combobox', { name: 'Grupo muscular del ejercicio *', exact: true })
       .selectOption('ESPALDA');
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
@@ -297,10 +355,10 @@ test.describe('PROFESOR · backend real', () => {
     await page
       .getByRole('row')
       .filter({ has: page.getByRole('cell', { name: new RegExp(name) }) })
-      .getByRole('button', { name: /Editar ejercicio #/ })
+      .getByRole('button', { name: /Editar / })
       .click();
     await page
-      .getByLabel('Descripción del catálogo *', { exact: true })
+      .getByLabel('Descripción del ejercicio *', { exact: true })
       .fill('Descripción actualizada');
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
@@ -310,7 +368,7 @@ test.describe('PROFESOR · backend real', () => {
     await page
       .getByRole('row')
       .filter({ has: page.getByRole('cell', { name: new RegExp(name) }) })
-      .getByRole('button', { name: /Eliminar ejercicio #/ })
+      .getByRole('button', { name: /Eliminar / })
       .click();
     await confirm(page);
     await expect(page.getByText('Ejercicio eliminado del catálogo.')).toBeVisible();
@@ -318,9 +376,7 @@ test.describe('PROFESOR · backend real', () => {
       .getByRole('searchbox', { name: 'Nombre del ejercicio', exact: true })
       .fill(exercise.nombre);
     await page.getByRole('button', { name: 'Buscar ejercicios', exact: true }).click();
-    await page
-      .getByRole('button', { name: `Eliminar ejercicio #${exercise.id}`, exact: true })
-      .click();
+    await page.getByRole('button', { name: `Eliminar ${exercise.nombre}`, exact: true }).click();
     await confirm(page);
     await expect(page.getByRole('alert')).toContainText('referenciado');
   });

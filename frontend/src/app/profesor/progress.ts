@@ -201,7 +201,7 @@ export class Progress {
     metric: 'pesoMaximo' | 'repeticionesTotales' | 'volumenRegistrado',
   ): ChartPoint[] {
     return (this.evolution()?.contenido ?? []).map((p) => ({
-      label: `${p.fechaEfectiva} · sesión #${p.sesionId} · alumno #${p.alumnoId} · ${p.nombreHistorico}`,
+      label: `${p.fechaEfectiva} · ${p.nombreHistorico}`,
       value: p.datos?.[metric],
       link: p.sesionId ? `${this.sessionBase()}/${p.sesionId}` : undefined,
       note: [

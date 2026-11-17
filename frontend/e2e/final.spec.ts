@@ -1,3 +1,4 @@
+import { selectEntity } from './entity-picker';
 import { test, expect, APIRequestContext, Page } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -273,7 +274,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
           if (path === `/alumno/sesiones/${open.id}`) {
             await page
               .getByRole('button', {
-                name: new RegExp('bloque #' + routine.dias[0].ejercicios[0].id + '$'),
+                name: /posición 1$/,
               })
               .click();
             await expect(
@@ -312,12 +313,10 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
       await tp.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
       await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
       await expect(tp).toHaveURL(/guardada=2$/);
-      await tp
-        .getByRole('combobox', { name: 'Alumno vinculado', exact: true })
-        .selectOption(String(student.perfilId));
+      await selectEntity(tp, 'Alumno vinculado', studentAccount.email);
       await tp.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
       await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
-      await expect(tp.getByText(/Asignación #.*guardada: versión 2/)).toBeVisible();
+      await expect(tp.getByText(/Rutina asignada: versión 2/)).toBeVisible();
       await enter(sp, student, '/alumno/rutina');
       await expect(sp.getByRole('heading', { name, exact: true })).toBeVisible();
       await expect(sp.locator('main')).toContainText('Versión 2');
@@ -371,7 +370,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
       await sp!.goto(`/alumno/sesiones/${open.id}`);
       await sp!
         .getByRole('button', {
-          name: new RegExp('bloque #' + routine.dias[0].ejercicios[0].id + '$'),
+          name: /posición 1$/,
         })
         .click();
       await sp!.getByLabel('Repeticiones realizadas *', { exact: true }).fill('10');
@@ -488,7 +487,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     await enter(page, student, '/alumno/profesores');
     await page.getByLabel('Buscar profesor por nombre, email o especialidad').fill(account.email);
     await page
-      .getByRole('button', { name: 'Vincular profesor #' + created.perfil.id, exact: true })
+      .getByRole('button', { name: 'Vincular a TutorInactivo Prueba', exact: true })
       .click();
     const [response] = await Promise.all([
       page.waitForResponse(

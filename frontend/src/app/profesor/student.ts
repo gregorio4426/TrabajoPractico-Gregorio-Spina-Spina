@@ -52,7 +52,7 @@ export class Student {
     this.loading.set(true);
     this.error.set('');
     if (!Number.isSafeInteger(this.id()) || this.id() < 1) {
-      this.error.set('El ID del alumno no es válido.');
+      this.error.set('El alumno seleccionado no está disponible.');
       this.loading.set(false);
       return;
     }

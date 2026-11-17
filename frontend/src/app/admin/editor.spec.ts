@@ -23,10 +23,6 @@ describe('ADMIN reactive forms', () => {
     fixture.componentRef.setInput('initial', initial);
     fixture.componentRef.setInput('id', 7);
     fixture.detectChanges();
-    if (['link', 'unlink', 'replace'].includes(op))
-      TestBed.inject(HttpTestingController)
-        .expectOne((r) => r.url.endsWith('/profesores'))
-        .flush({ contenido: [], pagina: 0, tamanio: 10, totalElementos: 0, totalPaginas: 0 });
     return fixture;
   }
   it('requires at least 12 characters for a new ADMIN and removes irrelevant profile requirements', () => {
@@ -81,16 +77,9 @@ describe('ADMIN reactive forms', () => {
     expect(f.componentInstance.form.controls['nombre']!.value).toBe('Ana');
     expect(f.componentInstance.form.controls['fechaNacimiento']!.value).toBe('');
   });
-  it('submits a standalone professor search without a browser reload', () => {
+  it('renders relationship selection without a numeric ID input', () => {
     const f = create('link', 'alumnos');
-    f.componentInstance.lookup.setValue('docente@example.test');
-    const event = new Event('submit', { bubbles: true, cancelable: true });
-    f.nativeElement.querySelector('form.admin-filters').dispatchEvent(event);
-    expect(event.defaultPrevented).toBe(true);
-    const req = TestBed.inject(HttpTestingController).expectOne(
-      (r) => r.url === '/api/admin/profesores',
-    );
-    expect(req.request.params.get('q')).toBe('docente@example.test');
-    req.flush({ contenido: [], pagina: 0, tamanio: 10, totalElementos: 0, totalPaginas: 0 });
+    expect(f.nativeElement.querySelector('app-entity-picker')).not.toBeNull();
+    expect(f.nativeElement.querySelector('input[formcontrolname="profesorId"]')).toBeNull();
   });
 });

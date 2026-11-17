@@ -34,14 +34,14 @@
     <h2>{{ selected() ? 'Editar ejercicio #' + selected()?.id : 'Nuevo ejercicio' }}</h2>
     <form [formGroup]="form" (ngSubmit)="ask('save')">
       <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
-        <label>Nombre del catálogo *<input formControlName="nombre" maxlength="60" /></label
+        <label>Nombre del ejercicio *<input formControlName="nombre" maxlength="60" /></label
         ><label
-          >Descripción del catálogo *<textarea
+          >Descripción del ejercicio *<textarea
             formControlName="descripcion"
             maxlength="255"
           ></textarea></label
         ><label
-          >Grupo muscular del catálogo *<select formControlName="grupoMuscular">
+          >Grupo muscular del ejercicio *<select formControlName="grupoMuscular">
             <option value="">Seleccionar</option>
             @for (group of groups; track group) {
               <option [value]="group">{{ text(group) }}</option>
@@ -81,15 +81,15 @@
       <tbody>
         @for (e of rows(); track e.id) {
           <tr>
-            <td>#{{ e.id }} · {{ e.nombre }}</td>
+            <td>{{ e.nombre }}</td>
             <td>{{ text(e.grupoMuscular) }}</td>
             <td>{{ e.descripcion }}</td>
             <td>
               <button class="secondary" (click)="open(e)" [disabled]="pending()">
-                Editar ejercicio #{{ e.id }}
+                Editar {{ e.nombre }}
               </button>
               <button class="secondary" (click)="ask('delete', e)" [disabled]="pending()">
-                Eliminar ejercicio #{{ e.id }}
+                Eliminar {{ e.nombre }}
               </button>
             </td>
           </tr>

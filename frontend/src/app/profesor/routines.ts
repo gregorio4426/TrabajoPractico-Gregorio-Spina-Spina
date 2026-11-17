@@ -29,10 +29,21 @@ import { profesorError } from './utils';
           <option value="own">Mis rutinas</option>
           <option value="all">Todas las disponibles</option>
         </select></label
+      ><label
+        >Cantidad de días<select formControlName="days">
+          <option value="">Todas</option>
+          @for (n of dayCounts(); track n) {
+            <option [value]="n">{{ n }} días</option>
+          }
+        </select></label
       ><button class="secondary" [disabled]="loading()">Recargar catálogo</button>
     </form>
     <form class="admin-filters" (submit)="$event.preventDefault(); lookup()">
-      <app-entity-picker kind="rutinas" label="Rutina" [formControl]="filters.controls.id" /><button class="secondary">Abrir rutina seleccionada</button>
+      <app-entity-picker kind="rutinas" label="Rutina" [formControl]="filters.controls.id" /><button
+        class="secondary"
+      >
+        Abrir rutina seleccionada
+      </button>
     </form>
     @if (error()) {
       <p class="error-message" role="alert">{{ error() }}</p>
@@ -49,12 +60,11 @@ import { profesorError } from './utils';
           <div>
             <strong>{{ r.nombre }} · versión {{ r.numeroVersion }}</strong>
             <p>
+              {{ r.dias?.length }} días · {{ r.alumnos?.length ?? 0 }} alumnos con acceso vigente ·
               {{ r.descripcion }} · Autor: {{ r.profesor }}
               {{ r.profesorId === auth.session()?.perfilId ? '(vos)' : '' }}
             </p>
-            <a class="admin-link" [routerLink]="['/profesor/rutinas', r.id]"
-              >Ver rutina #{{ r.id }}</a
-            >
+            <a class="admin-link" [routerLink]="['/profesor/rutinas', r.id]">Ver {{ r.nombre }}</a>
           </div>
         } @empty {
           <p class="admin-empty">No hay rutinas con estos filtros.</p>
@@ -84,7 +94,12 @@ export class Routines {
   readonly error = signal('');
   readonly loading = signal(false);
   readonly page = signal(0);
-  readonly filters = inject(FormBuilder).nonNullable.group({ q: '', scope: 'own', id: '' });
+  readonly filters = inject(FormBuilder).nonNullable.group({
+    q: '',
+    scope: 'own',
+    id: '',
+    days: '',
+  });
   private readonly criteria = signal(this.filters.getRawValue());
   private seq = 0;
   readonly filtered = computed(() => {
@@ -93,9 +108,15 @@ export class Routines {
     return this.data().filter(
       (r) =>
         (c.scope === 'all' || r.profesorId === this.auth.session()?.perfilId) &&
+        (!c.days || r.dias?.length === Number(c.days)) &&
         (!q || `${r.nombre} ${r.descripcion} ${r.profesor}`.toLocaleLowerCase('es').includes(q)),
     );
   });
+  readonly dayCounts = computed(() =>
+    [...new Set(this.data().map((r) => r.dias?.length ?? 0))]
+      .filter((n) => n > 0)
+      .sort((a, b) => a - b),
+  );
   readonly pages = computed(() => Math.ceil(this.filtered().length / 20));
   readonly visible = computed(() => this.filtered().slice(this.page() * 20, this.page() * 20 + 20));
   constructor() {
@@ -108,7 +129,7 @@ export class Routines {
   lookup() {
     const id = Number(this.filters.controls.id.value);
     if (Number.isSafeInteger(id) && id > 0) void this.router.navigate(['/profesor/rutinas', id]);
-    else this.error.set('Ingresá un ID entero positivo.');
+    else this.error.set('Seleccioná una rutina del listado.');
   }
   async load() {
     const seq = ++this.seq;

@@ -251,7 +251,7 @@ export class StudentSession {
       case 'date':
         return `Se corregirá la fecha efectiva a ${this.dateForm.controls.fecha.value}. La fecha original y la asignación histórica se conservan. Motivo: ${this.dateForm.controls.motivo.value}`;
       default:
-        return `Operación ${this.action() === 'annul' ? 'anular' : this.action() === 'restore' ? 'restaurar' : 'corregir'} sobre la serie #${this.selectedSeries()?.id}. Motivo: ${this.correction.controls.motivo.value}. El cambio quedará auditado; no se borra el historial.`;
+        return `Operación ${this.action() === 'annul' ? 'anular' : this.action() === 'restore' ? 'restaurar' : 'corregir'} sobre la serie ${this.selectedSeries()?.numeroSerie}. Motivo: ${this.correction.controls.motivo.value}. El cambio quedará auditado; no se borra el historial.`;
     }
   }
   async save() {

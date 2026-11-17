@@ -12,9 +12,8 @@
   }
   @if (['link', 'unlink', 'replace'].includes(operation())) {
     <p class="admin-help">
-      Buscá y seleccioná profesores por nombre o email. Vincular requiere perfiles
-      con los roles vigentes. Reemplazar conserva los demás profesores y todo el historial del
-      alumno.
+      Buscá y seleccioná profesores por nombre o email. Vincular requiere perfiles con los roles
+      vigentes. Reemplazar conserva los demás profesores y todo el historial del alumno.
     </p>
   }
   @if (error()) {
@@ -25,9 +24,16 @@
       @for (field of fields(); track field.key) {
         <label [class.wide]="field.type === 'textarea'"
           >{{ field.label }} {{ field.required ? '*' : '(opcional)' }}
-          @if (['profesorId','profesorAnteriorId','profesorNuevoId'].includes(field.key)) {
- <app-entity-picker kind="profesores" [label]="field.label" [formControlName]="field.key" />
- } @else if (field.options) {
+          @if (['profesorId', 'profesorAnteriorId', 'profesorNuevoId'].includes(field.key)) {
+            <app-entity-picker
+              kind="profesores"
+              [parentStudentId]="
+                field.key === 'profesorAnteriorId' || operation() === 'unlink' ? id() : null
+              "
+              [label]="field.label"
+              [formControlName]="field.key"
+            />
+          } @else if (field.options) {
             <select [formControlName]="field.key">
               <option value="">Seleccionar</option>
               @for (option of field.options; track option) {
@@ -77,15 +83,23 @@
 <dialog #confirmationDialog class="dialog admin-confirm" aria-labelledby="admin-confirm-title">
   <h2 id="admin-confirm-title">¿Confirmar {{ titles[operation()].toLowerCase() }}?</h2>
   <p>
-    Se aplicará el cambio {{ id() ? 'al registro #' + id() : 'a una nueva cuenta' }}. Revisá los
+    Se aplicará el cambio {{ id() ? 'al registro seleccionado' : 'a una nueva cuenta' }}. Revisá los
     datos antes de continuar.
   </p>
   <dl class="admin-details">
     @for (field of fields(); track field.key) {
-      @if (field.key !== 'password') {
+      @if (field.key !== 'password' && !field.key.endsWith('Id')) {
         <div>
           <dt>{{ field.label }}</dt>
           <dd>{{ form.controls[field.key]?.value || 'Sin dato' }}</dd>
+        </div>
+      }
+    }
+    @for (picker of selections(); track $index) {
+      @if (picker.selected(); as choice) {
+        <div>
+          <dt>{{ picker.label() }}</dt>
+          <dd>{{ choice.label }} · {{ choice.detail }}</dd>
         </div>
       }
     }

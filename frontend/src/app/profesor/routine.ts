@@ -108,7 +108,7 @@ export class Routine {
           this.api.assign(Number(this.form.controls.alumnoId.value), this.id()),
         );
         this.success.set(
-          `Asignación #${result.id} guardada: versión ${result.numeroVersion}. La asignación anterior del alumno se desactiva.`,
+          `Rutina asignada: versión ${result.numeroVersion}. La asignación anterior del alumno se desactiva.`,
         );
       }
     } catch (e) {

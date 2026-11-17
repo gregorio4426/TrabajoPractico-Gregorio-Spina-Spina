@@ -39,6 +39,10 @@
           ></textarea>
         </label>
       </section>
+      <p class="admin-help">
+        {{ days.length }} días. Podés agregar tantos ejercicios como necesites en cada día y cambiar
+        su orden.
+      </p>
       <div formArrayName="dias">
         @for (day of days.controls; track day; let di = $index) {
           <section class="teacher-day" [formGroupName]="di">
@@ -64,7 +68,13 @@
             <div formArrayName="ejercicios">
               @for (exercise of day.controls.ejercicios.controls; track exercise; let ei = $index) {
                 <div class="teacher-exercise-row" [formGroupName]="ei">
-                  <app-entity-picker kind="ejercicios" [label]="'Ejercicio del día ' + (di+1) + ', fila ' + (ei+1)" [options]="exerciseOptions()" formControlName="ejercicioId" /> <label
+                  <app-entity-picker
+                    kind="ejercicios"
+                    [label]="'Ejercicio del día ' + (di + 1) + ', fila ' + (ei + 1)"
+                    [options]="exerciseOptions()"
+                    formControlName="ejercicioId"
+                  />
+                  <label
                     >Series día {{ di + 1 }}, fila {{ ei + 1 }} *<input
                       type="number"
                       min="1"
@@ -86,15 +96,48 @@
                   ><button type="button" class="secondary" (click)="removeExercise(di, ei)">
                     Quitar ejercicio {{ ei + 1 }} del día {{ di + 1 }}
                   </button>
+                  <div class="admin-actions">
+                    <button
+                      type="button"
+                      class="secondary"
+                      [disabled]="ei === 0"
+                      (click)="moveExercise(di, ei, -1)"
+                    >
+                      Subir ejercicio {{ ei + 1 }} del día {{ di + 1 }}
+                    </button>
+                    <button
+                      type="button"
+                      class="secondary"
+                      [disabled]="ei + 1 === day.controls.ejercicios.length"
+                      (click)="moveExercise(di, ei, 1)"
+                    >
+                      Bajar ejercicio {{ ei + 1 }} del día {{ di + 1 }}
+                    </button>
+                  </div>
                 </div>
               }
             </div>
-            <button type="button" class="secondary" (click)="addExercise(di)">
+            <button type="button" class="primary" (click)="addExercise(di)">
               Agregar ejercicio al día {{ di + 1 }}
             </button>
           </section>
         }
       </div>
+      <section class="admin-panel">
+        <h2>Vista previa de la rutina</h2>
+        <h3>{{ form.controls.nombre.value }}</h3>
+        @for (day of days.controls; track day) {
+          <h4>{{ day.controls.nombre.value || 'Día sin nombre' }}</h4>
+          @for (exercise of day.controls.ejercicios.controls; track exercise) {
+            <p>
+              {{ exerciseName(exercise.controls.ejercicioId.value) }} ·
+              {{ exercise.controls.seriesSugeridas.value }} series ×
+              {{ exercise.controls.repsSugeridas.value }} repeticiones · Peso sugerido:
+              {{ exercise.controls.pesoSugerido.value ?? 'Sin peso sugerido' }}
+            </p>
+          }
+        }
+      </section>
       @if (days.hasError('duplicateOrder')) {
         <p class="teacher-form-error">Los números de orden de los días no se pueden repetir.</p>
       }

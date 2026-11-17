@@ -28,7 +28,7 @@ import { profesorError } from './utils';
     @if (data(); as s) {
       <p>
         <a class="admin-link" [routerLink]="['/profesor/alumnos', s.alumnoId]"
-          >Volver al alumno #{{ s.alumnoId }}</a
+          >Volver al perfil del alumno</a
         >
       </p>
       <section class="admin-panel">

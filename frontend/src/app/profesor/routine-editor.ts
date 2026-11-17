@@ -33,6 +33,8 @@ export class RoutineEditor {
   private readonly fb = inject(FormBuilder);
   private readonly confirmation = viewChild.required<Confirm>('confirmation');
   readonly id = Number(this.route.snapshot.paramMap.get('id'));
+  readonly copyVersion = Number(this.route.snapshot.queryParamMap?.get('version')) || null;
+  readonly copyFrom = Number(this.route.snapshot.queryParamMap?.get('copiar')) || null;
   readonly editing = this.route.snapshot.paramMap.has('id');
   readonly exercises = signal<D.EjercicioResponse[]>([]);
   readonly loading = signal(true);
@@ -80,15 +82,25 @@ export class RoutineEditor {
       const exercises = await firstValueFrom(this.api.exercises());
       this.exercises.set(exercises);
       this.days.clear();
-      if (this.editing) {
-        if (!Number.isSafeInteger(this.id) || this.id < 1) throw new Error('ID inválido');
-        const routine = await firstValueFrom(this.api.routine(this.id));
-        if (routine.profesorId !== this.auth.session()?.perfilId || routine.archivada) {
+      if (this.editing || this.copyFrom) {
+        const sourceId = this.copyFrom ?? this.id;
+        if (!Number.isSafeInteger(sourceId) || sourceId < 1) throw new Error('ID inválido');
+        const routine = await firstValueFrom(
+          this.copyFrom && this.copyVersion
+            ? this.api.version(sourceId, this.copyVersion)
+            : this.api.routine(sourceId),
+        );
+        if (
+          routine.profesorId !== this.auth.session()?.perfilId ||
+          (this.editing && routine.archivada)
+        ) {
           this.error.set('Solo podés editar tus propias rutinas no archivadas.');
           return;
         }
         this.form.patchValue({
-          nombre: routine.nombre ?? '',
+          nombre: this.copyFrom
+            ? (routine.nombre ?? '').slice(0, 247) + ' (copia)'
+            : (routine.nombre ?? ''),
           descripcion: routine.descripcion ?? '',
         });
         for (const day of routine.dias ?? []) this.days.push(this.day(day));
@@ -116,13 +128,24 @@ export class RoutineEditor {
   removeExercise(day: number, index: number) {
     this.days.at(day).controls.ejercicios.removeAt(index);
   }
+  exerciseName(value: unknown) {
+    return this.exercises().find((e) => e.id === Number(value))?.nombre ?? 'Seleccionar ejercicio';
+  }
+  moveExercise(day: number, index: number, offset: number) {
+    const list = this.days.at(day).controls.ejercicios,
+      target = index + offset;
+    if (target < 0 || target >= list.length) return;
+    const row = list.at(index);
+    list.removeAt(index);
+    list.insert(target, row);
+  }
   confirm() {
     this.form.markAllAsTouched();
     this.error.set('');
     if (this.pending() || !this.ready()) return;
     if (this.form.invalid || this.days.controls.some((d) => d.controls.ejercicios.length === 0)) {
       this.error.set(
-        'Revisá los campos: se requiere al menos un día y un ejercicio por día; órdenes de día únicos, IDs válidos, series/repeticiones enteras positivas y pesos opcionales finitos no negativos.',
+        'Revisá los campos: se requiere al menos un día y un ejercicio por día; órdenes de día únicos, ejercicios seleccionados, series/repeticiones enteras positivas y pesos opcionales finitos no negativos.',
       );
       return;
     }

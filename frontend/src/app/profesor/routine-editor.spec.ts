@@ -13,7 +13,7 @@ describe('PROFESOR routine forms', () => {
     TestBed.resetTestingModule();
     localStorage.clear();
   });
-  async function setup(edit = false, owner = 1) {
+  async function setup(edit = false, owner = 1, copy = false) {
     TestBed.configureTestingModule({
       imports: [RoutineEditor],
       providers: [
@@ -22,7 +22,12 @@ describe('PROFESOR routine forms', () => {
         provideHttpClientTesting(),
         {
           provide: ActivatedRoute,
-          useValue: { snapshot: { paramMap: convertToParamMap(edit ? { id: '7' } : {}) } },
+          useValue: {
+            snapshot: {
+              paramMap: convertToParamMap(edit ? { id: '7' } : {}),
+              queryParamMap: convertToParamMap(copy ? { copiar: '7', version: '1' } : {}),
+            },
+          },
         },
       ],
     });
@@ -30,17 +35,15 @@ describe('PROFESOR routine forms', () => {
     const http = TestBed.inject(HttpTestingController);
     http.expectOne('/api/ejercicios').flush([{ id: 3, nombre: 'Press', grupoMuscular: 'PECHO' }]);
     await Promise.resolve();
-    if (edit) {
-      http
-        .expectOne('/api/rutinas/7')
-        .flush({
-          id: 7,
-          profesorId: owner,
-          archivada: false,
-          nombre: 'Plan',
-          descripcion: 'Real',
-          dias: [],
-        });
+    if (edit || copy) {
+      http.expectOne(copy ? '/api/rutinas/7/versiones/1' : '/api/rutinas/7').flush({
+        id: 7,
+        profesorId: owner,
+        archivada: false,
+        nombre: 'Plan',
+        descripcion: 'Real',
+        dias: [],
+      });
       await Promise.resolve();
     }
     fixture.detectChanges();
@@ -85,5 +88,28 @@ describe('PROFESOR routine forms', () => {
     expect(editor.ready()).toBe(false);
     expect(editor.error()).toContain('propias');
     TestBed.inject(HttpTestingController).expectNone((r) => r.method === 'PUT');
+  });
+  it('serializes reordered exercises without losing their individual prescriptions', async () => {
+    const e = await setup();
+    e.days
+      .at(0)
+      .controls.ejercicios.at(0)
+      .patchValue({ ejercicioId: 3, repsSugeridas: 8, pesoSugerido: 0 });
+    e.addExercise(0);
+    e.days
+      .at(0)
+      .controls.ejercicios.at(1)
+      .patchValue({ ejercicioId: 3, repsSugeridas: 12, pesoSugerido: null });
+    e.moveExercise(0, 1, -1);
+    expect(e.payload().dias[0]?.ejercicios.map((x) => [x.repsSugeridas, x.pesoSugerido])).toEqual([
+      [12, null],
+      [8, 0],
+    ]);
+  });
+  it('duplicates the selected historical version as a new routine instead of editing its family', async () => {
+    const e = await setup(false, 1, true);
+    expect(e.editing).toBe(false);
+    expect(e.form.controls.nombre.value).toBe('Plan (copia)');
+    expect(e.copyVersion).toBe(1);
   });
 });

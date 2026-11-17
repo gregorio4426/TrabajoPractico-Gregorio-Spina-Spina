@@ -145,7 +145,7 @@ export function label(key: string): string {
   return (
     (
       {
-        id: 'ID',
+        id: 'Orden de registro',
         cuenta: 'Cuenta de acceso',
         perfil: 'Perfil',
         perfilVigente: 'Perfil vigente',
@@ -161,8 +161,8 @@ export function label(key: string): string {
         fechaEfectiva: 'Fecha efectiva',
         rutinaVersionId: 'ID exacto de versión',
         numeroVersion: 'Número de versión',
-        actorId: 'ID del actor',
-        usuarioId: 'ID de cuenta afectada',
+        actorId: 'Actor',
+        usuarioId: 'Cuenta afectada',
         accion: 'Acción',
         emailContacto: 'Email de contacto',
       } as Record<string, string>

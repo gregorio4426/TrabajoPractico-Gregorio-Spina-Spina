@@ -1,6 +1,6 @@
 <p><a class="admin-link" routerLink="/alumno/sesiones">← Volver a mis sesiones</a></p>
 <div class="page-intro admin-kicker">
-  <h1>Entrenamiento #{{ id() }}</h1>
+  <h1>Mi entrenamiento</h1>
   <button class="secondary" (click)="load()" [disabled]="loading() || pending()">
     Recargar sesión
   </button>
@@ -47,7 +47,7 @@
               {{ text(e.pesoSugerido) }}
             </p>
             <button class="primary" (click)="choose(e)" [disabled]="pending()">
-              Registrar {{ e.ejercicioNombre }} · bloque #{{ e.id }}
+              Registrar {{ e.ejercicioNombre }} · posición {{ $index + 1 }}
             </button>
           </div>
         }
@@ -142,10 +142,8 @@
   @if (edit() === 'series' && selectedSeries(); as selected) {
     <section class="admin-panel">
       <h2>
-        {{
-          action() === 'annul' ? 'Anular' : action() === 'restore' ? 'Restaurar' : 'Corregir'
-        }}
-        serie #{{ selectedSeries()?.id }}
+        {{ action() === 'annul' ? 'Anular' : action() === 'restore' ? 'Restaurar' : 'Corregir' }}
+        serie {{ selectedSeries()?.numeroSerie }}
       </h2>
       <form [formGroup]="correction" (ngSubmit)="ask(action())">
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
@@ -217,7 +215,7 @@
             ><small>peso registrado</small>
           </div>
           <div>
-            <strong>#{{ serie.id }}</strong
+            <strong>Serie {{ serie.numeroSerie }}</strong
             ><small>registro</small>
           </div>
         </div>
@@ -227,17 +225,17 @@
         <div class="admin-actions">
           @if (!serie.anulada) {
             <button class="secondary" (click)="editSeries(serie, 'correct')" [disabled]="pending()">
-              Corregir serie #{{ serie.id }}</button
+              Corregir serie {{ serie.numeroSerie }}</button
             ><button
               class="secondary"
               (click)="editSeries(serie, 'annul')"
               [disabled]="pending() || (closed() && validSeries(serie) && validCount() <= 1)"
             >
-              Anular serie #{{ serie.id }}
+              Anular serie {{ serie.numeroSerie }}
             </button>
           } @else {
             <button class="secondary" (click)="editSeries(serie, 'restore')" [disabled]="pending()">
-              Restaurar serie #{{ serie.id }}
+              Restaurar serie {{ serie.numeroSerie }}
             </button>
           }
         </div>
