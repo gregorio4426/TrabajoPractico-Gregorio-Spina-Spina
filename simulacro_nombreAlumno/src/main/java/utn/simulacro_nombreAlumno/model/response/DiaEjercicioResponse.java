@@ -27,4 +27,11 @@ public class DiaEjercicioResponse {
         this.repsSugeridas = repsSugeridas;
         this.pesoSugerido = pesoSugerido;
     }
+    private Integer bloqueOrden;
+    private String bloqueNombre;
+    private Integer vueltas;
+    private Integer ordenEnBloque;
+    private Integer descansoEjercicioSegundos;
+    private Integer descansoVueltaSegundos;
+
 }

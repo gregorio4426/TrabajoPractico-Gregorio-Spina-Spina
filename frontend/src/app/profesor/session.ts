@@ -28,11 +28,15 @@ import { profesorError } from './utils';
     @if (data(); as s) {
       <p>
         <a class="admin-link" [routerLink]="['/profesor/alumnos', s.alumnoId]"
-          >Volver al alumno #{{ s.alumnoId }}</a
+          >Volver al perfil del alumno</a
         >
       </p>
       <section class="admin-panel">
         <h2>Resultados registrados</h2>
+        <section class="admin-panel">
+          <h2>Comentario del alumno</h2>
+          <p class="session-comment">{{ data()?.comentario || 'Sin comentario.' }}</p>
+        </section>
         <app-record-view [value]="s" />
       </section>
       <section class="admin-panel">

@@ -35,16 +35,24 @@ export class RecordView {
   readonly label = label;
   readonly text = text;
   entries() {
-    return Object.entries(record(this.value())).map(([key, value]): [string, unknown] => {
-      if ((key === 'antes' || key === 'despues') && typeof value === 'string') {
-        try {
-          return [key, JSON.parse(value) as unknown];
-        } catch {
-          /* Historical audit may contain descriptive text. */
+    return Object.entries(record(this.value()))
+      .filter(
+        ([key]) =>
+          key !== 'id' &&
+          !key.endsWith('Id') &&
+          !key.toLowerCase().endsWith('_id') &&
+          key !== 'ids',
+      )
+      .map(([key, value]): [string, unknown] => {
+        if ((key === 'antes' || key === 'despues') && typeof value === 'string') {
+          try {
+            return [key, JSON.parse(value) as unknown];
+          } catch {
+            /* Historical audit may contain descriptive text. */
+          }
         }
-      }
-      return [key, value];
-    });
+        return [key, value];
+      });
   }
   isObject(value: unknown) {
     return value !== null && typeof value === 'object' && !Array.isArray(value);

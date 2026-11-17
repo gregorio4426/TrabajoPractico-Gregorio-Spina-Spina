@@ -1,6 +1,6 @@
 <p><a class="admin-link" routerLink="/alumno/sesiones">← Volver a mis sesiones</a></p>
 <div class="page-intro admin-kicker">
-  <h1>Entrenamiento #{{ id() }}</h1>
+  <h1>Mi entrenamiento</h1>
   <button class="secondary" (click)="load()" [disabled]="loading() || pending()">
     Recargar sesión
   </button>
@@ -39,15 +39,24 @@
     @if (day(); as d) {
       <section class="admin-panel">
         <h2>Elegí el ejercicio que estás haciendo</h2>
-        @for (e of d.ejercicios ?? []; track e.id) {
+        @for (e of d.ejercicios ?? []; track e.id; let ei = $index) {
+          @if (
+            e.bloqueOrden != null &&
+            (ei === 0 || d.ejercicios?.[ei - 1]?.bloqueOrden !== e.bloqueOrden)
+          ) {
+            <app-training-block [row]="e" [exercises]="d.ejercicios ?? []" />
+          }
           <div class="student-prescription">
             <strong>{{ e.ejercicioNombre }}</strong>
+            @if (e.descansoEjercicioSegundos != null) {
+              <p>Descanso después del ejercicio: {{ e.descansoEjercicioSegundos }} s</p>
+            }
             <p>
               Sugerido: {{ e.seriesSugeridas }} series × {{ e.repsSugeridas }} repeticiones · Peso
               {{ text(e.pesoSugerido) }}
             </p>
             <button class="primary" (click)="choose(e)" [disabled]="pending()">
-              Registrar {{ e.ejercicioNombre }} · bloque #{{ e.id }}
+              Registrar {{ e.ejercicioNombre }} · posición {{ $index + 1 }}
             </button>
           </div>
         }
@@ -142,10 +151,8 @@
   @if (edit() === 'series' && selectedSeries(); as selected) {
     <section class="admin-panel">
       <h2>
-        {{
-          action() === 'annul' ? 'Anular' : action() === 'restore' ? 'Restaurar' : 'Corregir'
-        }}
-        serie #{{ selectedSeries()?.id }}
+        {{ action() === 'annul' ? 'Anular' : action() === 'restore' ? 'Restaurar' : 'Corregir' }}
+        serie {{ selectedSeries()?.numeroSerie }}
       </h2>
       <form [formGroup]="correction" (ngSubmit)="ask(action())">
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
@@ -217,7 +224,7 @@
             ><small>peso registrado</small>
           </div>
           <div>
-            <strong>#{{ serie.id }}</strong
+            <strong>Serie {{ serie.numeroSerie }}</strong
             ><small>registro</small>
           </div>
         </div>
@@ -227,17 +234,17 @@
         <div class="admin-actions">
           @if (!serie.anulada) {
             <button class="secondary" (click)="editSeries(serie, 'correct')" [disabled]="pending()">
-              Corregir serie #{{ serie.id }}</button
+              Corregir serie {{ serie.numeroSerie }}</button
             ><button
               class="secondary"
               (click)="editSeries(serie, 'annul')"
               [disabled]="pending() || (closed() && validSeries(serie) && validCount() <= 1)"
             >
-              Anular serie #{{ serie.id }}
+              Anular serie {{ serie.numeroSerie }}
             </button>
           } @else {
             <button class="secondary" (click)="editSeries(serie, 'restore')" [disabled]="pending()">
-              Restaurar serie #{{ serie.id }}
+              Restaurar serie {{ serie.numeroSerie }}
             </button>
           }
         </div>
@@ -246,7 +253,26 @@
       <p class="admin-empty">Todavía no registraste series en esta sesión.</p>
     }
   </section>
+  @if (closed()) {
+    <section class="admin-panel">
+      <h2>Comentario del entrenamiento</h2>
+      <p class="session-comment">{{ data()?.comentario || 'No agregaste comentarios.' }}</p>
+    </section>
+  }
   @if (!closed()) {
+    <section class="admin-panel">
+      <label
+        >Comentario para tus profesores (opcional)<textarea
+          [formControl]="comment"
+          maxlength="2000"
+          rows="3"
+          placeholder="Cómo te sentiste, molestias o dudas"
+        ></textarea>
+      </label>
+      <p class="admin-help">
+        Se guarda al finalizar y lo podrán consultar tus profesores vinculados.
+      </p>
+    </section>
     <div class="student-sticky-actions">
       <button class="primary" (click)="ask('finish')" [disabled]="pending() || validCount() === 0">
         Finalizar entrenamiento

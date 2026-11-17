@@ -52,4 +52,6 @@ public class Sesion {
     @Version
     private long revision;
     public LocalDate getFechaEfectiva() { return fechaCorregida == null ? fecha : fechaCorregida; }
+    @jakarta.persistence.Column(length=2000)
+    private String comentario;
 }

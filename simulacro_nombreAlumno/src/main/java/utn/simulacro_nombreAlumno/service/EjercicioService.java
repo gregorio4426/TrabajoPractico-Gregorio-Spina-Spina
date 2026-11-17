@@ -23,6 +23,7 @@ import java.util.List;
 public class EjercicioService {
 
     private final EjercicioMapper ejercicioMapper;
+    private final GrupoMuscularService grupos;
     private final EjercicioRepository ejercicioRepository;
     private final utn.simulacro_nombreAlumno.repository.DiaEjercicioRepository prescripciones;
 
@@ -30,12 +31,23 @@ public class EjercicioService {
     @PreAuthorize("hasRole('PROFESOR')")
     public EjercicioResponse createEjercicio(EjercicioRequest nuevo) {
         Ejercicio ejercicio = ejercicioMapper.toEntity(nuevo);
+        preparar(ejercicio,nuevo);
         ejercicioRepository.save(ejercicio);
 
         EjercicioResponse ejercicioResponse = ejercicioMapper.toDto(ejercicio);
         return ejercicioResponse;
     }
 
+    private void preparar(Ejercicio ejercicio,EjercicioRequest datos) {
+        String normalizado=GrupoMuscularService.normalizar(datos.getNombre());
+        if(ejercicioRepository.findAll().stream().anyMatch(e->!java.util.Objects.equals(e.getId(),ejercicio.getId()) && GrupoMuscularService.normalizar(e.getNombre()).equals(normalizado)))
+            throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT,"Ya existe un ejercicio con ese nombre");
+        ejercicio.setNombre(datos.getNombre().strip());ejercicio.setNombreNormalizado(normalizado);
+        if(datos.getGrupoId()!=null) {
+            var grupo=grupos.buscar(datos.getGrupoId());ejercicio.setGrupoPersonalizado(grupo);
+            ejercicio.setGrupoMuscular(java.util.Arrays.stream(GrupoMuscular.values()).filter(v->GrupoMuscularService.normalizar(v.name()).equals(grupo.getNormalizado())).findFirst().orElse(null));
+        } else ejercicio.setGrupoPersonalizado(null);
+    }
     public List<EjercicioResponse> listarEjercicios() {
         List<Ejercicio> ejercicios = ejercicioRepository.findAll();
         List<EjercicioResponse> ejercicioResponse = ejercicioMapper.toLISTDto(ejercicios);
@@ -48,6 +60,7 @@ public class EjercicioService {
         ejercicio.setNombre(request.getNombre());
         ejercicio.setDescripcion(request.getDescripcion());
         ejercicio.setGrupoMuscular(request.getGrupoMuscular());
+        preparar(ejercicio,request);
         ejercicioRepository.save(ejercicio);
         return ejercicioMapper.toDto(ejercicio);
     }

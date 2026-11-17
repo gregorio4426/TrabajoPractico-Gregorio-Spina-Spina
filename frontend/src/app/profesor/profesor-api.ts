@@ -14,6 +14,22 @@ export class ProfesorApi {
       if (v !== null && v !== undefined && v !== '') params = params.set(k, String(v));
     return this.http.get<T>(this.base + path, { params });
   }
+  muscleGroups() {
+    return this.get<Array<{ id: number; nombre: string }>>('/grupos-musculares');
+  }
+  createMuscleGroup(nombre: string) {
+    return this.http.post<{ id: number; nombre: string }>(this.base + '/grupos-musculares', {
+      nombre,
+    });
+  }
+  updateMuscleGroup(id: number, nombre: string) {
+    return this.http.put<{ id: number; nombre: string }>(this.base + '/grupos-musculares/' + id, {
+      nombre,
+    });
+  }
+  deleteMuscleGroup(id: number) {
+    return this.http.delete<void>(this.base + '/grupos-musculares/' + id);
+  }
   dashboard(query: Query = {}) {
     return this.get<D.DashboardProfesor>('/profesores/me/dashboard', query);
   }

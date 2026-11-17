@@ -148,9 +148,13 @@ public class RutinaService {
             if (req.getEjercicios() != null) for (var e : req.getEjercicios()) {
                 Ejercicio ejercicio = ejercicioService.findEntityById(e.getEjercicioId());
                 dia.getEjercicios().add(DiaEjercicio.builder().diaRutina(dia).ejercicio(ejercicio)
+
+                        .bloqueOrden(e.getBloqueOrden()).bloqueNombre(e.getBloqueNombre()).vueltas(e.getVueltas())
+                        .ordenEnBloque(e.getOrdenEnBloque()).descansoEjercicioSegundos(e.getDescansoEjercicioSegundos())
+                        .descansoVueltaSegundos(e.getDescansoVueltaSegundos())
                         .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas()).pesoSugerido(e.getPesoSugerido())
                         .ejercicioNombreSnapshot(ejercicio.getNombre()).ejercicioDescripcionSnapshot(ejercicio.getDescripcion())
-                        .grupoMuscularSnapshot(ejercicio.getGrupoMuscular() == null ? null : ejercicio.getGrupoMuscular().name()).build());
+                        .grupoMuscularSnapshot(ejercicio.getGrupoNombre()).build());
             }
             rutina.getDias().add(dia);
         }
@@ -161,6 +165,10 @@ public class RutinaService {
             DiaRutina dia = DiaRutina.builder().nombre(viejo.getNombre()).numeroOrden(viejo.getNumeroOrden()).rutina(nueva).build();
             for (DiaEjercicio e : viejo.getEjercicios()) {
                 dia.getEjercicios().add(DiaEjercicio.builder().diaRutina(dia).ejercicio(e.getEjercicio())
+
+                        .bloqueOrden(e.getBloqueOrden()).bloqueNombre(e.getBloqueNombre()).vueltas(e.getVueltas())
+                        .ordenEnBloque(e.getOrdenEnBloque()).descansoEjercicioSegundos(e.getDescansoEjercicioSegundos())
+                        .descansoVueltaSegundos(e.getDescansoVueltaSegundos())
                         .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas()).pesoSugerido(e.getPesoSugerido())
                         .ejercicioNombreSnapshot(e.getNombreHistorico()).grupoMuscularSnapshot(e.getGrupoHistorico())
                         .ejercicioDescripcionSnapshot(e.getEjercicioDescripcionSnapshot()).build());
@@ -173,7 +181,7 @@ public class RutinaService {
         return rutina.getDias().stream().map(d -> java.util.Arrays.asList(d.getNombre(), d.getNumeroOrden(),
                 d.getEjercicios().stream().map(e -> java.util.Arrays.asList(e.getEjercicio().getId(), e.getSeriesSugeridas(),
                         e.getRepsSugeridas(), e.getPesoSugerido(), e.getNombreHistorico(), e.getGrupoHistorico(),
-                        e.getEjercicioDescripcionSnapshot())).toList())).toList();
+                        e.getEjercicioDescripcionSnapshot(), e.getBloqueOrden(), e.getBloqueNombre(),e.getVueltas(), e.getOrdenEnBloque(), e.getDescansoEjercicioSegundos(), e.getDescansoVueltaSegundos())).toList())).toList();
     }
 
     @Transactional

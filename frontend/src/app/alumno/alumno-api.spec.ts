@@ -72,4 +72,15 @@ describe('ALUMNO contracts and training semantics', () => {
     ).toBe(3);
     expect(nextSeriesNumber([{ ejercicioId: 3, numeroSerie: 1, anulada: true }], 3)).toBe(1);
   });
+  it('saves optional closing comments on the real completion endpoint', () => {
+    api.finish(2, 'Me costó la última serie').subscribe();
+    const request = http.expectOne('/api/sesiones/2/completar');
+    expect(request.request.method).toBe('PUT');
+    expect(request.request.body).toEqual({ comentario: 'Me costó la última serie' });
+    request.flush({ comentario: 'Me costó la última serie', finalizada: true });
+    api.finish(3).subscribe();
+    const legacy = http.expectOne('/api/sesiones/3/completar');
+    expect(legacy.request.body).toBeNull();
+    legacy.flush({});
+  });
 });

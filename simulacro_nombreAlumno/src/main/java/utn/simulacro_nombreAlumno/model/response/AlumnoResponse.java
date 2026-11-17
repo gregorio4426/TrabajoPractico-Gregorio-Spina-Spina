@@ -34,5 +34,7 @@ public class AlumnoResponse {
         this.fechaNacimiento = fechaNacimiento;
     }
     private String emailContacto;
+
+    private String objetivoPersonalizado;
 }
 

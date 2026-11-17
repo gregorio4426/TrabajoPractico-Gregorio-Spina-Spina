@@ -1,3 +1,4 @@
+import { selectEntity } from './entity-picker';
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -127,7 +128,11 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await page.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
   }
   async function record(page: Page, block: number, number: number, reps: number, weight: string) {
-    await page.getByRole('button', { name: new RegExp('bloque #' + block + '$') }).click();
+    await page
+      .getByRole('button', {
+        name: new RegExp('posición ' + (block === v2.dias[0]!.ejercicios[1]!.id ? 2 : 1) + '$'),
+      })
+      .click();
     await page.getByLabel('Serie realizada *', { exact: true }).fill(String(number));
     await page.getByLabel('Repeticiones realizadas *', { exact: true }).fill(String(reps));
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill(weight);
@@ -240,14 +245,17 @@ test.describe('ALUMNO · backend real y móvil', () => {
     page,
   }) => {
     await login(page);
-    await page.getByRole('link', { name: `Continuar sesión #${oldOpen.id}`, exact: true }).click();
+    await page
+      .getByRole('link', {
+        name: `Continuar ${v1.dias[0]!.nombre} · ${new Date().toISOString().slice(0, 10)}`,
+        exact: true,
+      })
+      .click();
     await expect(page.getByRole('heading', { name: /Día original/ })).toBeVisible();
     await expect(page.locator('.student-series-card')).toHaveCount(1);
     await page.reload();
     await expect(page.locator('.student-series-card')).toHaveCount(1);
-    await page
-      .getByRole('button', { name: new RegExp('bloque #' + v1.dias[0]!.ejercicios[1]!.id + '$') })
-      .click();
+    await page.getByRole('button', { name: /posición 2$/ }).click();
     await expect(page.getByLabel('Serie realizada *', { exact: true })).toHaveValue('2');
     await expect(page.getByLabel('Repeticiones realizadas *', { exact: true })).toHaveValue('');
     await expect(page.getByLabel('Peso realizado (opcional)', { exact: true })).toHaveValue('');
@@ -279,9 +287,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await expect(
       page.getByRole('button', { name: 'Finalizar entrenamiento', exact: true }),
     ).toBeDisabled();
-    await page
-      .getByRole('button', { name: new RegExp('bloque #' + v2.dias[0]!.ejercicios[0]!.id + '$') })
-      .click();
+    await page.getByRole('button', { name: /posición 1$/ }).click();
     await page.getByLabel('Repeticiones realizadas *', { exact: true }).fill('0');
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill('-1');
     await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
@@ -320,7 +326,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
     ).toBe(200);
     await login(page);
     await page.goto(`/alumno/sesiones/${s.id}`);
-    await page.getByRole('button', { name: `Corregir serie #${one.id}`, exact: true }).click();
+    await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
     await page.getByLabel('Repeticiones corregidas *', { exact: true }).fill('12');
     await page.getByLabel('Peso corregido (opcional)', { exact: true }).fill('22');
     await page
@@ -329,15 +335,13 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await page.getByRole('button', { name: 'Confirmar corrección', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
-    await page.getByRole('button', { name: `Anular serie #${two.id}`, exact: true }).click();
+    await page.getByRole('button', { name: `Anular serie 2`, exact: true }).click();
     await page.getByLabel('Motivo de la serie *', { exact: true }).fill('Anotación a revisar');
     await page.getByRole('button', { name: 'Confirmar anulación', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
-    await expect(
-      page.getByRole('button', { name: `Anular serie #${one.id}`, exact: true }),
-    ).toBeDisabled();
-    await page.getByRole('button', { name: `Restaurar serie #${two.id}`, exact: true }).click();
+    await expect(page.getByRole('button', { name: `Anular serie 1`, exact: true })).toBeDisabled();
+    await page.getByRole('button', { name: `Restaurar serie 2`, exact: true }).click();
     await page.getByLabel('Motivo de la serie *', { exact: true }).fill('Registro verificado');
     await page.getByRole('button', { name: 'Confirmar restauración', exact: true }).click();
     await confirm(page);
@@ -371,16 +375,14 @@ test.describe('ALUMNO · backend real y móvil', () => {
     const row = await add(request, identity, s.id, v2.dias[0]!.ejercicios[0]!.id, 1, 20);
     await login(page);
     await page.goto(`/alumno/sesiones/${s.id}`);
-    await page
-      .getByRole('button', { name: new RegExp('bloque #' + v2.dias[0]!.ejercicios[0]!.id + '$') })
-      .click();
+    await page.getByRole('button', { name: /posición 1$/ }).click();
     await page.getByLabel('Serie realizada *', { exact: true }).fill('1');
     await page.getByLabel('Repeticiones realizadas *', { exact: true }).fill('8');
     await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
     await confirm(page);
     await expect(page.getByRole('alert')).toContainText('Recargá');
     await page.getByRole('button', { name: 'Recargar sesión', exact: true }).click();
-    await page.getByRole('button', { name: `Corregir serie #${row.id}`, exact: true }).click();
+    await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
     const concurrent = await request.patch(`/api/sesiones/${s.id}/series/${row.id}`, {
       headers: { Authorization: 'Bearer ' + identity.token },
       data: {
@@ -400,7 +402,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await confirm(page);
     await expect(page.getByRole('alert')).toContainText('Recargá');
     await page.getByRole('button', { name: 'Recargar sesión', exact: true }).click();
-    await page.getByRole('button', { name: `Corregir serie #${row.id}`, exact: true }).click();
+    await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
     await expect(page.getByLabel('Repeticiones corregidas *', { exact: true })).toHaveValue('15');
   });
   test('own routine history and progress graphs use only personal endpoints', async ({ page }) => {
@@ -410,16 +412,14 @@ test.describe('ALUMNO · backend real y móvil', () => {
     });
     await login(page);
     await page.goto('/alumno/rutinas');
-    await expect(page.getByRole('button', { name: /Ver asignación #/ })).toHaveCount(2);
+    await expect(page.getByRole('button', { name: /Ver .* · versión/ })).toHaveCount(2);
     await page
-      .getByRole('button', { name: /Ver asignación #/ })
+      .getByRole('button', { name: /Ver .* · versión/ })
       .last()
       .click();
     await expect(page.getByRole('heading', { name: /versión histórica 1/ })).toBeVisible();
     await page.goto('/alumno/progreso');
-    await page
-      .getByRole('button', { name: `${exercise.nombre} · #${exercise.id}`, exact: true })
-      .click();
+    await page.getByRole('button', { name: exercise.nombre, exact: true }).click();
     await expect(
       page.getByRole('heading', { name: 'Peso máximo registrado por sesión' }),
     ).toBeVisible();
@@ -554,36 +554,30 @@ test.describe('ALUMNO · backend real y móvil', () => {
         exact: true,
       })
       .fill(teacherB.email);
-    await page
-      .getByRole('button', { name: `Vincular profesor #${teacherB.id}`, exact: true })
-      .click();
+    await page.getByRole('button', { name: 'Vincular a TutorBeta Prueba', exact: true }).click();
     await confirm(page);
     await expect(
       page.getByText('Vinculación actualizada. Tus rutinas y entrenamientos se conservan.'),
     ).toBeVisible();
-    await page
-      .getByRole('combobox', { name: 'Profesor vinculado a reemplazar *', exact: true })
-      .selectOption(String(teacherB.id));
-    await page
-      .getByRole('combobox', { name: 'Nuevo profesor *', exact: true })
-      .selectOption(String(teacherC.id));
+    await selectEntity(page, 'Profesor vinculado a reemplazar', 'TutorBeta');
+    await selectEntity(page, 'Nuevo profesor', teacherC.email);
     await page.getByRole('button', { name: 'Reemplazar vínculo', exact: true }).click();
     await confirm(page);
     await expect(
-      page.getByRole('button', { name: `Desvincular profesor #${teacherC.id}`, exact: true }),
+      page.getByRole('button', { name: 'Desvincular a TutorGamma Prueba', exact: true }),
     ).toBeVisible();
     await page
-      .getByRole('button', { name: `Desvincular profesor #${teacherC.id}`, exact: true })
+      .getByRole('button', { name: 'Desvincular a TutorGamma Prueba', exact: true })
       .click();
     await confirm(page);
     await expect(
       page.getByText('Vinculación actualizada. Tus rutinas y entrenamientos se conservan.'),
     ).toBeVisible();
     await expect(
-      page.getByRole('button', { name: `Desvincular profesor #${teacherC.id}`, exact: true }),
+      page.getByRole('button', { name: 'Desvincular a TutorGamma Prueba', exact: true }),
     ).toHaveCount(0);
     await expect(
-      page.getByRole('button', { name: `Desvincular profesor #${teacherA.id}`, exact: true }),
+      page.getByRole('button', { name: 'Desvincular a TutorAlfa Prueba', exact: true }),
     ).toBeVisible();
     const after = (await (await request.get('/api/rutinas/me/activa', { headers })).json()) as {
       asignacionId: number;

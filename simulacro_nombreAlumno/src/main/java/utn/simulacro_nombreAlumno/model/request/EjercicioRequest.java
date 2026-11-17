@@ -11,14 +11,18 @@ import utn.simulacro_nombreAlumno.model.GrupoMuscular;
 @AllArgsConstructor
 @Builder
 public class EjercicioRequest {
-    @NotBlank
+    @NotBlank @Size(max=60)
     private String nombre;
 
     @NotBlank
     private String descripcion;
 
-    @NotNull
     private GrupoMuscular grupoMuscular;
+    @Positive private Long grupoId;
+    @AssertTrue(message="Seleccioná un grupo muscular")
+    public boolean isGrupoInformado() { return grupoId != null || grupoMuscular != null; }
+    public EjercicioRequest(String nombre,String descripcion,GrupoMuscular grupo) {this.nombre=nombre;this.descripcion=descripcion;this.grupoMuscular=grupo;}
+
 
 }
 

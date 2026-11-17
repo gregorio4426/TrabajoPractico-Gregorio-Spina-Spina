@@ -1,5 +1,9 @@
 # 🏋️ Simulacro — API REST Gestión de Gimnasio
 
+## Ejecutar todo con Docker
+
+Ver la [guía de Docker Compose](docker/README.md) para levantar Angular, Java y MySQL con datos persistentes y secretos locales.
+
 El frontend Angular 22 está en [`frontend/`](frontend/README.md). Ver allí la guía completa de ejecución local, pruebas y producción del sistema y el [informe de revisión final](frontend/ETAPA-6-FINAL.md).
 
 

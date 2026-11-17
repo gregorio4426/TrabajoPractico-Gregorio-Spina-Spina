@@ -16,9 +16,9 @@ const q: Filter = { key: 'q', label: 'Buscar nombre o email' };
 const active: Filter = { key: 'activo', label: 'Cuenta activa', options: ['true', 'false'] };
 const current: Filter = { key: 'vigente', label: 'Perfil vigente', options: ['true', 'false'] };
 const noAccount: Filter = { key: 'sinCuenta', label: 'Sin cuenta', options: ['true', 'false'] };
-const studentId: Filter = { key: 'alumnoId', label: 'ID del alumno', type: 'number' };
-const professorId: Filter = { key: 'profesorId', label: 'ID del profesor', type: 'number' };
-const routineId: Filter = { key: 'rutinaId', label: 'ID de familia de rutina', type: 'number' };
+const studentId: Filter = { key: 'alumnoId', label: 'Alumno', type: 'alumnos' };
+const professorId: Filter = { key: 'profesorId', label: 'Profesor', type: 'profesores' };
+const routineId: Filter = { key: 'rutinaId', label: 'Rutina', type: 'rutinas' };
 export const ROLES = ['ADMIN', 'PROFESOR', 'ALUMNO'] as const;
 export const LEVELS = ['PRINCIPIANTE', 'INTERMEDIO', 'AVANZADO'] as const;
 export const OBJECTIVES = ['PERDER_PESO', 'GANAR_MASA_MUSCULAR', 'MEJORAR_RESISTENCIA'] as const;
@@ -27,7 +27,6 @@ export const CATALOG: Record<Resource, Catalog> = {
     label: 'Usuarios',
     singular: 'Usuario',
     columns: [
-      ['id', 'ID'],
       ['email', 'Email de acceso'],
       ['rol', 'Rol'],
       ['activo', 'Activo'],
@@ -39,7 +38,6 @@ export const CATALOG: Record<Resource, Catalog> = {
     label: 'Alumnos',
     singular: 'Alumno',
     columns: [
-      ['perfil.id', 'ID'],
       ['perfil.nombre', 'Nombre'],
       ['perfil.apellido', 'Apellido'],
       ['perfil.email', 'Email'],
@@ -62,7 +60,6 @@ export const CATALOG: Record<Resource, Catalog> = {
     label: 'Profesores',
     singular: 'Profesor',
     columns: [
-      ['perfil.id', 'ID'],
       ['perfil.nombre', 'Nombre'],
       ['perfil.apellido', 'Apellido'],
       ['perfil.email', 'Email'],
@@ -84,7 +81,6 @@ export const CATALOG: Record<Resource, Catalog> = {
     label: 'Rutinas',
     singular: 'Rutina',
     columns: [
-      ['id', 'ID'],
       ['nombre', 'Nombre'],
       ['numeroVersion', 'Versión'],
       ['profesor', 'Autor'],
@@ -101,7 +97,6 @@ export const CATALOG: Record<Resource, Catalog> = {
     label: 'Asignaciones',
     singular: 'Asignación',
     columns: [
-      ['id', 'ID'],
       ['alumnoNombre', 'Alumno'],
       ['rutinaNombre', 'Rutina'],
       ['numeroVersion', 'Versión'],
@@ -116,7 +111,6 @@ export const CATALOG: Record<Resource, Catalog> = {
     label: 'Sesiones',
     singular: 'Sesión',
     columns: [
-      ['id', 'ID'],
       ['alumnoId', 'Alumno'],
       ['rutinaNombre', 'Rutina'],
       ['fechaEfectiva', 'Fecha efectiva'],
@@ -137,14 +131,13 @@ export const CATALOG: Record<Resource, Catalog> = {
     label: 'Auditoría administrativa',
     singular: 'Evento',
     columns: [
-      ['id', 'ID'],
       ['actorId', 'Actor'],
       ['usuarioId', 'Cuenta afectada'],
       ['accion', 'Acción'],
       ['motivo', 'Motivo'],
       ['creadaEn', 'Fecha'],
     ],
-    filters: [{ key: 'usuarioId', label: 'ID de cuenta afectada', type: 'number' }],
+    filters: [{ key: 'usuarioId', label: 'Cuenta afectada', type: 'usuarios' }],
     orders: ['id', 'creadaEn'],
   },
 };
@@ -152,7 +145,7 @@ export function label(key: string): string {
   return (
     (
       {
-        id: 'ID',
+        id: 'Orden de registro',
         cuenta: 'Cuenta de acceso',
         perfil: 'Perfil',
         perfilVigente: 'Perfil vigente',
@@ -168,8 +161,8 @@ export function label(key: string): string {
         fechaEfectiva: 'Fecha efectiva',
         rutinaVersionId: 'ID exacto de versión',
         numeroVersion: 'Número de versión',
-        actorId: 'ID del actor',
-        usuarioId: 'ID de cuenta afectada',
+        actorId: 'Actor',
+        usuarioId: 'Cuenta afectada',
         accion: 'Acción',
         emailContacto: 'Email de contacto',
       } as Record<string, string>

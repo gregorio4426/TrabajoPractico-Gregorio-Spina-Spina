@@ -37,7 +37,8 @@ export class Student {
   private seq = 0;
   readonly form = inject(FormBuilder).nonNullable.group({
     nivel: ['', Validators.required],
-    objetivo: ['', Validators.required],
+    objetivo: [''],
+    objetivoPersonalizado: ['', Validators.maxLength(2000)],
   });
   private readonly confirm = viewChild.required<Confirm>('confirmation');
   constructor() {
@@ -52,7 +53,7 @@ export class Student {
     this.loading.set(true);
     this.error.set('');
     if (!Number.isSafeInteger(this.id()) || this.id() < 1) {
-      this.error.set('El ID del alumno no es válido.');
+      this.error.set('El alumno seleccionado no está disponible.');
       this.loading.set(false);
       return;
     }
@@ -72,7 +73,11 @@ export class Student {
       this.active.set(active);
       this.history.set(history);
       this.sessions.set(sessions);
-      this.form.setValue({ nivel: profile.nivel ?? '', objetivo: profile.objetivo ?? '' });
+      this.form.setValue({
+        nivel: profile.nivel ?? '',
+        objetivo: profile.objetivo ?? '',
+        objetivoPersonalizado: profile.objetivoPersonalizado ?? '',
+      });
     } catch (e) {
       if (seq === this.seq) {
         this.clear();
@@ -116,7 +121,8 @@ export class Student {
         await firstValueFrom(
           this.api.follow(this.id(), {
             nivel: v.nivel as D.SeguimientoAlumnoRequest['nivel'],
-            objetivo: v.objetivo as D.SeguimientoAlumnoRequest['objetivo'],
+            objetivo: (v.objetivo || null) as D.SeguimientoAlumnoRequest['objetivo'],
+            objetivoPersonalizado: v.objetivoPersonalizado.trim(),
           }),
         );
         await this.load();

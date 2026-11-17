@@ -1,3 +1,4 @@
+import { selectEntity } from './entity-picker';
 import { test, expect, Page } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -50,12 +51,12 @@ test.describe('ADMIN · API real', () => {
     await page
       .getByRole('row')
       .filter({ has: page.getByRole('cell', { name: email, exact: true }) })
-      .getByRole('button', { name: /Ver detalle #/ })
+      .getByRole('button', { name: /Abrir / })
       .click();
     await expect(page).toHaveURL(new RegExp(`/admin/${type}/\\d+$`));
     const id = Number(new URL(page.url()).pathname.split('/').pop());
     await expect(
-      page.getByRole('heading', { name: `${role === 'ALUMNO' ? 'Alumno' : 'Profesor'} #${id}` }),
+      page.getByRole('heading', { name: `${role === 'ALUMNO' ? 'Alumno' : 'Profesor'}` }),
     ).toBeVisible();
     return { id, email };
   }
@@ -95,22 +96,18 @@ test.describe('ADMIN · API real', () => {
     await confirm(page);
     await expect(page.getByText('Cambio guardado correctamente.')).toBeVisible();
     await page.getByRole('button', { name: 'Vincular profesor', exact: true }).click();
-    await page
-      .getByRole('searchbox', { name: 'Buscar profesor', exact: true })
-      .fill(profesor.email);
-    await page.getByRole('button', { name: 'Buscar profesores', exact: true }).click();
-    await page.getByRole('button', { name: `Seleccionar #${profesor.id}`, exact: true }).click();
+    await selectEntity(page, 'Profesor', profesor.email);
     await reason(page, 'Vínculo de prueba de interfaz');
     await page.getByRole('button', { name: 'Reemplazar profesor', exact: true }).click();
-    await page.getByLabel('ID del profesor anterior').fill(String(profesor.id));
-    await page.getByLabel('ID del nuevo profesor').fill(String(reemplazo.id));
+    await selectEntity(page, 'Profesor anterior', profesor.email);
+    await selectEntity(page, 'Nuevo profesor', reemplazo.email);
     await reason(page, 'Reemplazo de prueba');
     await page.getByRole('link', { name: 'Profesores vinculados', exact: true }).click();
     await expect(page.getByRole('cell', { name: reemplazo.email, exact: true })).toBeVisible();
     await expect(page.getByRole('cell', { name: profesor.email, exact: true })).not.toBeVisible();
     await page.goto(`/admin/alumnos/${alumno.id}`);
     await page.getByRole('button', { name: 'Desvincular profesor', exact: true }).click();
-    await page.getByLabel('ID del profesor *', { exact: true }).fill(String(reemplazo.id));
+    await selectEntity(page, 'Profesor', reemplazo.email);
     await reason(page, 'Desvínculo de prueba');
     await page.getByRole('link', { name: 'Historial de asignaciones' }).click();
     await expect(page.getByText(/registros encontrados/)).toBeVisible();
@@ -144,9 +141,11 @@ test.describe('ADMIN · API real', () => {
     await expect(page.getByText(newEmail, { exact: true }).first()).toBeVisible();
     await page.goto(`/admin/auditoria?usuarioId=${userId}`);
     await expect(page.getByText(/registros encontrados/)).toBeVisible();
-    await expect(page.getByRole('cell', {name:'Cambio de rol para prueba',exact:true})).toBeVisible();
+    await expect(
+      page.getByRole('cell', { name: 'Cambio de rol para prueba', exact: true }),
+    ).toBeVisible();
     await page
-      .getByRole('button', { name: /Ver detalle #/ })
+      .getByRole('button', { name: /Abrir / })
       .first()
       .click();
     await expect(page.getByRole('heading', { name: 'Detalle del evento' })).toBeVisible();
@@ -265,9 +264,9 @@ test.describe('ADMIN · API real', () => {
     expect(v2.status()).toBe(200);
     await page.goto(`/admin/rutinas/${v1.id}/versiones`);
     await expect(page.getByText(/registros encontrados/)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Ver detalle #/ })).toHaveCount(2);
+    await expect(page.getByRole('button', { name: /Abrir / })).toHaveCount(2);
     await page
-      .getByRole('button', { name: /Ver detalle #/ })
+      .getByRole('button', { name: /Abrir / })
       .first()
       .click();
     await expect(
@@ -276,7 +275,7 @@ test.describe('ADMIN · API real', () => {
     await expect(page.getByText('Versión original de prueba', { exact: true })).toBeVisible();
     await page.goto(`/admin/alumnos/${alumno.perfilId}/historial`);
     await expect(page.getByRole('cell', { name: routineBody.nombre, exact: true })).toBeVisible();
-    await page.getByRole('button', { name: /Ver detalle #/ }).click();
+    await page.getByRole('button', { name: /Abrir / }).click();
     await expect(page.getByRole('heading', { name: 'Datos del registro' })).toBeVisible();
     await page.goto(`/admin/sesiones/${sessionId}`);
     await expect(page.getByRole('heading', { name: 'Datos del registro' })).toBeVisible();
@@ -320,7 +319,7 @@ test.describe('ADMIN · API real', () => {
     await page
       .getByRole('row')
       .filter({ has: page.getByRole('cell', { name: email, exact: true }) })
-      .getByRole('button', { name: /Ver detalle #/ })
+      .getByRole('button', { name: /Abrir / })
       .click();
     await expect(page).toHaveURL(/\/admin\/usuarios\/\d+$/);
     const id = new URL(page.url()).pathname.split('/').pop();

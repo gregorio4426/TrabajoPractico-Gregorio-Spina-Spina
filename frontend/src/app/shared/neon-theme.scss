@@ -1,0 +1,292 @@
+// Shared palette for login and all three roles. Layouts and application behavior stay intact.
+@mixin apply {
+  :root,
+  .workspace,
+  .workspace[data-role] {
+    color-scheme: dark;
+    --accent: #e6ff00;
+    --accent-dark: #e6ff00;
+    --ink: #f4f5ef;
+    --muted: #afb2a7;
+    --line: #33362e;
+    --canvas: #0a0b09;
+    --surface: #151713;
+    --surface-raised: #20231c;
+    --field: #0f110d;
+    color: var(--ink);
+    background: var(--canvas);
+    accent-color: var(--accent);
+  }
+  body {
+    background: var(--canvas);
+  }
+  ::selection {
+    background: #e6ff00;
+    color: #101207;
+  }
+
+  .login-story,
+  .sidebar {
+    background: #060705;
+    color: var(--ink);
+  }
+  .login-story {
+    background: radial-gradient(ellipse at bottom right, #2e3410 0, #090b07 60%);
+  }
+  .login-panel,
+  .workspace-header {
+    background: #10120e;
+  }
+  .sidebar {
+    border-right: 1px solid var(--line);
+  }
+  .sidebar-user,
+  .login-security {
+    border-color: var(--line);
+  }
+  .motion-art span,
+  .hero-art::before,
+  .hero-art::after {
+    border-color: #89972d;
+  }
+  .story-content .eyebrow,
+  .accent,
+  .brand-dot,
+  .student-welcome-mark {
+    color: var(--accent);
+  }
+  .brand-icon,
+  .primary,
+  .nav-link.active,
+  .skip-link,
+  .dialog-icon,
+  .admin-nav a.active,
+  .teacher-tabs button[aria-pressed='true'],
+  .teacher-exercise-picks button[aria-pressed='true'] {
+    background: var(--accent);
+    color: #101207;
+    border-color: var(--accent);
+  }
+  .primary:hover {
+    background: #f2ff70;
+  }
+  .secondary,
+  .menu-toggle,
+  .admin-nav a,
+  .teacher-version-list a,
+  .account-icon,
+  .avatar {
+    background: var(--surface-raised);
+    color: var(--ink);
+    border-color: var(--line);
+  }
+  .secondary:hover,
+  .admin-nav a:hover,
+  .teacher-version-list a:hover,
+  .nav-link:not(.active):hover {
+    background: #303626;
+    color: #f5ffb0;
+  }
+  .primary:disabled,
+  .secondary:disabled {
+    opacity: 0.55;
+  }
+  .text-button,
+  .reveal {
+    color: var(--ink);
+  }
+  .text-button:hover,
+  .reveal:hover {
+    color: var(--accent);
+  }
+  .avatar {
+    color: var(--accent);
+  }
+
+  .admin-panel,
+  .admin-metrics a,
+  .account-card,
+  .teacher-chart,
+  .admin-table-wrap,
+  .student-day-card,
+  .student-series-card,
+  .student-professor-card,
+  .student-session-row,
+  .teacher-day,
+  .teacher-history-list > div,
+  .dialog {
+    background: var(--surface);
+    color: var(--ink);
+    border-color: var(--line);
+  }
+  .admin-metrics a:first-child {
+    background: #22280f;
+    color: var(--ink);
+    border-color: #687629;
+  }
+  .admin-metrics a:first-child strong {
+    color: var(--accent);
+  }
+  .student-welcome,
+  .welcome-hero {
+    background: #1c2110;
+    border: 1px solid #414c1e;
+  }
+  .student-block-form {
+    background: #222812;
+    border: 1px solid #687629;
+  }
+  .teacher-exercise-row {
+    background: var(--surface-raised);
+  }
+  .student-sticky-actions {
+    background: #0a0b09f2;
+  }
+  .student-badge,
+  .session-badge,
+  .admin-pill {
+    background: #2e3518;
+    color: #e6f6a4;
+  }
+  .student-series-card.is-annulled {
+    background: #1c1d1a;
+    color: #b8b9b1;
+    border-style: dashed;
+  }
+  .student-series-card.is-annulled .student-series-values strong {
+    text-decoration: line-through;
+  }
+  .admin-empty {
+    background: var(--surface);
+    color: var(--muted);
+    border-color: #60674f;
+  }
+  .hero-badge {
+    color: #dce5b6;
+    border-color: #687629;
+  }
+
+  .login-card input,
+  .admin-filters input,
+  .admin-filters select,
+  .admin-form input,
+  .admin-form select,
+  .admin-form textarea,
+  .teacher-exercise-row input,
+  .teacher-exercise-row select {
+    background: var(--field);
+    color: var(--ink);
+    border-color: #626a55;
+    caret-color: var(--accent);
+  }
+  input::placeholder,
+  textarea::placeholder {
+    color: #999f8d;
+    opacity: 1;
+  }
+  .admin-form input.ng-invalid.ng-touched,
+  .admin-form select.ng-invalid.ng-touched,
+  .login-card input[aria-invalid='true'] {
+    border-color: #ff8f85;
+  }
+  .notice {
+    background: #222b11;
+    border-color: #6b7b2b;
+    color: #e0f3ac;
+  }
+  .error-message {
+    background: #321917;
+    border-color: #8e4c45;
+    color: #ffb7af;
+  }
+  .field-error,
+  .teacher-form-error,
+  .admin-form .validation {
+    color: #ffb7af;
+  }
+
+  .admin-table th {
+    background: #24291c;
+    color: #d5ddbd;
+  }
+  .admin-table td,
+  .admin-details > div,
+  .foundations > div,
+  .admin-details .nested {
+    border-color: var(--line);
+  }
+  .admin-table tbody tr:hover {
+    background: #20251a;
+  }
+  .admin-link,
+  .admin-table a,
+  .teacher-chart summary {
+    color: var(--accent);
+  }
+  .admin-link:hover,
+  .admin-table a:hover {
+    color: #f2ff70;
+  }
+  .teacher-chart text {
+    fill: #b9c0ac;
+  }
+  .chart-axis {
+    stroke: #626a55;
+  }
+  .chart-line {
+    stroke: var(--accent);
+  }
+  .chart-dot,
+  .chart-bar {
+    fill: var(--accent);
+  }
+
+  .story-content > p,
+  .story-footer,
+  .workspace-label,
+  .sidebar-user span,
+  .breadcrumb,
+  .page-intro p,
+  .welcome-hero p,
+  .student-welcome p,
+  .hero-signoff,
+  .stage-note,
+  .workspace-footer,
+  .account-card dt,
+  .admin-facts dt,
+  .admin-details dt,
+  .admin-help,
+  .teacher-status,
+  .teacher-history-list p,
+  .student-prescription p,
+  .student-instruction,
+  .student-professor-card p,
+  .student-session-row p,
+  .student-series-values small,
+  .dialog p,
+  .login-help,
+  .login-security,
+  .panel-footer,
+  .foundations > div > span,
+  .chart-scroll-help {
+    color: var(--muted);
+  }
+  .breadcrumb strong {
+    color: var(--ink);
+  }
+  .breadcrumb > span {
+    color: #89917b;
+  }
+  .dialog::backdrop,
+  .menu-overlay {
+    background: #000b;
+  }
+  .dialog {
+    box-shadow: 0 24px 80px #0009;
+  }
+  :is(button, a, input, select, textarea, summary, main, [tabindex='0']):focus-visible,
+  .teacher-chart-scroll:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+}

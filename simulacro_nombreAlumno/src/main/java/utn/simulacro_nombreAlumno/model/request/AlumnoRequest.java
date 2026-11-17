@@ -28,10 +28,13 @@ public class AlumnoRequest {
     @NotNull
     private Nivel nivel;
 
-    @NotNull
     private Objetivo objetivo;
     @jakarta.validation.constraints.Email
     @jakarta.validation.constraints.Size(max = 150)
     private String emailContacto;
+    @jakarta.validation.constraints.Size(max=2000)
+    private String objetivoPersonalizado;
+    @AssertTrue(message="Informá un objetivo libre o una categoría")
+    public boolean isObjetivoInformado() { return objetivo != null || (objetivoPersonalizado != null && !objetivoPersonalizado.isBlank()); }
 }
 

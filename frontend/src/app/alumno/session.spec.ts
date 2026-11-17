@@ -55,26 +55,24 @@ describe('ALUMNO session recovery and revisions', () => {
     http.expectOne('/api/sesiones/7').flush(data);
     await Promise.resolve();
     if (data.alumnoId === 1) {
-      http
-        .expectOne('/api/rutinas/3/versiones/2')
-        .flush({
-          dias: [
-            {
-              id: 15,
-              nombre: 'Día original',
-              ejercicios: [
-                {
-                  id: 20,
-                  ejercicioId: 3,
-                  ejercicioNombre: 'Press',
-                  seriesSugeridas: 2,
-                  repsSugeridas: 8,
-                  pesoSugerido: 20,
-                },
-              ],
-            },
-          ],
-        });
+      http.expectOne('/api/rutinas/3/versiones/2').flush({
+        dias: [
+          {
+            id: 15,
+            nombre: 'Día original',
+            ejercicios: [
+              {
+                id: 20,
+                ejercicioId: 3,
+                ejercicioNombre: 'Press',
+                seriesSugeridas: 2,
+                repsSugeridas: 8,
+                pesoSugerido: 20,
+              },
+            ],
+          },
+        ],
+      });
       http.expectOne('/api/sesiones/7/auditoria').flush([]);
     }
     await Promise.resolve();
@@ -167,6 +165,6 @@ describe('ALUMNO session recovery and revisions', () => {
     const buttons = Array.from(
       fixture.nativeElement.querySelectorAll('button'),
     ) as HTMLButtonElement[];
-    expect(buttons.find((b) => b.textContent?.includes('Anular serie #9'))?.disabled).toBe(true);
+    expect(buttons.find((b) => b.textContent?.includes('Anular serie 1'))?.disabled).toBe(true);
   });
 });

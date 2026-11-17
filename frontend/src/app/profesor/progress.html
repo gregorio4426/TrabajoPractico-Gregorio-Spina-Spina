@@ -106,7 +106,7 @@
             [disabled]="loading()"
             (click)="chooseExercise(item.ejercicioId!)"
           >
-            {{ item.nombreActual }} · #{{ item.ejercicioId }}
+            {{ item.nombreActual }}
           </button>
         } @empty {
           <p class="admin-empty">No hay ejercicios con resultados válidos en este período.</p>

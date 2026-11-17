@@ -24,8 +24,8 @@
       <section class="admin-panel">
         <h2>{{ r.nombre }}</h2>
         <p class="admin-help">
-          {{ r.descripcion }} · Versión {{ r.numeroVersion }} · Asignación #{{ r.asignacionId }}.
-          Las series y pesos sugeridos no son resultados realizados.
+          {{ r.descripcion }} · Versión {{ r.numeroVersion }}. Las series y pesos sugeridos no son
+          resultados realizados.
         </p>
         <form class="admin-filters" [formGroup]="form">
           <label
@@ -35,19 +35,29 @@
         @for (d of r.dias ?? []; track d.id) {
           <section class="student-day-card">
             <h3>{{ d.nombre }}</h3>
-            @for (e of d.ejercicios ?? []; track e.id) {
+            @for (e of d.ejercicios ?? []; track e.id; let ei = $index) {
+              @if (
+                e.bloqueOrden != null &&
+                (ei === 0 || d.ejercicios?.[ei - 1]?.bloqueOrden !== e.bloqueOrden)
+              ) {
+                <app-training-block [row]="e" [exercises]="d.ejercicios ?? []" />
+              }
               <div class="student-prescription">
                 <strong>{{ e.ejercicioNombre }}</strong>
+                @if (e.descansoEjercicioSegundos != null) {
+                  <p>Descanso después del ejercicio: {{ e.descansoEjercicioSegundos }} s</p>
+                }
                 <p>
-                  {{ e.seriesSugeridas }} series · {{ e.repsSugeridas }} repeticiones · Peso
-                  sugerido: {{ text(e.pesoSugerido) }} (unidad registrada)
+                  {{ e.seriesSugeridas }} {{ e.bloqueOrden == null ? 'series' : 'vueltas' }} ·
+                  {{ e.repsSugeridas }} repeticiones · Peso sugerido:
+                  {{ text(e.pesoSugerido) }} (unidad registrada)
                 </p>
               </div>
             }
             <div class="admin-actions">
               @for (s of openForDay(d.id); track s.id) {
                 <a class="primary" [routerLink]="['/alumno/sesiones', s.id]"
-                  >Continuar sesión #{{ s.id }}</a
+                  >Continuar {{ s.diaRutinaNombre }} · {{ s.fechaEfectiva ?? s.fecha }}</a
                 >
               }
               <button class="secondary" (click)="ask(d)" [disabled]="pending()">
@@ -73,11 +83,11 @@
         <div>
           <strong>{{ r.nombre }} · versión {{ r.numeroVersion }}</strong>
           <p>
-            Asignación #{{ r.asignacionId }} · {{ r.fechaInicio }} →
-            {{ r.fechaFin ?? 'Sin cierre' }} · {{ r.activa ? 'Activa' : 'Anterior' }}
+            {{ r.fechaInicio }} → {{ r.fechaFin ?? 'Sin cierre' }} ·
+            {{ r.activa ? 'Activa' : 'Anterior' }}
           </p>
           <button class="secondary" (click)="selected.set(r)">
-            Ver asignación #{{ r.asignacionId }}
+            Ver {{ r.nombre }} · versión {{ r.numeroVersion }}
           </button>
         </div>
       } @empty {

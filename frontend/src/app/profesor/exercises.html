@@ -14,8 +14,8 @@
   ><label
     >Grupo muscular<select formControlName="grupoMuscular">
       <option value="">Todos</option>
-      @for (group of groups; track group) {
-        <option [value]="group">{{ text(group) }}</option>
+      @for (group of groups(); track group.id) {
+        <option [value]="groupValue(group)">{{ group.nombre }}</option>
       }
     </select></label
   ><button class="secondary" [disabled]="loading()">Buscar ejercicios</button>
@@ -31,20 +31,20 @@
 }
 @if (editing()) {
   <section class="admin-panel">
-    <h2>{{ selected() ? 'Editar ejercicio #' + selected()?.id : 'Nuevo ejercicio' }}</h2>
+    <h2>{{ selected() ? 'Editar ' + selected()?.nombre : 'Nuevo ejercicio' }}</h2>
     <form [formGroup]="form" (ngSubmit)="ask('save')">
       <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
-        <label>Nombre del catálogo *<input formControlName="nombre" maxlength="60" /></label
+        <label>Nombre del ejercicio *<input formControlName="nombre" maxlength="60" /></label
         ><label
-          >Descripción del catálogo *<textarea
+          >Descripción del ejercicio *<textarea
             formControlName="descripcion"
             maxlength="255"
           ></textarea></label
         ><label
-          >Grupo muscular del catálogo *<select formControlName="grupoMuscular">
+          >Grupo muscular del ejercicio *<select formControlName="grupoMuscular">
             <option value="">Seleccionar</option>
-            @for (group of groups; track group) {
-              <option [value]="group">{{ text(group) }}</option>
+            @for (group of groups(); track group.id) {
+              <option [value]="groupValue(group)">{{ group.nombre }}</option>
             }
           </select></label
         >
@@ -60,8 +60,8 @@
 }
 @if (!loading() && (data().length || !error())) {
   <p class="admin-help">
-    {{ visible().length }} ejercicios. Cuando se combinan filtros, el grupo se consulta al servidor
-    y el nombre se filtra en la lista recibida. Paginación local.
+    {{ visible().length }} ejercicios. Los filtros de nombre y grupo se combinan sobre el catálogo
+    real. Paginación local.
   </p>
   <div
     class="admin-table-wrap"
@@ -81,15 +81,15 @@
       <tbody>
         @for (e of rows(); track e.id) {
           <tr>
-            <td>#{{ e.id }} · {{ e.nombre }}</td>
-            <td>{{ text(e.grupoMuscular) }}</td>
+            <td>{{ e.nombre }}</td>
+            <td>{{ e.grupoMuscularNombre || text(e.grupoMuscular) }}</td>
             <td>{{ e.descripcion }}</td>
             <td>
               <button class="secondary" (click)="open(e)" [disabled]="pending()">
-                Editar ejercicio #{{ e.id }}
+                Editar {{ e.nombre }}
               </button>
               <button class="secondary" (click)="ask('delete', e)" [disabled]="pending()">
-                Eliminar ejercicio #{{ e.id }}
+                Eliminar {{ e.nombre }}
               </button>
             </td>
           </tr>
@@ -117,14 +117,57 @@
   [title]="action() === 'delete' ? '¿Eliminar este ejercicio?' : '¿Guardar el ejercicio?'"
   [message]="
     action() === 'delete'
-      ? 'Ejercicio #' +
-        selected()?.id +
-        ': ' +
-        selected()?.nombre +
-        '. Solo se podrá eliminar si no está referenciado.'
+      ? 'Ejercicio ' + selected()?.nombre + '. Solo se podrá eliminar si no está referenciado.'
       : 'Se actualizará el catálogo compartido con el ejercicio ' +
         form.controls.nombre.value +
         '. No se reescriben resultados históricos.'
   "
   (confirmed)="save()"
+/>
+
+<section class="admin-panel">
+  <h2>Grupos musculares</h2>
+  <p class="admin-help">
+    Los grupos estándar se conservan. Podés crear y editar grupos personalizados; solo se eliminan
+    si ningún ejercicio los utiliza.
+  </p>
+  <label>Buscar grupo muscular<input type="search" [formControl]="groupSearch" /></label>
+  <div class="admin-actions">
+    @for (group of filteredGroups(); track group.id) {
+      <span>{{ group.nombre }}</span>
+      @if (
+        !['PECHO', 'ESPALDA', 'PIERNAS', 'BRAZOS', 'HOMBROS', 'ABDOMINALES'].includes(group.nombre)
+      ) {
+        <button class="secondary" (click)="editGroup(group)" [disabled]="pending()">
+          Editar {{ group.nombre }}
+        </button>
+        <button class="secondary" (click)="askGroup('delete', group)" [disabled]="pending()">
+          Eliminar {{ group.nombre }}
+        </button>
+      }
+    } @empty {
+      <p>Sin grupos con ese nombre.</p>
+    }
+  </div>
+  <form [formGroup]="groupForm" (ngSubmit)="askGroup('save')" class="admin-form">
+    <label>Nombre del grupo muscular<input [formControl]="groupName" maxlength="100" /></label>
+    <button class="primary" [disabled]="pending()">
+      {{ selectedGroup() ? 'Guardar grupo muscular' : 'Crear grupo muscular' }}
+    </button>
+    @if (selectedGroup()) {
+      <button type="button" class="secondary" (click)="editGroup(null)">
+        Cancelar edición de grupo
+      </button>
+    }
+  </form>
+</section>
+<app-teacher-confirm
+  #groupConfirmation
+  [title]="groupAction() === 'delete' ? '¿Eliminar grupo muscular?' : '¿Guardar grupo muscular?'"
+  [message]="
+    groupAction() === 'delete'
+      ? 'Solo se eliminará si no está en uso.'
+      : 'Se actualizará el catálogo compartido de grupos musculares.'
+  "
+  (confirmed)="saveGroup()"
 />

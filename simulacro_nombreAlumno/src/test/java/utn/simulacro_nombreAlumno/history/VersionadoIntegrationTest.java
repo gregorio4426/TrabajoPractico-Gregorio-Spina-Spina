@@ -227,6 +227,58 @@ class VersionadoIntegrationTest {
         assertThat(response(get("/api/sesiones/" + sesion1), student, null, 200).get("rutinaVersionId").asLong()).isEqualTo(v1Id);
     }
 
+    @Test
+    void blocksPersistAcrossVersionsWithoutChangingAssignedHistory() throws Exception {
+        var body=(com.fasterxml.jackson.databind.node.ObjectNode)json.readTree(definition("Bloques",8,ejercicio.getId()));
+        var rows=(com.fasterxml.jackson.databind.node.ArrayNode)body.at("/dias/0/ejercicios");
+        var first=(com.fasterxml.jackson.databind.node.ObjectNode)rows.get(0);
+        first.put("bloqueOrden",1).put("bloqueNombre","Biserie").put("vueltas",3).put("ordenEnBloque",1).put("descansoEjercicioSegundos",0).put("descansoVueltaSegundos",60);
+        var second=first.deepCopy();second.put("ordenEnBloque",2).put("repsSugeridas",12).put("pesoSugerido",0);rows.add(second);
+        var v2=response(put(routinePath()),teacher,json.writeValueAsString(body),200);
+        assertThat(v2.at("/dias/0/ejercicios/1/ordenEnBloque").asInt()).isEqualTo(2);
+        assertThat(v2.at("/dias/0/ejercicios/1/pesoSugerido").asDouble()).isZero();
+        first.put("descansoVueltaSegundos",90);second.put("descansoVueltaSegundos",90);
+        response(put(routinePath()),teacher,json.writeValueAsString(body),200);
+        var old=response(get(routinePath()+"/versiones/2"),teacher,null,200);
+        assertThat(old.at("/dias/0/ejercicios/0/descansoVueltaSegundos").asInt()).isEqualTo(60);
+        assertThat(response(get("/api/rutinas/me/activa"),student,null,200).get("numeroVersion").asInt()).isEqualTo(1);
+        second.put("vueltas",4);
+        response(put(routinePath()),teacher,json.writeValueAsString(body),400);
+    }
+
+    @Test
+    void freeGoalsAndCommentsPersistAndRespectCurrentTeacherLinks() throws Exception {
+        var profile=response(put("/api/alumnos/me"),student,"{\"nombre\":\"Luis\",\"apellido\":\"Rios\",\"nivel\":\"INTERMEDIO\",\"objetivoPersonalizado\":\"Volver a correr sin molestias\"}",200);
+        assertThat(profile.get("objetivoPersonalizado").asText()).isEqualTo("Volver a correr sin molestias");
+        response(patch("/api/alumnos/"+alumno.getId()+"/seguimiento"),next,"{\"nivel\":\"INTERMEDIO\",\"objetivoPersonalizado\":\"Otro\"}",403);
+        // La sesión de la fixture está cerrada: no admite reescritura del comentario.
+        response(put("/api/sesiones/"+sesion1+"/completar"),student,"{\"comentario\":\"No sobrescribir\"}",400);
+        fecha=fecha.minusDays(1);var session=start(dia1);long id=session.get("id").asLong();
+        response(post("/api/sesiones/"+id+"/series"),student,"{\"diaEjercicioId\":"+prescripcion1+",\"numeroSerie\":1,\"repsHechas\":8,\"pesoUsado\":0}",201);
+        response(put("/api/sesiones/"+id+"/completar"),next,"{\"comentario\":\"Ajeno\"}",403);
+        response(put("/api/sesiones/"+id+"/completar"),student,json.writeValueAsString(java.util.Map.of("comentario","x".repeat(2001))),400);
+        var closed=response(put("/api/sesiones/"+id+"/completar"),student,"{\"comentario\":\"  Me costó la última serie  \"}",200);
+        assertThat(closed.get("comentario").asText()).isEqualTo("Me costó la última serie");
+        assertThat(response(get("/api/sesiones/"+id),teacher,null,200).get("comentario").asText()).isEqualTo("Me costó la última serie");
+        response(get("/api/sesiones/"+id),next,null,403);
+    }
+
+    @Test
+    void customMuscleGroupsAreReusableAndRenamingPreservesRoutineSnapshots() throws Exception {
+        String label="Movilidad "+UUID.randomUUID();
+        var group=response(post("/api/grupos-musculares"),teacher,json.writeValueAsString(java.util.Map.of("nombre",label)),201);
+        var same=response(post("/api/grupos-musculares"),teacher,json.writeValueAsString(java.util.Map.of("nombre","  "+label.toUpperCase()+"  ")),201);
+        assertThat(same.get("id")).isEqualTo(group.get("id"));
+        response(post("/api/grupos-musculares"),student,"{\"nombre\":\"Ajeno\"}",403);
+        String name="Ejercicio "+UUID.randomUUID();
+        var exercise=response(post("/api/ejercicios"),teacher,json.writeValueAsString(java.util.Map.of("nombre",name,"descripcion","Personalizado","grupoId",group.get("id").asLong())),201);
+        response(post("/api/ejercicios"),teacher,json.writeValueAsString(java.util.Map.of("nombre",name,"descripcion","Duplicado","grupoId",group.get("id").asLong())),409);
+        response(put(routinePath()),teacher,definition("Personalizada",8,exercise.get("id").asLong()),200);
+        response(put("/api/grupos-musculares/"+group.get("id").asLong()),teacher,"{\"nombre\":\"Nuevo "+UUID.randomUUID()+"\"}",200);
+        assertThat(response(get(routinePath()),teacher,null,200).at("/dias/0/ejercicios/0/grupoMuscular").asText()).isEqualTo(label);
+        response(delete("/api/grupos-musculares/"+group.get("id").asLong()),teacher,null,409);
+    }
+
     private JsonNode start(long day) throws Exception { return response(post("/api/sesiones"), student, startBody(day), 201); }
     private String startBody(long day) { return "{\"diaRutinaId\":" + day + ",\"fecha\":\"" + fecha + "\"}"; }
     private String routinePath() { return "/api/rutinas/" + rutinaId; }

@@ -70,7 +70,7 @@ import { profesorError, text } from './utils';
                   <td>{{ text(student.objetivo) }}</td>
                   <td>
                     <a [routerLink]="['/profesor/alumnos', student.id]"
-                      >Ver alumno #{{ student.id }}</a
+                      >Ver {{ student.nombre }} {{ student.apellido }}</a
                     >
                   </td>
                 </tr>

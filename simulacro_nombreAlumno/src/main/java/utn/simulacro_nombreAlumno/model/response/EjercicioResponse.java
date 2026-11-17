@@ -16,6 +16,9 @@ public class EjercicioResponse {
 
     private Long id;
     private GrupoMuscular grupoMuscular;
+    private Long grupoId;
+    private String grupoMuscularNombre;
+    public EjercicioResponse(String nombre,String descripcion,Long id,GrupoMuscular grupo) {this.nombre=nombre;this.descripcion=descripcion;this.id=id;this.grupoMuscular=grupo;}
 
     // Conserva el constructor anterior para consumidores Java existentes.
     public EjercicioResponse(String nombre, String descripcion) {

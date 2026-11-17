@@ -19,6 +19,7 @@ public class SesionResponse {
     private List<SerieResponse> series;
 
     private Long alumnoId;
+    private String alumnoNombre;
     private Long rutinaId;
     private Long diaRutinaId;
 
@@ -42,4 +43,6 @@ public class SesionResponse {
     private long revision;
     private java.time.LocalDate fechaEfectiva;
     private java.time.LocalDateTime finalizadaEn;
+
+    private String comentario;
 }

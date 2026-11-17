@@ -21,6 +21,20 @@ public class ValidacionEntrenamiento {
         if (request.getDias() != null) {
             var ordenes = new HashSet<Integer>();
             for (var dia : request.getDias()) {
+                var bloques = new java.util.HashMap<Integer, java.util.List<Object>>();
+                var posiciones = new java.util.HashSet<String>();
+                for(var ejercicio:dia.getEjercicios()) {
+                    if(ejercicio.getBloqueOrden()==null) {
+                        if(ejercicio.getVueltas()!=null || ejercicio.getOrdenEnBloque()!=null || ejercicio.getBloqueNombre()!=null || ejercicio.getDescansoEjercicioSegundos()!=null || ejercicio.getDescansoVueltaSegundos()!=null)
+                            throw new ReglaNegocioException("La configuración de bloque requiere un orden de bloque");
+                        continue;
+                    }
+                    if(ejercicio.getVueltas()==null || ejercicio.getOrdenEnBloque()==null || !ejercicio.getVueltas().equals(ejercicio.getSeriesSugeridas())) throw new ReglaNegocioException("Cada ejercicio del bloque debe respetar sus vueltas y orden");
+                    if(!posiciones.add(ejercicio.getBloqueOrden()+":"+ejercicio.getOrdenEnBloque()))throw new ReglaNegocioException("Orden de ejercicio repetido en el bloque");
+                    var config=java.util.Arrays.<Object>asList(ejercicio.getBloqueNombre(),ejercicio.getVueltas(),ejercicio.getDescansoVueltaSegundos());
+                    var anterior=bloques.putIfAbsent(ejercicio.getBloqueOrden(),config);
+                    if(anterior!=null && !anterior.equals(config))throw new ReglaNegocioException("Los ejercicios deben compartir la configuración de su bloque");
+                }
                 if (!ordenes.add(dia.getNumeroOrden())) throw new ReglaNegocioException("Los números de orden de los días no pueden repetirse");
             }
         }

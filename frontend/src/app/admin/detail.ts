@@ -38,7 +38,7 @@ export class Detail {
   }
   async load() {
     if (!Number.isSafeInteger(this.id()) || this.id() < 1) {
-      this.error.set('El ID del registro no es válido.');
+      this.error.set('El registro seleccionado no está disponible.');
       return;
     }
     const version = ++this.request;

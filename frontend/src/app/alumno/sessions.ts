@@ -35,7 +35,7 @@ import { alumnoError, isClosed, text } from './utils';
     @if (!loading() && !error()) {
       <p class="admin-help">
         {{ filtered().length }} sesiones. Filtros y páginas locales sobre tu historial. Orden por
-        fecha efectiva e ID descendentes.
+        fecha efectiva, más recientes primero.
       </p>
       @for (s of visible(); track s.id) {
         <section class="student-session-row">
@@ -49,7 +49,8 @@ import { alumnoError, isClosed, text } from './utils';
             {{ text(s.diaCumplido) }}
           </p>
           <a class="primary" [routerLink]="['/alumno/sesiones', s.id]"
-            >{{ isClosed(s) ? 'Ver entrenamiento' : 'Continuar sesión' }} #{{ s.id }}</a
+            >{{ isClosed(s) ? 'Ver entrenamiento' : 'Continuar sesión' }} ·
+            {{ s.fechaEfectiva ?? s.fecha }}</a
           >
         </section>
       } @empty {

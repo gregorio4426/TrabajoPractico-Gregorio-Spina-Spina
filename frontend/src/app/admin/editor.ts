@@ -1,3 +1,4 @@
+import { EntityPicker, entityOption } from '../shared/entity-picker';
 import {
   Component,
   ElementRef,
@@ -7,6 +8,7 @@ import {
   output,
   signal,
   viewChild,
+  viewChildren,
 } from '@angular/core';
 import {
   AbstractControl,
@@ -38,7 +40,7 @@ const bytePassword: ValidatorFn = (control) =>
   new TextEncoder().encode(String(control.value ?? '')).length <= 72 ? null : { bytes: true };
 @Component({
   selector: 'app-admin-editor',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, EntityPicker],
   templateUrl: './editor.html',
 })
 export class Editor implements OnInit {
@@ -50,13 +52,10 @@ export class Editor implements OnInit {
   readonly cancelled = output<void>();
   private readonly api = inject(AdminApi);
   private readonly auth = inject(AuthService);
-  readonly lookup = new FormControl('', { nonNullable: true });
-  readonly lookupData = signal<Page<D.ProfesorVista> | null>(null);
-  readonly lookupLoading = signal(false);
-  readonly lookupScope = signal<'actuales' | 'disponibles'>('disponibles');
   readonly form = new FormRecord<FormControl<string>>({});
   readonly fields = signal<Field[]>([]);
   readonly pending = signal(false);
+  readonly selections = viewChildren(EntityPicker);
   readonly error = signal('');
   private readonly dialog = viewChild.required<ElementRef<HTMLDialogElement>>('confirmationDialog');
   readonly titles: Record<Operation, string> = {
@@ -72,48 +71,6 @@ export class Editor implements OnInit {
   };
   ngOnInit() {
     this.configure(true);
-    if (['link', 'unlink', 'replace'].includes(this.operation())) {
-      this.lookupScope.set(this.operation() === 'link' ? 'disponibles' : 'actuales');
-      void this.searchProfessors();
-    }
-  }
-  async searchProfessors(page = 0) {
-    this.lookupLoading.set(true);
-    this.error.set('');
-    try {
-      const current = this.lookupScope() === 'actuales';
-      this.lookupData.set(
-        await firstValueFrom(
-          this.api.get<Page<D.ProfesorVista>>(
-            current ? `alumnos/${this.id()}/profesores` : 'profesores',
-            {
-              q: this.lookup.value,
-              pagina: page,
-              tamanio: 10,
-              ...(!current ? { activo: true, vigente: true } : {}),
-            },
-          ),
-        ),
-      );
-    } catch (error) {
-      this.error.set(adminError(error));
-      this.lookupData.set(null);
-    } finally {
-      this.lookupLoading.set(false);
-    }
-  }
-  chooseProfessor(professor: D.ProfesorVista) {
-    const key =
-      this.operation() === 'replace'
-        ? this.lookupScope() === 'actuales'
-          ? 'profesorAnteriorId'
-          : 'profesorNuevoId'
-        : 'profesorId';
-    this.form.controls[key]?.setValue(String(professor.perfil?.id ?? ''));
-  }
-  switchScope(scope: 'actuales' | 'disponibles') {
-    this.lookupScope.set(scope);
-    void this.searchProfessors();
   }
   private field(
     key: string,
@@ -172,17 +129,25 @@ export class Editor implements OnInit {
           this.field('edad', 'Edad', 'number'),
           this.field('fechaNacimiento', 'Fecha de nacimiento', 'date', false),
           this.field('nivel', 'Nivel', 'select', true, undefined, LEVELS),
-          this.field('objetivo', 'Objetivo', 'select', true, undefined, OBJECTIVES),
+          this.field('objetivoPersonalizado', 'Objetivo del alumno', 'textarea', false, 2000),
+          this.field(
+            'objetivo',
+            'Categoría de objetivo (opcional)',
+            'select',
+            false,
+            undefined,
+            OBJECTIVES,
+          ),
         );
       else fields.push(this.field('especialidad', 'Especialidad', 'text', true, 100));
       fields.push(this.field('emailContacto', 'Email de contacto', 'email', false, 150));
     }
     if (mode === 'link' || mode === 'unlink')
-      fields.push(this.field('profesorId', 'ID del profesor', 'number'));
+      fields.push(this.field('profesorId', 'Profesor', 'number'));
     if (mode === 'replace')
       fields.push(
-        this.field('profesorAnteriorId', 'ID del profesor anterior', 'number'),
-        this.field('profesorNuevoId', 'ID del nuevo profesor', 'number'),
+        this.field('profesorAnteriorId', 'Profesor anterior', 'number'),
+        this.field('profesorNuevoId', 'Nuevo profesor', 'number'),
       );
     if (!['create', 'profile'].includes(mode))
       fields.push(this.field('motivo', 'Motivo de la operación', 'textarea', true, 500));
@@ -230,6 +195,14 @@ export class Editor implements OnInit {
       return;
     }
     const v = this.form.getRawValue();
+    if (
+      this.form.controls['objetivoPersonalizado'] &&
+      !v['objetivoPersonalizado']?.trim() &&
+      !v['objetivo']
+    ) {
+      this.error.set('Informá un objetivo del alumno o elegí una categoría.');
+      return;
+    }
     if (this.fields().some((f) => f.key === 'fechaNacimiento') && v['fechaNacimiento']) {
       const birth = v['fechaNacimiento'];
       const now = new Date();
@@ -259,7 +232,8 @@ export class Editor implements OnInit {
       edad: Number(v['edad']),
       fechaNacimiento: v['fechaNacimiento'] || null,
       nivel: v['nivel'] as D.AlumnoDatos['nivel'],
-      objetivo: v['objetivo'] as D.AlumnoDatos['objetivo'],
+      objetivo: (v['objetivo'] || null) as D.AlumnoDatos['objetivo'],
+      objetivoPersonalizado: v['objetivoPersonalizado']?.trim() ?? '',
       emailContacto: v['emailContacto']?.trim() || null,
     };
   }

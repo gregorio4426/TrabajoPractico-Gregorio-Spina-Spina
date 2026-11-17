@@ -70,8 +70,17 @@
                 <option [value]="level">{{ level }}</option>
               }
             </select></label
+          ><label class="wide"
+            >Objetivo del alumno<textarea
+              formControlName="objetivoPersonalizado"
+              maxlength="2000"
+              rows="3"
+              placeholder="Describí qué querés lograr"
+            ></textarea
+            ><small>Descripción libre. Informá un objetivo o elegí una categoría.</small></label
           ><label
-            >Objetivo *<select formControlName="objetivo">
+            >Categoría de objetivo (opcional)<select formControlName="objetivo">
+              <option value="">Sin categoría</option>
               @for (goal of objectives; track goal) {
                 <option [value]="goal">{{ goal.replaceAll('_', ' ') }}</option>
               }

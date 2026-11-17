@@ -1,0 +1,50 @@
+services:
+  db:
+    build:
+      context: .
+      dockerfile: docker/db.Dockerfile
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: gimnasio
+      MYSQL_USER: gym
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:?Generá el archivo .env siguiendo docker/README.md}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Falta MYSQL_ROOT_PASSWORD}
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", 'MYSQL_PWD="$$MYSQL_PASSWORD" mysql --protocol=TCP -h 127.0.0.1 -ugym gimnasio -Nse "SELECT COUNT(*) FROM gimnasio_schema_migrations" >/dev/null']
+      interval: 10s
+      timeout: 5s
+      start_period: 60s
+      retries: 20
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GYM_DB_URL: jdbc:mysql://db:3306/gimnasio?allowPublicKeyRetrieval=true&useSSL=false
+      GYM_DB_USERNAME: gym
+      GYM_DB_PASSWORD: ${MYSQL_PASSWORD:?Falta MYSQL_PASSWORD}
+      GYM_JWT_SECRET_BASE64: ${GYM_JWT_SECRET_BASE64:?Falta GYM_JWT_SECRET_BASE64}
+      GYM_JWT_TTL: PT24H
+      GYM_JWT_ISSUER: gimnasio-api
+      GYM_CORS_ALLOWED_ORIGINS: ${GYM_CORS_ALLOWED_ORIGINS:-}
+      GYM_BOOTSTRAP_ADMIN_ENABLED: ${GYM_BOOTSTRAP_ADMIN_ENABLED:-false}
+      GYM_BOOTSTRAP_ADMIN_EMAIL: ${GYM_BOOTSTRAP_ADMIN_EMAIL:-}
+      GYM_BOOTSTRAP_ADMIN_PASSWORD: ${GYM_BOOTSTRAP_ADMIN_PASSWORD:-}
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${GYM_BIND_ADDRESS:-127.0.0.1}:${GYM_HTTP_PORT:-8088}:8080"
+volumes:
+  mysql-data:

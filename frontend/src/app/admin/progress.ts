@@ -22,7 +22,7 @@ import { adminError } from './admin-utils';
       </p>
     </section>
     @if (invalid()) {
-      <p class="error-message" role="alert">El ID del alumno no es válido.</p>
+      <p class="error-message" role="alert">El alumno seleccionado no está disponible.</p>
     } @else {
       <a class="admin-link" routerLink="/admin/sesiones" [queryParams]="{ alumnoId: studentId() }"
         >Consultar historial de sesiones</a

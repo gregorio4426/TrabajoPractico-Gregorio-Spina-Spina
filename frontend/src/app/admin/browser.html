@@ -1,7 +1,7 @@
 <div class="admin-kicker page-intro">
   <div>
     <span class="eyebrow muted">ADMINISTRACIÓN</span>
-    <h1>{{ config.label }}{{ sub ? ' · ' + sub + ' #' + id() : '' }}</h1>
+    <h1>{{ config.label }}{{ sub ? ' · ' + sub : '' }}</h1>
   </div>
   @if (isPeople && !sub) {
     <a class="primary" [routerLink]="['/admin', type, 'nuevo']"
@@ -11,7 +11,7 @@
 </div>
 @if (sub) {
   <p>
-    <a class="admin-link" [routerLink]="['/admin', parent, id()]">Volver al detalle #{{ id() }}</a>
+    <a class="admin-link" [routerLink]="['/admin', parent, id()]">Volver al registro</a>
   </p>
 }
 @if (created) {
@@ -21,7 +21,13 @@
   @for (filter of filters; track filter.key) {
     <label
       >{{ filter.label }}
-      @if (filter.options) {
+      @if (['alumnos', 'profesores', 'rutinas', 'usuarios'].includes(filter.type ?? '')) {
+        <app-entity-picker
+          [kind]="$any(filter.type)"
+          [label]="filter.label"
+          [formControlName]="filter.key"
+        />
+      } @else if (filter.options) {
         <select [formControlName]="filter.key">
           <option value="">Todos</option>
           @for (option of filter.options; track option) {
@@ -93,11 +99,19 @@
           @for (row of pageData.contenido; track rowKey(row)) {
             <tr>
               @for (col of config.columns; track col[0]) {
-                <td>{{ text(at(row, col[0])) }}</td>
+                <td>{{ displayCell(row, col[0]) }}</td>
               }
               <td>
                 <button class="secondary" (click)="detail(row)">
-                  Ver detalle #{{ idOf(row) }}
+                  Abrir
+                  {{
+                    text(
+                      at(row, 'perfil.nombre') ??
+                        at(row, 'nombre') ??
+                        at(row, 'email') ??
+                        at(row, 'rutinaNombre')
+                    )
+                  }}
                 </button>
               </td>
             </tr>

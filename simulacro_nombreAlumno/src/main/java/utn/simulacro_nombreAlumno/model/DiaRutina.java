@@ -30,7 +30,7 @@ public class DiaRutina {
     private Rutina rutina;
 
     @OneToMany(mappedBy = "diaRutina", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @OrderBy("id ASC")
+    @OrderBy("bloqueOrden ASC, ordenEnBloque ASC, id ASC")
     @Builder.Default
     private List<DiaEjercicio> ejercicios = new ArrayList<>();
 }

@@ -1,3 +1,4 @@
+import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +11,7 @@ import { positiveInteger } from '../profesor/utils';
 import { alumnoError } from './utils';
 @Component({
   selector: 'app-student-professors',
-  imports: [ReactiveFormsModule, Confirm],
+  imports: [ReactiveFormsModule, Confirm, EntityPicker],
   templateUrl: './professors.html',
 })
 export class Professors {
@@ -29,6 +30,11 @@ export class Professors {
   private seq = 0;
   readonly search = this.fb.nonNullable.control('');
   private readonly q = signal('');
+  readonly linkedOptions = () => (this.profile()?.profesores ?? []).map(entityOption);
+  readonly replacementOptions = () =>
+    this.directory()
+      .filter((p) => !this.linked(p.id))
+      .map(entityOption);
   readonly form = this.fb.nonNullable.group({
     anterior: ['', [Validators.required, positiveInteger]],
     nuevo: ['', [Validators.required, positiveInteger]],
@@ -128,7 +134,7 @@ export class Professors {
   }
   message() {
     return this.action() === 'replace'
-      ? `Se reemplazará solo el vínculo con el profesor #${this.form.controls.anterior.value} por #${this.form.controls.nuevo.value}. Los demás profesores y tu historial se conservan.`
-      : `Se ${this.action() === 'link' ? 'agregará' : 'terminará'} tu vínculo con ${this.selected()?.nombre} ${this.selected()?.apellido} (#${this.selected()?.id}). La rutina y el historial se conservan. El profesor desvinculado pierde acceso a tus datos.`;
+      ? `Se reemplazará el vínculo seleccionado. Los demás profesores y tu historial se conservan.`
+      : `Se ${this.action() === 'link' ? 'agregará' : 'terminará'} tu vínculo con ${this.selected()?.nombre} ${this.selected()?.apellido}. La rutina y el historial se conservan. El profesor desvinculado pierde acceso a tus datos.`;
   }
 }

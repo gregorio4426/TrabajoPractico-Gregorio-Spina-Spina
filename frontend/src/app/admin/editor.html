@@ -12,74 +12,28 @@
   }
   @if (['link', 'unlink', 'replace'].includes(operation())) {
     <p class="admin-help">
-      Buscá y seleccioná profesores por nombre o email, o ingresá su ID. Vincular requiere perfiles
-      con los roles vigentes. Reemplazar conserva los demás profesores y todo el historial del
-      alumno.
+      Buscá y seleccioná profesores por nombre o email. Vincular requiere perfiles con los roles
+      vigentes. Reemplazar conserva los demás profesores y todo el historial del alumno.
     </p>
   }
   @if (error()) {
     <p class="error-message" role="alert">{{ error() }}</p>
-  }
-  @if (['link', 'unlink', 'replace'].includes(operation())) {
-    <div class="admin-panel">
-      <h3>Seleccionar profesor</h3>
-      @if (operation() === 'replace') {
-        <div class="admin-actions">
-          <button class="secondary" (click)="switchScope('actuales')">
-            Buscar vínculo anterior</button
-          ><button class="secondary" (click)="switchScope('disponibles')">
-            Buscar nuevo profesor
-          </button>
-        </div>
-      }
-      <form class="admin-filters" (submit)="$event.preventDefault(); searchProfessors()">
-        <label>Buscar profesor<input type="search" [formControl]="lookup" /></label
-        ><button class="secondary" [disabled]="lookupLoading()">Buscar profesores</button>
-      </form>
-      @if (lookupLoading()) {
-        <p role="status">Buscando profesores…</p>
-      }
-      @if (lookupData(); as choices) {
-        <p class="admin-help">
-          {{ choices.totalElementos }} profesores
-          {{ lookupScope() === 'actuales' ? 'vinculados' : 'activos y vigentes' }}.
-        </p>
-        @for (professor of choices.contenido; track professor.perfil?.id) {
-          <div class="admin-picker">
-            <span
-              >#{{ professor.perfil?.id }} · {{ professor.perfil?.nombre }}
-              {{ professor.perfil?.apellido }}<small>{{ professor.perfil?.email }}</small></span
-            ><button class="secondary" (click)="chooseProfessor(professor)">
-              Seleccionar #{{ professor.perfil?.id }}
-            </button>
-          </div>
-        } @empty {
-          <p>No hay profesores con esta búsqueda.</p>
-        }
-        <div class="admin-actions">
-          <button
-            class="secondary"
-            (click)="searchProfessors(choices.pagina - 1)"
-            [disabled]="lookupLoading() || choices.pagina === 0"
-          >
-            Anterior grupo de profesores</button
-          ><button
-            class="secondary"
-            (click)="searchProfessors(choices.pagina + 1)"
-            [disabled]="lookupLoading() || choices.pagina + 1 >= choices.totalPaginas"
-          >
-            Siguiente grupo de profesores
-          </button>
-        </div>
-      }
-    </div>
   }
   <form [formGroup]="form" (ngSubmit)="confirm()">
     <fieldset class="admin-form" [disabled]="pending()" style="border: 0; padding: 0; margin: 0">
       @for (field of fields(); track field.key) {
         <label [class.wide]="field.type === 'textarea'"
           >{{ field.label }} {{ field.required ? '*' : '(opcional)' }}
-          @if (field.options) {
+          @if (['profesorId', 'profesorAnteriorId', 'profesorNuevoId'].includes(field.key)) {
+            <app-entity-picker
+              kind="profesores"
+              [parentStudentId]="
+                field.key === 'profesorAnteriorId' || operation() === 'unlink' ? id() : null
+              "
+              [label]="field.label"
+              [formControlName]="field.key"
+            />
+          } @else if (field.options) {
             <select [formControlName]="field.key">
               <option value="">Seleccionar</option>
               @for (option of field.options; track option) {
@@ -129,15 +83,23 @@
 <dialog #confirmationDialog class="dialog admin-confirm" aria-labelledby="admin-confirm-title">
   <h2 id="admin-confirm-title">¿Confirmar {{ titles[operation()].toLowerCase() }}?</h2>
   <p>
-    Se aplicará el cambio {{ id() ? 'al registro #' + id() : 'a una nueva cuenta' }}. Revisá los
+    Se aplicará el cambio {{ id() ? 'al registro seleccionado' : 'a una nueva cuenta' }}. Revisá los
     datos antes de continuar.
   </p>
   <dl class="admin-details">
     @for (field of fields(); track field.key) {
-      @if (field.key !== 'password') {
+      @if (field.key !== 'password' && !field.key.endsWith('Id')) {
         <div>
           <dt>{{ field.label }}</dt>
           <dd>{{ form.controls[field.key]?.value || 'Sin dato' }}</dd>
+        </div>
+      }
+    }
+    @for (picker of selections(); track $index) {
+      @if (picker.selected(); as choice) {
+        <div>
+          <dt>{{ picker.label() }}</dt>
+          <dd>{{ choice.label }} · {{ choice.detail }}</dd>
         </div>
       }
     }

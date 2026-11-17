@@ -7,8 +7,8 @@
   },
   "servers": [
     {
-      "url": "/",
-      "description": "Origen de la API. Configurar base URL explícita al generar el cliente Angular."
+      "url": "http://127.0.0.1:8080",
+      "description": "Generated server url"
     }
   ],
   "security": [
@@ -89,16 +89,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -109,8 +99,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -129,8 +129,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -160,6 +160,15 @@
             }
           }
         ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinalizarSesionRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK",
@@ -181,16 +190,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -201,8 +200,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -221,8 +230,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -263,16 +272,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -283,8 +282,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -303,8 +312,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -363,16 +372,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -383,8 +382,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -403,8 +412,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -446,16 +455,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -466,8 +465,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -486,8 +495,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -517,16 +526,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -537,8 +536,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -557,8 +566,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -606,16 +615,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -626,8 +625,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -646,8 +655,193 @@
               }
             }
           },
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/grupos-musculares/{id}": {
+      "put": {
+        "tags": [
+          "grupo-muscular-controller"
+        ],
+        "description": "Roles admitidos: PROFESOR. También se verifican propiedad y vinculaciones actuales en los servicios cuando corresponde.",
+        "operationId": "editar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Datos"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vista"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicto de estado, revisión o integridad",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno sin detalles del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Recurso no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "grupo-muscular-controller"
+        ],
+        "description": "Roles admitidos: PROFESOR. También se verifican propiedad y vinculaciones actuales en los servicios cuando corresponde.",
+        "operationId": "eliminar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "409": {
+            "description": "Conflicto de estado, revisión o integridad",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno sin detalles del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -708,16 +902,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -728,8 +912,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -748,8 +942,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -791,16 +985,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -811,8 +995,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -831,8 +1025,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -882,16 +1076,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -902,8 +1086,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -922,8 +1116,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -973,16 +1167,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -993,8 +1177,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1013,8 +1207,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1055,16 +1249,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1075,8 +1259,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1095,8 +1289,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1155,16 +1349,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1175,8 +1359,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1195,8 +1389,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1265,16 +1459,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1285,8 +1469,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1305,8 +1499,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1336,16 +1530,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1356,8 +1540,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1376,8 +1570,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1425,16 +1619,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1445,8 +1629,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1465,8 +1659,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1527,16 +1721,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1547,8 +1731,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1567,8 +1761,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1629,16 +1823,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1649,8 +1833,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1669,8 +1863,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1731,16 +1925,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1751,8 +1935,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1771,8 +1965,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1813,16 +2007,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1833,8 +2017,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1853,8 +2047,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1913,16 +2107,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -1933,8 +2117,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -1953,8 +2147,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -1995,16 +2189,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2015,8 +2199,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2035,8 +2229,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2095,16 +2289,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2115,8 +2299,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2135,8 +2329,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2206,16 +2400,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2226,8 +2410,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2246,8 +2440,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2315,16 +2509,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2335,8 +2519,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2355,8 +2549,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2417,16 +2611,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2437,8 +2621,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2457,8 +2651,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2508,16 +2702,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2528,8 +2712,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2548,8 +2742,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2610,16 +2804,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2630,8 +2814,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2650,8 +2844,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2684,16 +2878,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2704,8 +2888,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2724,8 +2918,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2773,16 +2967,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2793,8 +2977,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2813,8 +3007,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2874,16 +3068,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2894,8 +3078,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -2914,8 +3108,170 @@
               }
             }
           },
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/grupos-musculares": {
+      "get": {
+        "tags": [
+          "grupo-muscular-controller"
+        ],
+        "operationId": "listar",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Vista"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno sin detalles del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "404": {
             "description": "Recurso no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "grupo-muscular-controller"
+        ],
+        "description": "Roles admitidos: PROFESOR. También se verifican propiedad y vinculaciones actuales en los servicios cuando corresponde.",
+        "operationId": "crear_1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Datos"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/Vista"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicto de estado, revisión o integridad",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error interno sin detalles del servidor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Solicitud inválida",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -2973,16 +3329,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -2993,8 +3339,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3013,8 +3369,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3062,16 +3418,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3082,8 +3428,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3102,8 +3458,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3153,16 +3509,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3173,8 +3519,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3193,8 +3549,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3244,16 +3600,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3264,8 +3610,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3284,8 +3640,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3337,16 +3693,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3357,8 +3703,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3377,8 +3733,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3439,16 +3795,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3459,8 +3805,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3479,8 +3835,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3538,16 +3894,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3558,8 +3904,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3578,8 +3934,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3630,16 +3986,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3650,8 +3996,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3670,8 +4026,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3720,16 +4076,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3740,8 +4086,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -3760,8 +4116,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -3976,16 +4332,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -3996,8 +4342,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4016,8 +4372,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -4033,7 +4389,7 @@
           "admin-controller"
         ],
         "description": "Roles admitidos: ADMIN. También se verifican propiedad y vinculaciones actuales en los servicios cuando corresponde.",
-        "operationId": "crear_1",
+        "operationId": "crear_2",
         "requestBody": {
           "content": {
             "application/json": {
@@ -4065,16 +4421,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -4085,8 +4431,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4105,8 +4461,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -4321,16 +4677,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -4341,8 +4687,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4361,8 +4717,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -4410,16 +4766,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -4430,8 +4776,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4450,8 +4806,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -4512,16 +4868,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -4532,8 +4878,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4552,8 +4908,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -4768,16 +5124,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -4788,8 +5134,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4808,8 +5164,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -4857,16 +5213,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -4877,8 +5223,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4897,8 +5253,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -4959,16 +5315,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -4979,8 +5325,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -4999,8 +5355,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5070,16 +5426,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5090,8 +5436,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5110,8 +5466,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5179,16 +5535,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5199,8 +5545,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5219,8 +5575,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5281,16 +5637,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5301,8 +5647,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5321,8 +5677,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5363,16 +5719,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5383,8 +5729,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5403,8 +5759,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5463,16 +5819,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5483,8 +5829,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5503,8 +5859,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5565,16 +5921,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5585,8 +5931,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5605,8 +5961,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5647,16 +6003,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5667,8 +6013,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5687,8 +6043,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5732,16 +6088,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5752,8 +6098,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5772,8 +6128,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5806,16 +6162,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5826,8 +6172,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5846,8 +6202,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5888,16 +6244,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5908,8 +6254,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -5928,8 +6284,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -5973,16 +6329,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -5993,8 +6339,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6013,8 +6369,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -6058,16 +6414,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -6078,8 +6424,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6098,8 +6454,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -6149,16 +6505,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -6169,8 +6515,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6189,8 +6545,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -6223,16 +6579,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -6243,8 +6589,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6263,8 +6619,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -6294,16 +6650,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -6314,8 +6660,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6334,8 +6690,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -6379,16 +6735,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -6399,8 +6745,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6419,8 +6775,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -6461,16 +6817,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -6481,8 +6827,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6501,8 +6857,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -6535,16 +6891,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -6555,8 +6901,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -6575,8 +6931,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -7386,16 +7742,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -7406,8 +7752,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -7426,8 +7782,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -8017,16 +8373,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -8037,8 +8383,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -8057,8 +8413,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -8748,16 +9104,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -8768,8 +9114,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -8788,8 +9144,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -9004,16 +9360,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -9024,8 +9370,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -9044,8 +9400,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -9086,16 +9442,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -9106,8 +9452,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -9126,8 +9482,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -9171,16 +9527,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -9191,8 +9537,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -9211,8 +9567,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -9427,16 +9783,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -9447,8 +9793,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -9467,8 +9823,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -9509,16 +9865,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -9529,8 +9875,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -9549,8 +9905,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -9774,16 +10130,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -9794,8 +10140,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -9814,8 +10170,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -9845,16 +10201,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -9865,8 +10211,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -9885,8 +10241,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -10110,16 +10466,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -10130,8 +10476,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -10150,8 +10506,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -11024,16 +11380,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -11044,8 +11390,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -11064,8 +11420,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -11280,16 +11636,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -11300,8 +11646,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -11320,8 +11676,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -11362,16 +11718,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -11382,8 +11728,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -11402,8 +11758,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -11627,16 +11983,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -11647,8 +11993,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -11667,8 +12023,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -11892,16 +12248,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -11912,8 +12258,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -11932,8 +12288,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -12157,16 +12513,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -12177,8 +12523,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -12197,8 +12553,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -12799,16 +13155,6 @@
               }
             }
           },
-          "403": {
-            "description": "Acceso no permitido",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
           "500": {
             "description": "Error interno sin detalles del servidor",
             "content": {
@@ -12819,8 +13165,18 @@
               }
             }
           },
-          "401": {
-            "description": "Autenticación requerida o credenciales inválidas",
+          "403": {
+            "description": "Acceso no permitido",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Recurso no encontrado",
             "content": {
               "application/json": {
                 "schema": {
@@ -12839,8 +13195,8 @@
               }
             }
           },
-          "404": {
-            "description": "Recurso no encontrado",
+          "401": {
+            "description": "Autenticación requerida o credenciales inválidas",
             "content": {
               "application/json": {
                 "schema": {
@@ -12947,6 +13303,16 @@
           }
         }
       },
+      "FinalizarSesionRequest": {
+        "type": "object",
+        "properties": {
+          "comentario": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
       "SesionResponse": {
         "type": "object",
         "properties": {
@@ -12976,6 +13342,9 @@
           "alumnoId": {
             "type": "integer",
             "format": "int64"
+          },
+          "alumnoNombre": {
+            "type": "string"
           },
           "rutinaId": {
             "type": "integer",
@@ -13025,6 +13394,9 @@
           "finalizadaEn": {
             "type": "string",
             "format": "date-time"
+          },
+          "comentario": {
+            "type": "string"
           }
         }
       },
@@ -13051,6 +13423,31 @@
           "pesoSugerido": {
             "type": "number",
             "format": "double"
+          },
+          "bloqueOrden": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bloqueNombre": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "vueltas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ordenEnBloque": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "descansoEjercicioSegundos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "descansoVueltaSegundos": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -13133,6 +13530,29 @@
           "ejercicioId": {
             "type": "integer",
             "format": "int64"
+          },
+          "bloqueOrden": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "bloqueNombre": {
+            "type": "string"
+          },
+          "vueltas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ordenEnBloque": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "descansoEjercicioSegundos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "descansoVueltaSegundos": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -13276,15 +13696,41 @@
           }
         }
       },
-      "EjercicioRequest": {
+      "Datos": {
         "required": [
-          "descripcion",
-          "grupoMuscular",
           "nombre"
         ],
         "type": "object",
         "properties": {
           "nombre": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          }
+        }
+      },
+      "Vista": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "nombre": {
+            "type": "string"
+          }
+        }
+      },
+      "EjercicioRequest": {
+        "required": [
+          "descripcion",
+          "nombre"
+        ],
+        "type": "object",
+        "properties": {
+          "nombre": {
+            "maxLength": 60,
+            "minLength": 0,
             "type": "string"
           },
           "descripcion": {
@@ -13300,6 +13746,13 @@
               "HOMBROS",
               "ABDOMINALES"
             ]
+          },
+          "grupoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "grupoInformado": {
+            "type": "boolean"
           }
         }
       },
@@ -13326,6 +13779,13 @@
               "HOMBROS",
               "ABDOMINALES"
             ]
+          },
+          "grupoId": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "grupoMuscularNombre": {
+            "type": "string"
           }
         }
       },
@@ -13389,8 +13849,7 @@
         "required": [
           "apellido",
           "nivel",
-          "nombre",
-          "objetivo"
+          "nombre"
         ],
         "type": "object",
         "properties": {
@@ -13424,9 +13883,17 @@
             "minLength": 0,
             "type": "string"
           },
+          "objetivoPersonalizado": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
           "fechaDeNacimiento": {
             "type": "string",
             "format": "date"
+          },
+          "objetivoInformado": {
+            "type": "boolean"
           }
         }
       },
@@ -13478,6 +13945,9 @@
           },
           "emailContacto": {
             "type": "string"
+          },
+          "objetivoPersonalizado": {
+            "type": "string"
           }
         }
       },
@@ -13504,8 +13974,7 @@
           "apellido",
           "edad",
           "nivel",
-          "nombre",
-          "objetivo"
+          "nombre"
         ],
         "type": "object",
         "properties": {
@@ -13549,6 +14018,14 @@
             "maxLength": 150,
             "minLength": 0,
             "type": "string"
+          },
+          "objetivoPersonalizado": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "objetivoInformado": {
+            "type": "boolean"
           }
         }
       },
@@ -14074,8 +14551,7 @@
       },
       "SeguimientoAlumnoRequest": {
         "required": [
-          "nivel",
-          "objetivo"
+          "nivel"
         ],
         "type": "object",
         "properties": {
@@ -14094,6 +14570,14 @@
               "GANAR_MASA_MUSCULAR",
               "MEJORAR_RESISTENCIA"
             ]
+          },
+          "objetivoPersonalizado": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "objetivoInformado": {
+            "type": "boolean"
           }
         }
       },

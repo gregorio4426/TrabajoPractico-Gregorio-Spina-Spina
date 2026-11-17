@@ -22,4 +22,9 @@ public class Ejercicio {
 
     @Enumerated(EnumType.STRING)
 	private GrupoMuscular grupoMuscular;
+    @ManyToOne @JoinColumn(name="grupo_muscular_id")
+    private GrupoMuscularCatalogo grupoPersonalizado;
+    @Column(length=60,unique=true) private String nombreNormalizado;
+    public String getGrupoNombre() { return grupoPersonalizado != null ? grupoPersonalizado.getNombre() : grupoMuscular == null ? null : grupoMuscular.name(); }
+
 }

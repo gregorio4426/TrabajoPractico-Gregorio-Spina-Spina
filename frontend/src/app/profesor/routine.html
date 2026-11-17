@@ -1,6 +1,6 @@
 <p><a class="admin-link" routerLink="/profesor/rutinas">← Volver a rutinas</a></p>
 <div class="page-intro admin-kicker">
-  <h1>Rutina #{{ id() }}{{ selectedVersion() ? ' · versión ' + selectedVersion() : '' }}</h1>
+  <h1>Detalle de rutina{{ selectedVersion() ? ' · versión ' + selectedVersion() : '' }}</h1>
   <button class="secondary" (click)="load()" [disabled]="loading() || pending()">
     Recargar rutina
   </button>
@@ -21,8 +21,16 @@
     <p class="admin-help">
       Autor: {{ r.profesor }} ·
       {{ own() ? 'Rutina propia' : 'Rutina de otro profesor, solo consulta' }} ·
-      {{ r.archivada ? 'Archivada' : 'Disponible' }}. ID de versión exacta: {{ r.rutinaVersionId }}.
+      {{ r.archivada ? 'Archivada' : 'Disponible' }}.
     </p>
+    @if (own()) {
+      <a
+        class="secondary"
+        routerLink="/profesor/rutinas/nueva"
+        [queryParams]="{ copiar: id(), version: selectedVersion() }"
+        >Duplicar rutina</a
+      >
+    }
     @if (own() && !r.archivada) {
       <div class="admin-actions">
         <a class="primary" [routerLink]="['/profesor/rutinas', id(), 'editar']"
@@ -34,16 +42,12 @@
     }
     @if (own() && !r.archivada && selectedVersion() === null) {
       <form class="admin-filters" [formGroup]="form" (ngSubmit)="ask('assign')">
-        <label
-          >Alumno vinculado<select formControlName="alumnoId">
-            <option value="">Seleccionar alumno</option>
-            @for (s of students(); track s.id) {
-              <option [value]="s.id">
-                #{{ s.id }} · {{ s.nombre }} {{ s.apellido }} · {{ s.email }}
-              </option>
-            }
-          </select></label
-        ><button class="primary" [disabled]="pending() || students().length === 0">
+        <app-entity-picker
+          kind="alumnos"
+          label="Alumno vinculado"
+          [options]="studentOptions()"
+          formControlName="alumnoId"
+        /><button class="primary" [disabled]="pending() || students().length === 0">
           Asignar última versión
         </button>
       </form>
@@ -62,7 +66,7 @@
     <div class="teacher-version-list">
       @for (v of versions(); track v.rutinaVersionId) {
         <a [routerLink]="['/profesor/rutinas', id(), 'versiones', v.numeroVersion]"
-          >Versión {{ v.numeroVersion }} · #{{ v.rutinaVersionId }}</a
+          >Versión {{ v.numeroVersion }}</a
         >
       }
     </div>
@@ -78,14 +82,10 @@
   [title]="action() === 'archive' ? '¿Archivar esta rutina?' : '¿Asignar la última versión?'"
   [message]="
     action() === 'archive'
-      ? 'La familia #' +
-        id() +
-        ' saldrá del catálogo activo. No se podrá editar ni asignar. Sus versiones e historiales se conservan.'
-      : 'Se asignará la última versión de la rutina #' +
-        id() +
-        ' al alumno #' +
-        form.controls.alumnoId.value +
-        '. Se desactivará su asignación anterior.'
+      ? 'Se archivará ' + data()?.nombre + '. Se conservan las versiones y entrenamientos.'
+      : 'Se asignará la última versión de ' +
+        data()?.nombre +
+        ' al alumno seleccionado. Se conserva su historial.'
   "
   (confirmed)="save()"
 />

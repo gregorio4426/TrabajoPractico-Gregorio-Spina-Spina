@@ -13,6 +13,9 @@ import utn.simulacro_nombreAlumno.model.Objetivo;
 public class SeguimientoAlumnoRequest {
     @NotNull
     private Nivel nivel;
-    @NotNull
     private Objetivo objetivo;
+    @jakarta.validation.constraints.Size(max=2000)
+    private String objetivoPersonalizado;
+    @jakarta.validation.constraints.AssertTrue(message="Informá un objetivo libre o una categoría")
+    public boolean isObjetivoInformado() { return objetivo != null || (objetivoPersonalizado != null && !objetivoPersonalizado.isBlank()); }
 }

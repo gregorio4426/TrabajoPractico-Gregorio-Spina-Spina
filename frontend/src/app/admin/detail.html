@@ -4,7 +4,7 @@
   >
 </p>
 <div class="admin-kicker page-intro">
-  <h1>{{ creating ? 'Nuevo registro' : config.singular + ' #' + id() }}</h1>
+  <h1>{{ creating ? 'Nuevo registro' : config.singular }}</h1>
   @if (!creating) {
     <button class="secondary" (click)="load()" [disabled]="loading()">Recargar datos</button>
   }

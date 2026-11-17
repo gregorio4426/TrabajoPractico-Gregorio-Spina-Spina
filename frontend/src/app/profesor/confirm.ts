@@ -1,8 +1,9 @@
 import { Component, ElementRef, input, output, viewChild } from '@angular/core';
+let nextConfirmation = 0;
 @Component({
   selector: 'app-teacher-confirm',
-  template: `<dialog #dialog class="dialog admin-confirm" aria-labelledby="teacher-confirm-heading">
-    <h2 id="teacher-confirm-heading">{{ title() }}</h2>
+  template: `<dialog #dialog class="dialog admin-confirm" [attr.aria-labelledby]="headingId">
+    <h2 [id]="headingId">{{ title() }}</h2>
     <p>{{ message() }}</p>
     <div class="dialog-actions">
       <button class="secondary" (click)="close()">Cancelar</button
@@ -11,6 +12,7 @@ import { Component, ElementRef, input, output, viewChild } from '@angular/core';
   </dialog>`,
 })
 export class Confirm {
+  readonly headingId = 'teacher-confirm-heading-' + ++nextConfirmation;
   readonly title = input('¿Confirmar la operación?');
   readonly message = input('');
   readonly confirmed = output<void>();

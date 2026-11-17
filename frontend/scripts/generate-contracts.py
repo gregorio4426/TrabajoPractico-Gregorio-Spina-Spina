@@ -1,4 +1,4 @@
-"""Generate frontend-only TS definitions from the unchanged backend OpenAPI export."""
+"""Generate TS definitions from the backend OpenAPI export."""
 import json,pathlib
 root=pathlib.Path(__file__).resolve().parents[1]
 spec=json.loads((root.parent/'simulacro_nombreAlumno/docs/openapi.json').read_text())

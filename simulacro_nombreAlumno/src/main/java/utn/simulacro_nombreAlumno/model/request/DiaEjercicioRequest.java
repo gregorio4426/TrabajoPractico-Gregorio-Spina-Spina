@@ -27,4 +27,11 @@ public class DiaEjercicioRequest {
 
     @PesoValido
     private Double pesoSugerido;
+    @Positive private Integer bloqueOrden;
+    @Size(max=100) private String bloqueNombre;
+    @Positive private Integer vueltas;
+    @Positive private Integer ordenEnBloque;
+    @PositiveOrZero private Integer descansoEjercicioSegundos;
+    @PositiveOrZero private Integer descansoVueltaSegundos;
+
 }

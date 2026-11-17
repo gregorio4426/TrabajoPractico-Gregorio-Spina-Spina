@@ -348,7 +348,7 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
       // New exercise is last in the stable ID catalogue; wait for each rendered page.
       const choose = async () => {
         const pick = progress.getByRole('button', {
-          name: exercise.nombre + ' · #' + exercise.id,
+          name: exercise.nombre,
           exact: true,
         });
         while (!(await pick.count())) {
@@ -418,11 +418,9 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
       await progress.getByRole('button', { name: 'Consultar progreso', exact: true }).click();
       await expect(progress.getByText(`${today} → ${today}`, { exact: false })).toBeVisible();
       await choose();
-      const singleChart = progress
-        .locator('.teacher-chart')
-        .filter({
-          has: page.getByRole('heading', { name: 'Volumen registrado por sesión', exact: true }),
-        });
+      const singleChart = progress.locator('.teacher-chart').filter({
+        has: page.getByRole('heading', { name: 'Volumen registrado por sesión', exact: true }),
+      });
       await singleChart.locator('summary').click();
       await expect(singleChart.locator('tbody tr')).toHaveCount(1);
       await expect(singleChart.locator('tbody td').nth(1)).toHaveText('0.0');

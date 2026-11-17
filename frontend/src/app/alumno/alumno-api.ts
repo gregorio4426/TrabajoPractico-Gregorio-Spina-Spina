@@ -50,8 +50,11 @@ export class AlumnoApi {
   addSeries(id: number, body: D.SerieRequest) {
     return this.http.post<D.SerieResponse>(`${this.base}/sesiones/${id}/series`, body);
   }
-  finish(id: number) {
-    return this.http.put<D.SesionResponse>(`${this.base}/sesiones/${id}/completar`, null);
+  finish(id: number, comentario?: string) {
+    return this.http.put<D.SesionResponse>(
+      `${this.base}/sesiones/${id}/completar`,
+      comentario === undefined ? null : { comentario },
+    );
   }
   correctSeries(id: number, seriesId: number, body: D.CorreccionSerieRequest) {
     return this.http.patch<D.SerieResponse>(`${this.base}/sesiones/${id}/series/${seriesId}`, body);

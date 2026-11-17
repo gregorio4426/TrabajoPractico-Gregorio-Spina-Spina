@@ -15,7 +15,64 @@ export class Exercises {
   private readonly api = inject(ProfesorApi);
   private readonly fb = inject(FormBuilder);
   private readonly confirmation = viewChild.required<Confirm>('confirmation');
-  readonly groups = MUSCLES;
+  readonly groupConfirmation = viewChild.required<Confirm>('groupConfirmation');
+  readonly groups = signal<Array<{ id: number; nombre: string }>>([]);
+  readonly groupSearch = this.fb.nonNullable.control('');
+  readonly groupName = this.fb.nonNullable.control('', [
+    Validators.required,
+    notBlank,
+    Validators.maxLength(100),
+  ]);
+  readonly groupForm = this.fb.group({ nombre: this.groupName });
+  readonly selectedGroup = signal<{ id: number; nombre: string } | null>(null);
+  readonly groupAction = signal<'save' | 'delete'>('save');
+  groupValue(group: { id: number; nombre: string }) {
+    return MUSCLES.includes(group.nombre as (typeof MUSCLES)[number])
+      ? group.nombre
+      : String(group.id);
+  }
+  filteredGroups() {
+    const q = this.groupSearch.value.trim().toLocaleLowerCase('es');
+    return this.groups().filter((g) => !q || g.nombre.toLocaleLowerCase('es').includes(q));
+  }
+  editGroup(group: { id: number; nombre: string } | null) {
+    this.selectedGroup.set(group);
+    this.groupName.setValue(group?.nombre ?? '');
+  }
+  askGroup(action: 'save' | 'delete', group?: { id: number; nombre: string }) {
+    if (this.pending()) return;
+    this.error.set('');
+    this.groupAction.set(action);
+    if (action === 'delete') this.selectedGroup.set(group!);
+    else if (this.groupName.invalid) {
+      this.error.set('Informá un nombre de grupo muscular de hasta 100 caracteres.');
+      return;
+    }
+    this.groupConfirmation().open();
+  }
+  async saveGroup() {
+    this.pending.set(true);
+    this.error.set('');
+    this.success.set('');
+    try {
+      const selected = this.selectedGroup();
+      if (this.groupAction() === 'delete')
+        await firstValueFrom(this.api.deleteMuscleGroup(selected!.id));
+      else
+        await firstValueFrom(
+          selected
+            ? this.api.updateMuscleGroup(selected.id, this.groupName.value.trim())
+            : this.api.createMuscleGroup(this.groupName.value.trim()),
+        );
+      this.editGroup(null);
+      await this.load();
+      if (!this.error()) this.success.set('Grupo muscular guardado.');
+    } catch (e) {
+      this.error.set(profesorError(e));
+    } finally {
+      this.pending.set(false);
+    }
+  }
   readonly text = text;
   readonly data = signal<D.EjercicioResponse[]>([]);
   readonly editing = signal(false);
@@ -31,7 +88,13 @@ export class Exercises {
   private readonly applied = signal(this.filters.getRawValue());
   readonly visible = computed(() => {
     const name = this.applied().nombre.trim().toLocaleLowerCase('es');
-    return this.data().filter((e) => !name || e.nombre?.toLocaleLowerCase('es').includes(name));
+    return this.data().filter(
+      (e) =>
+        (!name || e.nombre?.toLocaleLowerCase('es').includes(name)) &&
+        (!this.applied().grupoMuscular ||
+          String(e.grupoId) === this.applied().grupoMuscular ||
+          e.grupoMuscular === this.applied().grupoMuscular),
+    );
   });
   readonly rows = computed(() => this.visible().slice(this.page() * 20, this.page() * 20 + 20));
   readonly pages = computed(() => Math.ceil(this.visible().length / 20));
@@ -52,11 +115,9 @@ export class Exercises {
     const q = this.filters.getRawValue();
     this.applied.set(q);
     try {
-      const data = await firstValueFrom(
-        this.api.exercises(
-          q.grupoMuscular ? { grupoMuscular: q.grupoMuscular } : { nombre: q.nombre.trim() },
-        ),
-      );
+      const groups = await firstValueFrom(this.api.muscleGroups());
+      if (seq === this.seq) this.groups.set(groups);
+      const data = await firstValueFrom(this.api.exercises());
       if (seq === this.seq) this.data.set(data);
     } catch (e) {
       if (seq === this.seq) this.error.set(profesorError(e));
@@ -72,7 +133,7 @@ export class Exercises {
     this.form.setValue({
       nombre: exercise?.nombre ?? '',
       descripcion: exercise?.descripcion ?? '',
-      grupoMuscular: exercise?.grupoMuscular ?? '',
+      grupoMuscular: exercise?.grupoMuscular ?? (exercise?.grupoId ? String(exercise.grupoId) : ''),
     });
   }
   ask(action: 'save' | 'delete', exercise?: D.EjercicioResponse) {
@@ -106,7 +167,9 @@ export class Exercises {
         const body: D.EjercicioRequest = {
           nombre: v.nombre.trim(),
           descripcion: v.descripcion.trim(),
-          grupoMuscular: v.grupoMuscular as D.EjercicioRequest['grupoMuscular'],
+          ...(MUSCLES.includes(v.grupoMuscular as (typeof MUSCLES)[number])
+            ? { grupoMuscular: v.grupoMuscular as D.EjercicioRequest['grupoMuscular'] }
+            : { grupoId: Number(v.grupoMuscular) }),
         };
         await firstValueFrom(
           this.selected()
