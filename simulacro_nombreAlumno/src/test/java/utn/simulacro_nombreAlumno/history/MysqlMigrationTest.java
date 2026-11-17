@@ -278,6 +278,13 @@ class MysqlMigrationTest {
     private void validateHibernate(String database, String serverUrl, String user, String password) throws Exception {
         try(var connection=DriverManager.getConnection(serverUrl,user,password)) {
             connection.setCatalog(database); script(connection,"/db/mysql/005_administracion.sql");
+            long sessions=number(connection,"SELECT COUNT(*) FROM sesiones"), performed=number(connection,"SELECT COUNT(*) FROM series");
+            script(connection,"/db/mysql/006_mejoras_funcionales.sql");
+            script(connection,"/db/mysql/006_mejoras_funcionales.sql");
+            assertThat(number(connection,"SELECT COUNT(*) FROM sesiones")).isEqualTo(sessions);
+            assertThat(number(connection,"SELECT COUNT(*) FROM series")).isEqualTo(performed);
+            assertThat(number(connection,"SELECT COUNT(*) FROM grupos_musculares")).isEqualTo(6);
+            assertThat(number(connection,"SELECT COUNT(*) FROM dias_ejercicio WHERE bloque_orden IS NOT NULL")).isZero();
         }
         String base = serverUrl.substring(0, serverUrl.indexOf('/', "jdbc:mysql://".length()));
         var registry = new StandardServiceRegistryBuilder()
@@ -289,7 +296,7 @@ class MysqlMigrationTest {
         try {
             var metadata = new MetadataSources(registry);
             for (Class<?> entity : new Class<?>[]{Usuario.class, Profesor.class, Alumno.class, Rutina.class, DiaRutina.class,
-                    DiaEjercicio.class, Ejercicio.class, AsignacionRutina.class, Sesion.class, Serie.class, AuditoriaEntrenamiento.class, EstadoSeguridad.class, AuditoriaAdministrativa.class}) metadata.addAnnotatedClass(entity);
+                    DiaEjercicio.class, Ejercicio.class, GrupoMuscularCatalogo.class, AsignacionRutina.class, Sesion.class, Serie.class, AuditoriaEntrenamiento.class, EstadoSeguridad.class, AuditoriaAdministrativa.class}) metadata.addAnnotatedClass(entity);
             try (var factory = metadata.buildMetadata().buildSessionFactory()) {
                 assertThat(factory.isOpen()).isTrue();
             }

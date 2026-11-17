@@ -75,11 +75,12 @@ public class AlumnoService {
     @Transactional
     public AlumnoResponse actualizarSeguimiento(Long id, SeguimientoAlumnoRequest request, Authentication auth) {
         Alumno alumno = gestionarEntity(id, auth);
-        if (request.getNivel() == null || request.getObjetivo() == null) {
+        if (request.getNivel() == null || (request.getObjetivo() == null && (request.getObjetivoPersonalizado()==null || request.getObjetivoPersonalizado().isBlank()))) {
             throw new ReglaNegocioException("Nivel y objetivo requeridos");
         }
         alumno.setNivel(request.getNivel());
-        alumno.setObjetivo(request.getObjetivo());
+        if(request.getObjetivo()!=null) alumno.setObjetivo(request.getObjetivo());
+        if(request.getObjetivoPersonalizado()!=null) alumno.setObjetivoPersonalizado(request.getObjetivoPersonalizado().strip());
         return alumnoMapper.toDto(alumnoRepository.save(alumno));
     }
 
@@ -216,6 +217,7 @@ public class AlumnoService {
             alumno.setEdad(Period.between(alumno.getFechaNacimiento(), LocalDate.now()).getYears());
         }
         alumno.setNivel(request.getNivel());
-        alumno.setObjetivo(request.getObjetivo());
+        if(request.getObjetivo()!=null) alumno.setObjetivo(request.getObjetivo());
+        if(request.getObjetivoPersonalizado()!=null) alumno.setObjetivoPersonalizado(request.getObjetivoPersonalizado().strip());
     }
 }

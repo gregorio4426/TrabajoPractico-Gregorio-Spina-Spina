@@ -10,6 +10,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface EjercicioMapper {
     Ejercicio toEntity(EjercicioRequest request);
+    @org.mapstruct.Mapping(target="grupoId", source="grupoPersonalizado.id")
+    @org.mapstruct.Mapping(target="grupoMuscularNombre", source="grupoNombre")
     EjercicioResponse toDto(Ejercicio ejercicio);
 
     List<EjercicioResponse> toLISTDto(List<Ejercicio> ejercicios);

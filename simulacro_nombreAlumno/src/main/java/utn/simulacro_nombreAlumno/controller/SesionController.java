@@ -37,8 +37,8 @@ public class SesionController {
 
     @PutMapping("/{id}/completar")
     @PreAuthorize("hasRole('ALUMNO')")
-    public ResponseEntity<SesionResponse> completarSesion(@PathVariable Long id, Authentication authentication) {
-        return ResponseEntity.ok(sesionService.completarSesion(id, authentication));
+    public ResponseEntity<SesionResponse> completarSesion(@PathVariable Long id, @Valid @RequestBody(required=false) utn.simulacro_nombreAlumno.model.request.FinalizarSesionRequest request, Authentication authentication) {
+        return ResponseEntity.ok(sesionService.completarSesion(id, request, authentication));
     }
 
     @GetMapping("/{id}")

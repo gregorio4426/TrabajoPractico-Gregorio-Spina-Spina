@@ -58,4 +58,6 @@ public class Alumno {
 
     @Column(length = 150)
     private String emailContacto;
+    @jakarta.persistence.Column(length=2000)
+    private String objetivoPersonalizado;
 }

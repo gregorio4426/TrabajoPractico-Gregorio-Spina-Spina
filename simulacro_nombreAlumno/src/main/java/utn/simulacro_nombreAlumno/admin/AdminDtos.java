@@ -12,7 +12,15 @@ public final class AdminDtos {
     private AdminDtos() {}
     public record AlumnoDatos(@NotBlank @Size(max=20) String nombre, @NotBlank @Size(max=20) String apellido,
             @NotNull @Min(1) @Max(150) Integer edad, @Past LocalDate fechaNacimiento,
-            @NotNull Nivel nivel, @NotNull Objetivo objetivo, @Email @Size(max=150) String emailContacto) {}
+            @NotNull Nivel nivel, Objetivo objetivo, @Email @Size(max=150) String emailContacto,
+            @Size(max=2000) String objetivoPersonalizado) {
+        public AlumnoDatos(String nombre, String apellido, Integer edad, LocalDate fechaNacimiento,
+                Nivel nivel, Objetivo objetivo, String emailContacto) {
+            this(nombre,apellido,edad,fechaNacimiento,nivel,objetivo,emailContacto,null);
+        }
+        @AssertTrue(message="Informá un objetivo libre o una categoría")
+        public boolean isObjetivoInformado() { return objetivo != null || (objetivoPersonalizado != null && !objetivoPersonalizado.isBlank()); }
+    }
     public record ProfesorDatos(@NotBlank @Size(max=20) String nombre, @NotBlank @Size(max=20) String apellido,
             @NotBlank @Size(max=100) String especialidad, @Email @Size(max=150) String emailContacto) {}
     public record CrearUsuario(@NotBlank @Email @Size(max=150) String email, @NotBlank String password,

@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface SesionMapper {
 
+    @Mapping(target="alumnoNombre", expression="java(sesion.getAlumno() == null ? null : sesion.getAlumno().getNombre() + \" \" + sesion.getAlumno().getApellido())")
     @Mapping(target = "finalizada", source = "completada")
     @Mapping(target = "diaCumplido", ignore = true)
     @Mapping(target = "seriesEsperadas", ignore = true)

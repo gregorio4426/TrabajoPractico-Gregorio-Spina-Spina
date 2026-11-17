@@ -84,11 +84,17 @@ public class SesionService {
 
     @Transactional
     public SesionResponse completarSesion(Long sesionId, Authentication authentication) {
+        return completarSesion(sesionId, null, authentication);
+    }
+    @Transactional
+    public SesionResponse completarSesion(Long sesionId, utn.simulacro_nombreAlumno.model.request.FinalizarSesionRequest request, Authentication authentication) {
+        if(request!=null) validacion.validar(request);
         Sesion sesion = bloquearPropia(sesionId, authentication);
         if (sesion.isCompletada()) throw new ReglaNegocioException("La sesión ya estaba completada");
         if (sesion.getSeries().stream().noneMatch(Serie::isVigenteValida)) {
             throw new ReglaNegocioException("No se puede finalizar una sesión sin series válidas vigentes");
         }
+        sesion.setComentario(request==null || request.getComentario()==null?null:request.getComentario().strip());
         sesion.setCompletada(true);
         sesion.setFinalizadaEn(LocalDateTime.now());
         tocar(sesion);

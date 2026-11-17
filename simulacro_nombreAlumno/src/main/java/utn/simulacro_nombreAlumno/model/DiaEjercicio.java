@@ -37,7 +37,7 @@ public class DiaEjercicio {
     private String ejercicioNombreSnapshot;
     @Column(updatable = false)
     private String ejercicioDescripcionSnapshot;
-    @Column(updatable = false, length = 32)
+    @Column(updatable = false, length = 100)
     private String grupoMuscularSnapshot;
 
     @PrePersist
@@ -45,7 +45,7 @@ public class DiaEjercicio {
         if (ejercicio != null && ejercicioNombreSnapshot == null) {
             ejercicioNombreSnapshot = ejercicio.getNombre();
             ejercicioDescripcionSnapshot = ejercicio.getDescripcion();
-            grupoMuscularSnapshot = ejercicio.getGrupoMuscular() == null ? null : ejercicio.getGrupoMuscular().name();
+            grupoMuscularSnapshot = ejercicio.getGrupoNombre();
         }
     }
 
@@ -54,7 +54,14 @@ public class DiaEjercicio {
         return ejercicioNombreSnapshot != null ? ejercicioNombreSnapshot : ejercicio == null ? null : ejercicio.getNombre();
     }
     public String getGrupoHistorico() {
-        return ejercicioNombreSnapshot != null ? grupoMuscularSnapshot : ejercicio == null || ejercicio.getGrupoMuscular() == null
-                ? null : ejercicio.getGrupoMuscular().name();
+        return ejercicioNombreSnapshot != null ? grupoMuscularSnapshot : ejercicio == null ? null : ejercicio.getGrupoNombre();
     }
+    private Integer bloqueOrden;
+    @Column(length=100)
+    private String bloqueNombre;
+    private Integer vueltas;
+    private Integer ordenEnBloque;
+    private Integer descansoEjercicioSegundos;
+    private Integer descansoVueltaSegundos;
+
 }

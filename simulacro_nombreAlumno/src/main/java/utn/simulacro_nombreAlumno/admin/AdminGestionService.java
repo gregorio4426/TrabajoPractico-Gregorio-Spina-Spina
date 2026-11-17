@@ -85,6 +85,7 @@ public class AdminGestionService {
         }
         a.setNombre(d.nombre().trim());a.setApellido(d.apellido().trim());a.setEdad(edad);a.setFechaNacimiento(d.fechaNacimiento());
         a.setNivel(d.nivel());a.setObjetivo(d.objetivo());a.setEmailContacto(d.emailContacto());
+        if(d.objetivoPersonalizado()!=null) a.setObjetivoPersonalizado(d.objetivoPersonalizado().strip());
     }
     private void aplicar(Profesor p,ProfesorDatos d) {
         p.setNombre(d.nombre().trim());p.setApellido(d.apellido().trim());p.setEspecialidad(d.especialidad().trim());p.setEmailContacto(d.emailContacto());
