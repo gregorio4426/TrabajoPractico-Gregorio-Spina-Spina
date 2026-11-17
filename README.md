@@ -1,312 +1,196 @@
-# 🏋️ Simulacro — API REST Gestión de Gimnasio
+# Impulso Gym — gestión de gimnasio
+
+Aplicación web completa con **Angular 22**, **Spring Boot 3.4.5 / Java 21** y **MySQL 8.4**. Incluye login único con JWT y paneles responsive para **ADMIN, PROFESOR y ALUMNO**, conectados al backend real. La interfaz utiliza negro, gris carbón y amarillo fluorescente.
+
+## Funcionalidades
+
+| Rol | Funciones principales |
+| --- | --- |
+| ADMIN | Dashboard, gestión de cuentas y perfiles, activación/desactivación, roles, vinculaciones profesor-alumno, consulta de rutinas, sesiones, estadísticas y auditoría. |
+| PROFESOR | Alumnos vinculados, seguimiento y objetivos, rutinas propias, creación de versiones, duplicación, archivo y asignación, catálogo de ejercicios y grupos musculares, historiales y gráficos de progreso. |
+| ALUMNO | Dashboard personal, rutina activa y asignaciones anteriores, registro y recuperación de sesiones abiertas, cierre completo o parcial, correcciones y anulaciones, evolución, perfil y gestión de profesores. |
+
+Los tres espacios incluyen validaciones, confirmaciones, estados de carga/vacío/error y controles de acceso. Los selectores permiten buscar alumnos, profesores y ejercicios por nombre; los identificadores se utilizan internamente.
+
+### Mejoras funcionales actuales
+
+- **Bloques de entrenamiento persistentes:** series, biseries y circuitos; nombre opcional, vueltas, orden, descansos entre ejercicios/vueltas y repeticiones/pesos por ejercicio. Se pueden agregar, quitar y reordenar ejercicios y bloques, con vista previa.
+- **Catálogo personalizado:** creación y administración de grupos musculares y ejercicios. Se evitan nuevos duplicados por normalización del nombre y se conservan las referencias existentes.
+- **Objetivo del alumno:** descripción libre editable de hasta 2000 caracteres, con categoría anterior opcional. Debe informarse una descripción o una categoría.
+- **Comentarios de entrenamiento:** texto opcional de hasta 2000 caracteres al finalizar una sesión, consultable por el alumno y sus profesores actualmente vinculados mediante el historial/detalle autorizado.
+
+Las ediciones de rutinas conservan las versiones utilizadas por asignaciones y sesiones anteriores. **Peso cero y peso no registrado son valores distintos.** Las estadísticas provienen de los registros del backend; no se completan resultados faltantes con datos simulados.
+
+Los seis grupos musculares estándar se conservan por compatibilidad. Los personalizados pueden renombrarse manteniendo referencias y eliminarse únicamente cuando no están en uso. Los comentarios se guardan al cerrar la sesión; no existe edición posterior del comentario.
 
 ## Ejecutar todo con Docker
 
-Ver la [guía de Docker Compose](docker/README.md) para levantar Angular, Java y MySQL con datos persistentes y secretos locales.
+Es la opción para utilizar el sistema **sin abrir el IDE ni iniciar MySQL manualmente**. Requiere Docker Engine/Desktop iniciado y Compose v2; Java, Node y MySQL se ejecutan dentro de contenedores.
 
-El frontend Angular 22 está en [`frontend/`](frontend/README.md). Ver allí la guía completa de ejecución local, pruebas y producción del sistema y el [informe de revisión final](frontend/ETAPA-6-FINAL.md).
+Abrir una terminal **en la raíz del repositorio, donde está `compose.yaml`**. Los siguientes pasos de inicialización son para una instalación nueva.
 
+1. Crear la configuración privada. Si tenés Python 3:
 
-REST API para la gestión integral de un gimnasio, desarrollada con **Java 21** y **Spring Boot 3**.
-Permite administrar alumnos, profesores, ejercicios, rutinas y sesiones de entrenamiento, con autenticación **JWT** y autorización por roles.
+   ```sh
+   python3 docker/init-env.py
+   ```
 
----
+   En Windows se puede usar `py -3 docker/init-env.py` si el lanzador está instalado. Sin Python, copiar `.env.example` a `.env` y completar sus valores; en PowerShell:
 
-## 🛠️ Tecnologías
+   ```powershell
+   Copy-Item .env.example .env
+   notepad .env
+   ```
 
-| Tecnología | Versión |
-|---|---|
-| Java | 21 |
-| Spring Boot | 3.4.5 |
-| Spring Data JPA / Hibernate | — |
-| Spring Security + JWT (jjwt) | 0.11.5 |
-| Spring Validation | — |
-| MySQL | 8+ |
-| Lombok | — |
-| MapStruct | 1.6.3 |
-| Springdoc OpenAPI (Swagger) | 2.8.5 |
-| Maven | — |
+   Configurar contraseñas aleatorias distintas para MySQL y el primer ADMIN, un email para ese ADMIN y una clave JWT Base64 de al menos 32 bytes aleatorios. El bootstrap exige una contraseña de al menos 12 caracteres y hasta 72 bytes UTF-8. No publicar `.env`. El generador crea valores aleatorios y no sobrescribe un archivo existente.
 
----
+2. Construir e iniciar:
 
-## 📐 Arquitectura
+   ```sh
+   docker compose up -d --build --wait --wait-timeout 300
+   docker compose ps
+   ```
 
-```
-Controller → Service → Repository → Base de datos (MySQL)
-```
+3. Abrir **http://localhost:8088** e ingresar con las credenciales iniciales de `.env`.
 
-- **DTOs** separados por dirección (`request` / `response`)
-- **MapStruct** para el mapeo entre entidades y DTOs
-- **Manejo global de excepciones** con `@RestControllerAdvice`
-- **Validaciones** con Bean Validation (`@Valid`) en todos los endpoints de escritura
-- **Seguridad stateless** con JWT: cada request lleva el header `Authorization: Bearer <token>`
-- **Autorización por rol** con `@PreAuthorize` en los controllers
-- **Bootstrap de ADMIN**: opt-in con variables seguras; sin cuentas o contraseñas predeterminadas. Ver la guía de seguridad de etapa 5.
+Después del primer acceso, establecer `GYM_BOOTSTRAP_ADMIN_ENABLED=false`, vaciar `GYM_BOOTSTRAP_ADMIN_EMAIL` y `GYM_BOOTSTRAP_ADMIN_PASSWORD`, y ejecutar `docker compose up -d backend`. Las cuentas ya creadas se conservan en MySQL.
 
----
-
-## 🗂️ Modelo de dominio
-
-```
-Usuario
-  └── Rol (enum: ADMIN / PROFESOR / ALUMNO)
-  └── OneToOne → Alumno o Profesor
-
-Alumno
-  ├── Nivel (enum: PRINCIPIANTE / INTERMEDIO / AVANZADO)
-  ├── Objetivo (enum)
-  ├── Profesores (ManyToMany)
-  ├── AsignacionesRutina (OneToMany)
-  └── Sesiones (OneToMany)
-
-Profesor
-  └── Rutinas creadas (OneToMany)
-
-Rutina
-  ├── Profesor (ManyToOne)
-  ├── Dias (OneToMany → DiaRutina)
-  └── Asignaciones (OneToMany → AsignacionRutina)
-
-DiaRutina
-  ├── nombre (ej: "Día 1 - Pecho y Tríceps")
-  ├── numeroOrden
-  └── Ejercicios (OneToMany → DiaEjercicio)
-
-DiaEjercicio
-  ├── Ejercicio (ManyToOne)
-  ├── seriesSugeridas
-  ├── repsSugeridas
-  └── pesoSugerido
-
-Ejercicio
-  └── GrupoMuscular (enum: PECHO / ESPALDA / PIERNAS / BRAZOS / HOMBROS / ABDOMINALES)
-
-Sesion (entrenamiento de un alumno en un día de rutina)
-  ├── Alumno (ManyToOne)
-  ├── DiaRutina (ManyToOne)
-  ├── fecha
-  ├── completada
-  └── Series (OneToMany)
-
-Serie
-  ├── DiaEjercicio (ManyToOne)
-  ├── numeroSerie
-  ├── repsHechas
-  ├── pesoUsado
-  └── completada
+```sh
+# Detener conservando los datos:
+docker compose stop
+# Volver a iniciar los contenedores existentes:
+docker compose start
+# Consultar errores de arranque:
+docker compose logs --tail=100 backend
 ```
 
----
+El volumen de MySQL conserva la información al detener o recrear contenedores. **`docker compose down -v` elimina los datos del volumen.** No regenerar las claves de MySQL/JWT de una instalación existente sin un procedimiento de cambio.
 
-## 🔐 Autenticación y roles
+### Actualizar una instalación existente: migración 006
 
-Todos los endpoints (salvo login, registro de alumno y Swagger) requieren un JWT válido en el header:
+Esta versión incorpora `006_mejoras_funcionales.sql`, posterior a 005. Es una migración aditiva y repetible que conserva rutinas, versiones, asignaciones y entrenamientos existentes.
 
-```
-Authorization: Bearer <token>
-```
+**Reconstruir las imágenes no aplica SQL sobre un volumen ya inicializado.** Antes de iniciar la nueva versión:
 
-### Roles
+1. Actualizar el código de la rama `codex/mejoras-rutinas-selectores`.
+2. Detener frontend y backend para evitar escrituras.
+3. Hacer un backup y verificar su restauración en una base separada.
+4. Aplicar únicamente las migraciones pendientes, incluida 006.
+5. Reconstruir e iniciar el sistema.
 
-| Rol | Descripción |
-|---|---|
-| `ADMIN` | Creación inicial opt-in con configuración segura. Puede registrar profesores. |
-| `PROFESOR` | Gestiona ejercicios, rutinas y alumnos. |
-| `ALUMNO` | Consulta rutinas asignadas y registra sus sesiones de entrenamiento. |
+Seguir los [comandos completos de actualización para Docker y PowerShell](docker/README.md#actualizar-un-volumen-existente-a-las-mejoras-funcionales). **No ejecutar 001 sobre una base existente ni eliminar el volumen para actualizar.**
 
-### Configuración del administrador
+Ver también la [guía de Docker](docker/README.md) y los [resultados de validación](docker/VALIDACION.md).
 
-No hay credenciales predeterminadas. Configurar el bootstrap inicial mediante variables de entorno y deshabilitarlo después de crear el primer ADMIN. Ver [seguridad, variables y migración 004](simulacro_nombreAlumno/docs/etapa-5-seguridad.md).
+## Desarrollo local sin Docker
 
----
+Requisitos: Java 21, MySQL 8.4, Node **24.15+ dentro de 24.x**, npm y Maven Wrapper incluido. No es necesario instalar Maven globalmente.
 
-## 🚀 Endpoints
+### Backend
 
-### Auth `/api/auth`
+1. Crear una base de desarrollo y un usuario MySQL con acceso a ella.
+2. En una base vacía, aplicar en orden los scripts **001 a 006** de [`simulacro_nombreAlumno/src/main/resources/db/mysql/`](simulacro_nombreAlumno/src/main/resources/db/mysql/). En una base existente, aplicar solo los pendientes con backup y escritores detenidos.
+3. Copiar `simulacro_nombreAlumno/.env.example` a `simulacro_nombreAlumno/.env` y completar:
 
-| Método | Ruta | Descripción | Acceso |
-|---|---|---|---|
-| `POST` | `/api/auth/register/alumno` | Registrar alumno | Público |
-| `POST` | `/api/auth/register/profesor` | Registrar profesor | ADMIN |
-| `POST` | `/api/auth/login` | Login (devuelve JWT) | Público |
+   | Variable | Uso |
+   | --- | --- |
+   | `GYM_DB_URL` | JDBC de la base local. |
+   | `GYM_DB_USERNAME`, `GYM_DB_PASSWORD` | Credenciales privadas de MySQL. |
+   | `GYM_JWT_SECRET_BASE64` | Clave privada Base64 de al menos 32 bytes aleatorios. |
+   | `GYM_CORS_ALLOWED_ORIGINS` | Orígenes exactos permitidos para el navegador. |
+   | `GYM_BOOTSTRAP_ADMIN_*` | Creación inicial del primer ADMIN; deshabilitar después. |
 
-### Alumnos `/api/alumnos`
+4. Cargar las variables en el entorno y arrancar. Spring Boot **no carga `.env` automáticamente**. En bash, usando un archivo propio y confiable:
 
-| Método | Ruta | Descripción | Rol |
-|---|---|---|---|
-| `GET` | `/api/alumnos` | Listar todos | PROFESOR |
-| `GET` | `/api/alumnos/{id}` | Obtener por ID | PROFESOR |
-| `GET` | `/api/alumnos/me` | Ver mi perfil | ALUMNO |
-| `PUT` | `/api/alumnos/me` | Actualizar mi perfil | ALUMNO |
-| `POST` | `/api/alumnos/me/profesores/{profesorId}` | Asignarme un profesor | ALUMNO |
+   ```sh
+   cd simulacro_nombreAlumno
+   set -a
+   . ./.env
+   set +a
+   bash mvnw spring-boot:run
+   ```
 
-### Profesores `/api/profesores`
+En PowerShell, definir las variables de entorno antes de ejecutar `./mvnw.cmd spring-boot:run`. La guía de [ejecución local](frontend/README.md#1-preparar-el-backend-local) detalla la configuración. El backend valida el esquema al iniciar (`ddl-auto: validate`).
 
-| Método | Ruta | Descripción | Rol |
-|---|---|---|---|
-| `GET` | `/api/profesores` | Listar todos | ALUMNO, PROFESOR |
-| `GET` | `/api/profesores/{id}` | Obtener por ID | ALUMNO, PROFESOR |
-| `GET` | `/api/profesores/me` | Ver mi perfil | PROFESOR |
-| `PUT` | `/api/profesores/me` | Actualizar mi perfil | PROFESOR |
+### Frontend
 
-### Ejercicios `/api/ejercicios`
+En otra terminal, desde la raíz:
 
-| Método | Ruta | Descripción | Rol |
-|---|---|---|---|
-| `GET` | `/api/ejercicios` | Listar todos | ALUMNO, PROFESOR |
-| `GET` | `/api/ejercicios?nombre=press` | Filtrar por nombre | ALUMNO, PROFESOR |
-| `GET` | `/api/ejercicios?grupoMuscular=PECHO` | Filtrar por grupo muscular | ALUMNO, PROFESOR |
-| `POST` | `/api/ejercicios` | Crear ejercicio | PROFESOR |
-| `PUT` | `/api/ejercicios/{id}` | Actualizar ejercicio | PROFESOR |
-| `DELETE` | `/api/ejercicios/{id}` | Eliminar ejercicio | PROFESOR |
-
-**Valores válidos para `grupoMuscular`:** `PECHO`, `ESPALDA`, `PIERNAS`, `BRAZOS`, `HOMBROS`, `ABDOMINALES`
-
-### Rutinas `/api/rutinas`
-
-| Método | Ruta | Descripción | Rol |
-|---|---|---|---|
-| `GET` | `/api/rutinas` | Listar todas | ALUMNO, PROFESOR |
-| `GET` | `/api/rutinas/{id}` | Obtener por ID | PROFESOR |
-| `POST` | `/api/rutinas` | Crear rutina con días y ejercicios | PROFESOR |
-| `PUT` | `/api/rutinas/{id}` | Actualizar rutina (solo el creador) | PROFESOR |
-| `DELETE` | `/api/rutinas/{id}` | Eliminar rutina (solo el creador) | PROFESOR |
-| `POST` | `/api/rutinas/asignar/alumno/{alumnoId}/rutina/{rutinaId}` | Asignar rutina a alumno | PROFESOR |
-| `GET` | `/api/rutinas/me/activa` | Mi rutina activa | ALUMNO |
-| `GET` | `/api/rutinas/me/historial` | Mi historial de rutinas | ALUMNO |
-
-#### Body para crear una rutina
-
-```json
-{
-  "nombre": "Rutina Fuerza A",
-  "descripcion": "Rutina de 3 días para ganar fuerza e hipertrofia.",
-  "dias": [
-    {
-      "nombre": "Día 1 - Pecho y Tríceps",
-      "numeroOrden": 1,
-      "ejercicios": [
-        {
-          "ejercicioId": 1,
-          "seriesSugeridas": 4,
-          "repsSugeridas": 8,
-          "pesoSugerido": 60.0
-        }
-      ]
-    }
-  ]
-}
+```sh
+cd frontend
+npm ci
+npm start
 ```
 
-### Sesiones `/api/sesiones`
+Abrir **http://localhost:4200**. Angular usa `/api` del mismo origen; [`frontend/proxy.conf.json`](frontend/proxy.conf.json) redirige las consultas al backend local en `http://127.0.0.1:8080`. Para otro destino, cambiar el `target` y reiniciar Angular. No colocar contraseñas ni claves JWT en el frontend.
 
-| Método | Ruta | Descripción | Rol |
-|---|---|---|---|
-| `POST` | `/api/sesiones` | Iniciar una sesión de entrenamiento | ALUMNO |
-| `POST` | `/api/sesiones/{id}/series` | Registrar una serie dentro de la sesión | ALUMNO |
-| `PUT` | `/api/sesiones/{id}/completar` | Marcar sesión como completada | ALUMNO |
-| `GET` | `/api/sesiones/me/historial` | Ver mi historial de sesiones | ALUMNO |
-| `GET` | `/api/sesiones/alumno/{alumnoId}/historial` | Ver historial de un alumno | PROFESOR |
+## Compilación y pruebas
 
-#### Body para iniciar una sesión
+Backend, desde `simulacro_nombreAlumno/`:
 
-```json
-{
-  "diaRutinaId": 1,
-  "fecha": "2026-09-14"
-}
+```sh
+bash mvnw test
+bash mvnw package
 ```
 
-#### Body para registrar una serie
+En Windows, usar `./mvnw.cmd` en lugar de `bash mvnw`. El JAR se genera en `target/simulacro_nombreAlumno-0.0.1-SNAPSHOT.jar` y puede ejecutarse con `java -jar`, con las variables de entorno configuradas.
 
-```json
-{
-  "diaEjercicioId": 1,
-  "numeroSerie": 1,
-  "repsHechas": 8,
-  "pesoUsado": 60.0
-}
+Las pruebas de migración MySQL requieren `MYSQL_TEST_URL`, `MYSQL_TEST_USERNAME` y `MYSQL_TEST_PASSWORD` hacia un servidor **exclusivo de pruebas**, con permisos para crear/eliminar las bases aleatorias de los tests. Sin esa configuración, las pruebas MySQL opcionales se omiten.
+
+Frontend, desde `frontend/`:
+
+```sh
+npm run check
+npx playwright install chromium
+npm run e2e:real
 ```
 
----
+`check` ejecuta compilación de producción y pruebas unitarias/HTTP. Para `e2e:real`, el backend debe estar iniciado y `GYM_E2E_CREDENTIALS_FILE` debe apuntar a un JSON privado, fuera del repositorio, con cuentas reales `ADMIN` y `PROFESOR` (`email` y `password`). Usar una base de pruebas: los recorridos crean y modifican registros.
 
-## 🔒 Reglas de negocio
+Configurar `GYM_E2E_PRODUCTION=1` para probar Angular en modo producción, o `GYM_E2E_BASE_URL=http://127.0.0.1:8088` para utilizar un stack Compose de pruebas. `CHROMIUM_PATH` permite seleccionar Chromium del sistema. Ver [configuración completa de Chromium](frontend/README.md#3-compilación-y-pruebas). `npm run e2e` sin configuración real puede omitir los recorridos que necesitan backend.
 
-- Un **alumno** solo puede ver y modificar sus propios datos. Acceder a datos de otro alumno devuelve `403`.
-- Un **profesor** puede ver datos de cualquier alumno, pero solo puede editar/eliminar las rutinas que él mismo creó.
-- Al asignar una nueva rutina a un alumno, la anterior se desactiva automáticamente.
-- Solo el **ADMIN** puede registrar profesores.
-- Un alumno solo puede registrar series en sus propias sesiones.
+### Última validación de las mejoras funcionales
 
----
+| Verificación | Resultado |
+| --- | --- |
+| Backend, incluidos contratos HTTP, seguridad y MySQL | **213 pruebas aprobadas, sin omisiones** |
+| Angular: unitarias e integración HTTP | **113 pruebas aprobadas** |
+| Chromium con Angular en configuración de producción | **55 aprobadas**: 47 con API real y 8 de interfaz aislada |
+| Compilación de producción y construcción de imágenes Docker | Aprobadas |
 
-## ⚙️ Configuración
+Los recorridos incluyen regresión de los tres roles, permisos, versiones, sesiones parciales, comentarios, estadísticas y pantallas de escritorio/tablet/celular. Ver el [informe funcional](frontend/MEJORAS-FUNCIONALES.md).
 
-### Requisitos previos
+## Arquitectura y contratos
 
-- Java 21
-- MySQL 8+
-- Maven
-
-### Base de datos
-
-Crear la base de datos en MySQL antes de levantar la aplicación:
-
-```sql
-CREATE DATABASE APPgimnasioBD;
+```text
+Angular 22 → /api → Spring Boot → servicios → repositorios JPA → MySQL
 ```
 
-> El arranque valida el esquema (`ddl-auto: validate`). En una base vacía, ejecutar los scripts 001, 002, 003, 004, 005 y 006 de `simulacro_nombreAlumno/src/main/resources/db/mysql/` en orden. En una base existente, aplicar únicamente las migraciones pendientes, con backup y la aplicación detenida. Ver [versionado y recuperación](simulacro_nombreAlumno/docs/etapa-3-historial.md) y [consistencia, correcciones y migración 003](simulacro_nombreAlumno/docs/etapa-4-consistencia.md).
+- Angular standalone, TypeScript estricto, Signals y formularios reactivos.
+- Spring Security con JWT y autorización por rol, propiedad y vínculos vigentes. Un profesor accede al historial de sus alumnos actualmente vinculados; no existe herencia implícita de roles.
+- DTOs de entrada/salida, Bean Validation, MapStruct y manejo global de errores.
+- Rutinas versionadas y prescripciones históricas inmutables; correcciones y anulaciones de entrenamientos con control de revisiones.
+- Nginx sirve Angular y actúa como reverse proxy de `/api/` en Docker.
 
-### `application.yaml`
+Documentación de referencia:
 
-```yaml
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/APPgimnasioBD
-    username: ${GYM_DB_USERNAME}
-    password: ${GYM_DB_PASSWORD}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-```
+- [OpenAPI y DTOs reales](simulacro_nombreAlumno/docs/openapi.json).
+- [Catálogo de endpoints y permisos](simulacro_nombreAlumno/docs/catalogo-endpoints.md).
+- [Bloques, catálogo personalizado, objetivos, comentarios y migración 006](simulacro_nombreAlumno/docs/mejoras-funcionales.md).
+- [Seguridad y configuración JWT](simulacro_nombreAlumno/docs/etapa-5-seguridad.md).
+- [Administración y auditoría](simulacro_nombreAlumno/docs/etapa-6-administracion.md).
+- [Estadísticas y limitaciones de datos](simulacro_nombreAlumno/docs/etapa-7-dashboards.md).
+- [Guía del frontend y producción](frontend/README.md).
 
-> Configurar también GYM_JWT_SECRET_BASE64 y las demás variables de la [guía de seguridad](simulacro_nombreAlumno/docs/etapa-5-seguridad.md). No hay secretos de desarrollo en el código.
+Con el backend local iniciado, Swagger está en **http://localhost:8080/swagger-ui/index.html** y el contrato en `/v3/api-docs`. En Docker se accede a la aplicación mediante Nginx en 8088; el puerto del backend no se publica directamente.
 
-### Levantar el proyecto
+## Producción
 
-```bash
-./mvnw spring-boot:run
-```
+Usar HTTPS, secretos privados, backups protegidos y un procedimiento de migración previo al arranque. El Compose entregado publica la aplicación en loopback por defecto. Para acceso desde otros equipos, configurar explícitamente dirección de escucha, firewall y reverse proxy/TLS.
 
----
+Para desplegar Angular por separado, publicar `frontend/dist/frontend/browser/` con fallback de rutas a `index.html` y `/api/` dirigido al backend real, conservando estados HTTP y respuestas JSON. `ng serve` se utiliza para desarrollo/pruebas, no como servidor de producción. El stack no incorpora alta disponibilidad ni backups programados.
 
-## 📄 Documentación interactiva (Swagger)
-
-Una vez levantada la aplicación:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
-### Cómo probar endpoints protegidos en Swagger
-
-1. Ejecutar `POST /api/auth/login` con las credenciales del admin o de un usuario registrado.
-2. Copiar el `token` de la respuesta.
-3. Hacer clic en **Authorize** (🔒) arriba a la derecha.
-4. Pegar `Bearer <token>` y confirmar.
-5. Todos los endpoints protegidos usarán ese token automáticamente.
-
----
-
-## 👥 Autores
+## Autores
 
 - **Facundo Gregorio**
 - **Nicolás Spina**
-
-La administración general está documentada en [etapa 6: endpoints ADMIN, cambios de rol y migración 005](simulacro_nombreAlumno/docs/etapa-6-administracion.md).
-
-La entrega del backend y sus dashboards están documentados en [etapa 7: estadísticas, contrato OpenAPI y ejecución local](simulacro_nombreAlumno/docs/etapa-7-dashboards.md). El frontend todavía no está implementado.
-
-Las [mejoras funcionales](simulacro_nombreAlumno/docs/mejoras-funcionales.md) incorporan bloques versionados, grupos personalizados, objetivos libres y comentarios de sesión. Aplicar migración 006 antes de iniciar esta versión con un volumen existente. Ver [actualización Docker sin perder datos](docker/README.md#actualizar-un-volumen-existente-a-las-mejoras-funcionales).
