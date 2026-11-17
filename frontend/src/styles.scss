@@ -50,3 +50,20 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible,
 .teacher-exercise-row > app-entity-picker { display:block; min-width:0; }
 .teacher-exercise-row > .admin-actions { grid-column:1/-1; margin:0; }
 @media(max-width:760px) { .teacher-exercise-row > app-entity-picker {grid-column:1/-1;} }
+
+.training-block-header {
+  grid-column: 1 / -1;
+  border-left: 3px solid var(--accent, #d7ff00);
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
+  background: #171a14;
+  border-radius: 0.5rem;
+}
+.training-block-header h3,
+.training-block-header h4 {
+  margin: 0 0 0.5rem;
+}
+.session-comment {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

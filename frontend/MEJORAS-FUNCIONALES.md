@@ -4,11 +4,11 @@ Base: `de53c3a30a48668827fedc614716145a3557716c` (Docker y frontend completo). E
 
 ## Arquitectura y compatibilidad
 
-Actualmente una familia de rutinas conserva versiones como filas de `rutinas`; los días y sus prescripciones son inmutables. Asignaciones y sesiones apuntan a la versión exacta. Se reutilizarán servicios, guards, cálculos y registros de series.
+Actualmente una familia de rutinas conserva versiones como filas de `rutinas`; los días y sus prescripciones son inmutables. Asignaciones y sesiones apuntan a la versión exacta. Se reutilizan servicios, guards, cálculos y registros de series.
 
-Los bloques guardarán metadatos versionados de agrupación, rondas, orden y descansos junto a sus prescripciones. La numeración de series y la referencia al ejercicio prescrito no se sustituyen. Las rutinas existentes se interpretarán visualmente como ejercicios individuales, manteniendo sus filas y sesiones intactas. Las modificaciones futuras crearán versiones nuevas.
+Los bloques guardan metadatos versionados de agrupación, rondas, orden y descansos junto a sus prescripciones. La numeración de series y la referencia al ejercicio prescrito no se sustituyen. Las rutinas existentes se interpretan visualmente como ejercicios individuales, manteniendo sus filas y sesiones intactas. Las modificaciones futuras crean versiones nuevas.
 
-Se incorporarán buscadores compartidos con selección por nombre/email; los identificadores seguirán viajando sólo internamente. El directorio de grupos musculares, objetivo personalizado y comentario de cierre se persistirán con migración aditiva y controles de permisos. Los comentarios pertenecerán a la sesión autenticada y el profesor los consultará mediante el acceso vigente a su alumno.
+Se incorporan buscadores compartidos con selección por nombre/email; los identificadores seguirán viajando sólo internamente. El directorio de grupos musculares, objetivo personalizado y comentario de cierre se persisten con migración aditiva y controles de permisos. Los comentarios pertenecen a la sesión autenticada y el profesor los consulta mediante el acceso vigente a su alumno.
 
 La implementación se guarda por etapas en esta rama. Las pruebas y migraciones efectivas se documentarán al cerrar cada parte.
 
@@ -22,18 +22,21 @@ La implementación se guarda por etapas en esta rama. Las pruebas y migraciones 
 - Mis rutinas: filtro por cantidad de días, alumnos con acceso vigente y búsqueda por nombre. El backend actual no permite listar rutinas archivadas del profesor por nombre; siguen accesibles desde historiales y enlaces guardados hasta ampliar su API.
 - Etiquetas del catálogo: Nombre del ejercicio y Descripción del ejercicio.
 
-## Alcance pendiente por bloqueo de aprobación
+## Persistencia y ampliación autorizada
 
-El control automático rechazó dos veces ampliar el backend, citando la prohibición de las etapas anteriores y considerando insuficiente el adjunto como autorización confiable. Se pidió confirmación explícita en el chat. Los cambios de backend no publicados se retiraron del repositorio y se preservaron aparte; el backend de esta entrega permanece idéntico a la base.
+El backend incorpora la migración aditiva 006, bloques versionados (vueltas, orden, nombre y descansos), catálogo de grupos personalizados con referencias estables, objetivo libre editable y comentarios opcionales al cerrar sesiones. Se conservan los contratos planos y categorías anteriores. Ver [contratos y migración](../simulacro_nombreAlumno/docs/mejoras-funcionales.md).
 
-Por eso aún NO se implementaron bloques persistidos con rondas/descansos, grupos musculares nuevos, objetivo personalizado ni comentarios de sesión. No se simulan esos datos en HTML/localStorage ni se presentan campos que el servidor no pueda guardar. Tampoco se entregan ni aplican migraciones nuevas en esta primera parte. La ampliación completa del pedido continúa después de esa confirmación.
+El editor permite crear bloques de series, biseries y circuitos, agregar ejercicios sin límite artificial, reordenar bloques y ejercicios, y previsualizar la prescripción completa. Las vueltas se comparten dentro del bloque; repeticiones, pesos y descanso posterior pertenecen a cada ejercicio. Cero y ausencia de peso siguen siendo distintos.
 
-## Validación de esta primera parte
+El perfil del alumno y el seguimiento del profesor admiten el objetivo libre como campo principal, con categoría opcional. Administración también puede crearlo/editarlo. Al finalizar un entrenamiento completo o parcial se puede guardar un comentario de hasta 2000 caracteres. Se consulta desde el detalle de la sesión, incluido el panel del profesor actualmente vinculado.
 
-Compilación Angular de producción aprobada; 107 pruebas unitarias/HTTP en 19 archivos. Incluyen homónimos diferenciados por email, eliminación de selección, teclado del buscador sin enviar el formulario padre, orden de prescripciones y copia de una versión histórica como rutina nueva.
+Los profesores administran grupos y ejercicios del catálogo compartido. Las normalizaciones evitan duplicados por espacios, mayúsculas y acentos; no se eliminan duplicados legados ni recursos referenciados. Los grupos estándar se conservan para compatibilidad con el enum anterior.
 
-La suite Chromium se adapta a nombres y selectores reales, manteniendo verificaciones de permisos y persistencia con identificadores sólo internos. Se añade un recorrido que crea varios ejercicios en un día, cambia su orden, comprueba repeticiones/peso cero/desconocido en la respuesta guardada y duplica la rutina como una familia nueva.
+## Validación
 
-El selector de ejercicios se revisó visualmente a 390 px y ocupa el ancho disponible sin desbordar la página. Se conservan los colores negro/amarillo y el stack Docker. El backend y las migraciones existentes permanecen sin modificaciones.
+- Backend: 203 pruebas aprobadas (212 detectadas, 9 MySQL omitidas en la ejecución H2).
+- MySQL real: 9 pruebas adicionales aprobadas; migración repetida, preservación de sesiones/series y validación Hibernate.
+- Angular: compilación de producción y 112 pruebas unitarias/HTTP aprobadas.
+- Chromium: recorridos nuevos y regresión de los tres roles en curso; el resultado final se registrará al completar la ejecución.
 
-Resultado Chromium final: **54 pruebas aprobadas, sin fallos ni omisiones**; 46 contra el backend real y 8 de interfaz aislada. Incluye regresión ADMIN/PROFESOR/ALUMNO y las operaciones nuevas del editor. Los archivos generados, credenciales y borradores no publicados del backend quedan fuera de los commits. No se hizo merge a master.
+No se hizo merge a master. Los backups, credenciales, dependencias y artefactos generados quedan fuera de Git.

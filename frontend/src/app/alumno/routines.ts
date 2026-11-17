@@ -1,3 +1,4 @@
+import { TrainingBlock } from '../shared/training-block';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -10,7 +11,7 @@ import { Prescription } from './prescription';
 import { alumnoError, isClosed, localDate, pastOrToday, text, utcDate } from './utils';
 @Component({
   selector: 'app-student-routines',
-  imports: [RouterLink, ReactiveFormsModule, Confirm, Prescription],
+  imports: [TrainingBlock, RouterLink, ReactiveFormsModule, Confirm, Prescription],
   templateUrl: './routines.html',
 })
 export class StudentRoutines {

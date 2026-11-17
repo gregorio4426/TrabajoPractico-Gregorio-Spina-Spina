@@ -35,7 +35,8 @@ export class StudentProfile {
     apellido: ['', [Validators.required, notBlank, Validators.maxLength(20)]],
     fechaDeNacimiento: ['', optionalPast],
     nivel: ['', Validators.required],
-    objetivo: ['', Validators.required],
+    objetivo: [''],
+    objetivoPersonalizado: ['', Validators.maxLength(2000)],
     emailContacto: ['', [Validators.email, Validators.maxLength(150)]],
   });
   readonly email = this.fb.nonNullable.group({
@@ -72,6 +73,7 @@ export class StudentProfile {
         fechaDeNacimiento: p.fechaNacimiento ?? '',
         nivel: p.nivel ?? '',
         objetivo: p.objetivo ?? '',
+        objetivoPersonalizado: p.objetivoPersonalizado ?? '',
         emailContacto: p.emailContacto ?? '',
       });
       this.age.set(p.edad ?? null);
@@ -101,7 +103,12 @@ export class StudentProfile {
     form.markAllAsTouched();
     this.error.set('');
     if (this.pending()) return;
-    if (form.invalid) {
+    if (
+      form.invalid ||
+      (this.mode() === 'profile' &&
+        !this.profile.controls.objetivo.value &&
+        !this.profile.controls.objetivoPersonalizado.value.trim())
+    ) {
       this.error.set(
         'Revisá los campos obligatorios, formatos y límites. La nueva contraseña requiere al menos 8 caracteres, máximo 72 bytes UTF-8 y confirmación coincidente.',
       );
@@ -122,7 +129,8 @@ export class StudentProfile {
             nombre: p.nombre.trim(),
             apellido: p.apellido.trim(),
             nivel: p.nivel as D.AlumnoRequest['nivel'],
-            objetivo: p.objetivo as D.AlumnoRequest['objetivo'],
+            objetivo: (p.objetivo || null) as D.AlumnoRequest['objetivo'],
+            objetivoPersonalizado: p.objetivoPersonalizado.trim(),
             ...(p.fechaDeNacimiento ? { fechaDeNacimiento: p.fechaDeNacimiento } : {}),
             emailContacto: p.emailContacto.trim(),
           }),

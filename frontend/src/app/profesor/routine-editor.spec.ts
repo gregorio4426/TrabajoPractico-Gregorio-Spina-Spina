@@ -112,4 +112,67 @@ describe('PROFESOR routine forms', () => {
     expect(e.form.controls.nombre.value).toBe('Plan (copia)');
     expect(e.copyVersion).toBe(1);
   });
+  it('persists biseries with shared rounds and individual reps, weights and rests', async () => {
+    const e = await setup();
+    e.removeExercise(0, 0);
+    e.addBlock(0, 2);
+    const rows = e.days.at(0).controls.ejercicios;
+    rows
+      .at(0)
+      .patchValue({
+        ejercicioId: 3,
+        bloqueNombre: 'Fuerza',
+        seriesSugeridas: 3,
+        repsSugeridas: 8,
+        pesoSugerido: 0,
+        descansoVueltaSegundos: 60,
+        descansoEjercicioSegundos: 0,
+      });
+    e.syncBlock(0, 0);
+    rows
+      .at(1)
+      .patchValue({
+        ejercicioId: 3,
+        repsSugeridas: 12,
+        pesoSugerido: null,
+        descansoEjercicioSegundos: 20,
+      });
+    const result = e.payload().dias[0]!.ejercicios;
+    expect(
+      result.map((r) => [
+        r.bloqueNombre,
+        r.vueltas,
+        r.seriesSugeridas,
+        r.ordenEnBloque,
+        r.descansoVueltaSegundos,
+      ]),
+    ).toEqual([
+      ['Fuerza', 3, 3, 1, 60],
+      ['Fuerza', 3, 3, 2, 60],
+    ]);
+    expect(
+      result.map((r) => [r.repsSugeridas, r.pesoSugerido, r.descansoEjercicioSegundos]),
+    ).toEqual([
+      [8, 0, 0],
+      [12, null, 20],
+    ]);
+    e.moveExercise(0, 1, -1);
+    expect(e.payload().dias[0]!.ejercicios.map((r) => r.repsSugeridas)).toEqual([12, 8]);
+  });
+  it('reorders entire blocks, adds exercises without an arbitrary circuit limit and removes groups', async () => {
+    const e = await setup();
+    e.removeExercise(0, 0);
+    e.addBlock(0, 2);
+    e.addBlock(0, 3);
+    const rows = e.days.at(0).controls.ejercicios;
+    const first = rows.at(0).controls.bloqueOrden.value!,
+      second = rows.at(2).controls.bloqueOrden.value!;
+    e.addToBlock(0, second);
+    expect(e.blockRows(0, second)).toHaveLength(4);
+    e.moveBlock(0, second, -1);
+    expect(rows.at(0).controls.bloqueOrden.value).toBe(second);
+    expect(e.payload().dias[0]!.ejercicios.map((r) => r.ordenEnBloque)).toEqual([1, 2, 3, 4, 1, 2]);
+    e.removeBlock(0, first);
+    expect(rows.length).toBe(4);
+  });
 });

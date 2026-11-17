@@ -129,7 +129,15 @@ export class Editor implements OnInit {
           this.field('edad', 'Edad', 'number'),
           this.field('fechaNacimiento', 'Fecha de nacimiento', 'date', false),
           this.field('nivel', 'Nivel', 'select', true, undefined, LEVELS),
-          this.field('objetivo', 'Objetivo', 'select', true, undefined, OBJECTIVES),
+          this.field('objetivoPersonalizado', 'Objetivo del alumno', 'textarea', false, 2000),
+          this.field(
+            'objetivo',
+            'Categoría de objetivo (opcional)',
+            'select',
+            false,
+            undefined,
+            OBJECTIVES,
+          ),
         );
       else fields.push(this.field('especialidad', 'Especialidad', 'text', true, 100));
       fields.push(this.field('emailContacto', 'Email de contacto', 'email', false, 150));
@@ -187,6 +195,14 @@ export class Editor implements OnInit {
       return;
     }
     const v = this.form.getRawValue();
+    if (
+      this.form.controls['objetivoPersonalizado'] &&
+      !v['objetivoPersonalizado']?.trim() &&
+      !v['objetivo']
+    ) {
+      this.error.set('Informá un objetivo del alumno o elegí una categoría.');
+      return;
+    }
     if (this.fields().some((f) => f.key === 'fechaNacimiento') && v['fechaNacimiento']) {
       const birth = v['fechaNacimiento'];
       const now = new Date();
@@ -216,7 +232,8 @@ export class Editor implements OnInit {
       edad: Number(v['edad']),
       fechaNacimiento: v['fechaNacimiento'] || null,
       nivel: v['nivel'] as D.AlumnoDatos['nivel'],
-      objetivo: v['objetivo'] as D.AlumnoDatos['objetivo'],
+      objetivo: (v['objetivo'] || null) as D.AlumnoDatos['objetivo'],
+      objetivoPersonalizado: v['objetivoPersonalizado']?.trim() ?? '',
       emailContacto: v['emailContacto']?.trim() || null,
     };
   }

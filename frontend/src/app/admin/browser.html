@@ -1,7 +1,7 @@
 <div class="admin-kicker page-intro">
   <div>
     <span class="eyebrow muted">ADMINISTRACIÓN</span>
-    <h1>{{ config.label }}{{ sub ? ' · ' + sub + ' #' + id() : '' }}</h1>
+    <h1>{{ config.label }}{{ sub ? ' · ' + sub : '' }}</h1>
   </div>
   @if (isPeople && !sub) {
     <a class="primary" [routerLink]="['/admin', type, 'nuevo']"

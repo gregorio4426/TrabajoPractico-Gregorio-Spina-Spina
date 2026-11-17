@@ -1,3 +1,4 @@
+import { TrainingBlock } from '../shared/training-block';
 import {
   Component,
   ElementRef,
@@ -31,7 +32,7 @@ import {
 type Action = 'add' | 'finish' | 'correct' | 'annul' | 'restore' | 'date';
 @Component({
   selector: 'app-student-session',
-  imports: [RouterLink, ReactiveFormsModule, Confirm, RecordView],
+  imports: [TrainingBlock, RouterLink, ReactiveFormsModule, Confirm, RecordView],
   templateUrl: './session.html',
 })
 export class StudentSession {
@@ -61,6 +62,7 @@ export class StudentSession {
   readonly text = text;
   readonly validSeries = validSeries;
   readonly today = utcDate();
+  readonly comment = this.fb.nonNullable.control('', Validators.maxLength(2000));
   private seq = 0;
   private lastSeq = 0;
   readonly closed = computed(() => (this.data() ? isClosed(this.data()!) : false));
@@ -209,7 +211,7 @@ export class StudentSession {
         return;
       }
     }
-    if (action === 'finish' && (this.closed() || this.validCount() === 0)) {
+    if (action === 'finish' && (this.closed() || this.validCount() === 0 || this.comment.invalid)) {
       this.error.set('No podés finalizar sin al menos una serie válida vigente.');
       return;
     }
@@ -270,7 +272,8 @@ export class StudentSession {
           repsHechas: Number(v.repsHechas),
           pesoUsado: v.pesoUsado == null || String(v.pesoUsado) === '' ? null : Number(v.pesoUsado),
         });
-      } else if (action === 'finish') request = this.api.finish(this.id());
+      } else if (action === 'finish')
+        request = this.api.finish(this.id(), this.comment.value.trim() || undefined);
       else if (action === 'date')
         request = this.api.correctDate(this.id(), {
           ...this.dateForm.getRawValue(),

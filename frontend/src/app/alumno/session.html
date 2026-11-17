@@ -39,9 +39,18 @@
     @if (day(); as d) {
       <section class="admin-panel">
         <h2>Elegí el ejercicio que estás haciendo</h2>
-        @for (e of d.ejercicios ?? []; track e.id) {
+        @for (e of d.ejercicios ?? []; track e.id; let ei = $index) {
+          @if (
+            e.bloqueOrden != null &&
+            (ei === 0 || d.ejercicios?.[ei - 1]?.bloqueOrden !== e.bloqueOrden)
+          ) {
+            <app-training-block [row]="e" [exercises]="d.ejercicios ?? []" />
+          }
           <div class="student-prescription">
             <strong>{{ e.ejercicioNombre }}</strong>
+            @if (e.descansoEjercicioSegundos != null) {
+              <p>Descanso después del ejercicio: {{ e.descansoEjercicioSegundos }} s</p>
+            }
             <p>
               Sugerido: {{ e.seriesSugeridas }} series × {{ e.repsSugeridas }} repeticiones · Peso
               {{ text(e.pesoSugerido) }}
@@ -244,7 +253,26 @@
       <p class="admin-empty">Todavía no registraste series en esta sesión.</p>
     }
   </section>
+  @if (closed()) {
+    <section class="admin-panel">
+      <h2>Comentario del entrenamiento</h2>
+      <p class="session-comment">{{ data()?.comentario || 'No agregaste comentarios.' }}</p>
+    </section>
+  }
   @if (!closed()) {
+    <section class="admin-panel">
+      <label
+        >Comentario para tus profesores (opcional)<textarea
+          [formControl]="comment"
+          maxlength="2000"
+          rows="3"
+          placeholder="Cómo te sentiste, molestias o dudas"
+        ></textarea>
+      </label>
+      <p class="admin-help">
+        Se guarda al finalizar y lo podrán consultar tus profesores vinculados.
+      </p>
+    </section>
     <div class="student-sticky-actions">
       <button class="primary" (click)="ask('finish')" [disabled]="pending() || validCount() === 0">
         Finalizar entrenamiento

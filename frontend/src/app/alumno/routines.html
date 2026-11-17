@@ -35,12 +35,22 @@
         @for (d of r.dias ?? []; track d.id) {
           <section class="student-day-card">
             <h3>{{ d.nombre }}</h3>
-            @for (e of d.ejercicios ?? []; track e.id) {
+            @for (e of d.ejercicios ?? []; track e.id; let ei = $index) {
+              @if (
+                e.bloqueOrden != null &&
+                (ei === 0 || d.ejercicios?.[ei - 1]?.bloqueOrden !== e.bloqueOrden)
+              ) {
+                <app-training-block [row]="e" [exercises]="d.ejercicios ?? []" />
+              }
               <div class="student-prescription">
                 <strong>{{ e.ejercicioNombre }}</strong>
+                @if (e.descansoEjercicioSegundos != null) {
+                  <p>Descanso después del ejercicio: {{ e.descansoEjercicioSegundos }} s</p>
+                }
                 <p>
-                  {{ e.seriesSugeridas }} series · {{ e.repsSugeridas }} repeticiones · Peso
-                  sugerido: {{ text(e.pesoSugerido) }} (unidad registrada)
+                  {{ e.seriesSugeridas }} {{ e.bloqueOrden == null ? 'series' : 'vueltas' }} ·
+                  {{ e.repsSugeridas }} repeticiones · Peso sugerido:
+                  {{ text(e.pesoSugerido) }} (unidad registrada)
                 </p>
               </div>
             }
