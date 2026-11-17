@@ -1,3 +1,4 @@
+import { AuthService } from '../core/auth.service';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -17,6 +18,7 @@ import { profesorError, text } from './utils';
   templateUrl: './student.html',
 })
 export class Student {
+  readonly auth = inject(AuthService);
   private readonly api = inject(ProfesorApi);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);

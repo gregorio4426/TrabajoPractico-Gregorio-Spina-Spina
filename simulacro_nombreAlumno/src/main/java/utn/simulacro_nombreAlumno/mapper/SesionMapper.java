@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface SesionMapper {
 
+    @Mapping(target="pesosSugeridos", expression="java(pesosDeSesion(sesion))")
     @Mapping(target="alumnoNombre", expression="java(sesion.getAlumno() == null ? null : sesion.getAlumno().getNombre() + \" \" + sesion.getAlumno().getApellido())")
     @Mapping(target = "finalizada", source = "completada")
     @Mapping(target = "diaCumplido", ignore = true)
@@ -36,6 +37,11 @@ public interface SesionMapper {
     SerieResponse toSerieDto(Serie serie);
 
     List<SesionResponse> toLISTDto(List<Sesion> sesiones);
+    default java.util.List<utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse> pesosDeSesion(Sesion sesion) {
+        if(sesion.getDiaRutina()==null || sesion.getDiaRutina().getEjercicios()==null)return java.util.List.of();
+        return sesion.getDiaRutina().getEjercicios().stream().map(e->new utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse(e.getId(),e.getNombreHistorico(),sesion.getPesosSugeridos().get(e.getId()))).toList();
+    }
+
 
     @org.mapstruct.AfterMapping
     default void cumplimiento(Sesion source, @org.mapstruct.MappingTarget SesionResponse target) {

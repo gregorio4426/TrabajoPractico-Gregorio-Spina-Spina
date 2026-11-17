@@ -8,6 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AsignacionRutinaRepository extends JpaRepository<AsignacionRutina, Long>, org.springframework.data.jpa.repository.JpaSpecificationExecutor<AsignacionRutina> {
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select a from AsignacionRutina a where a.id=:id")
+    Optional<AsignacionRutina> bloquear(@org.springframework.data.repository.query.Param("id") Long id);
     Optional<AsignacionRutina> findByAlumnoAndActivaTrue(Alumno alumno);
     @org.springframework.data.jpa.repository.Query("select a from AsignacionRutina a where a.alumno = :alumno order by case when a.fechaInicio is null then 1 else 0 end, a.fechaInicio desc, a.id desc")
     List<AsignacionRutina> findByAlumno(Alumno alumno);

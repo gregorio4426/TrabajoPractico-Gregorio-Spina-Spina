@@ -133,8 +133,8 @@ test.describe('ALUMNO · backend real y móvil', () => {
         name: new RegExp('posición ' + (block === v2.dias[0]!.ejercicios[1]!.id ? 2 : 1) + '$'),
       })
       .click();
-    await page.getByLabel('Serie realizada *', { exact: true }).fill(String(number));
-    await page.getByLabel('Repeticiones realizadas *', { exact: true }).fill(String(reps));
+    await page.getByLabel('Serie realizada', { exact: true }).fill(String(number));
+    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill(String(reps));
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill(weight);
     await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
     await confirm(page);
@@ -170,8 +170,8 @@ test.describe('ALUMNO · backend real y móvil', () => {
           nombre: 'Día original',
           numeroOrden: 1,
           ejercicios: [
-            { ejercicioId: exercise.id, seriesSugeridas: 1, repsSugeridas: 8, pesoSugerido: 25 },
-            { ejercicioId: exercise.id, seriesSugeridas: 1, repsSugeridas: 8, pesoSugerido: 25 },
+            { ejercicioId: exercise.id, seriesSugeridas: 1, repsSugeridas: 8, pesoSugerido: null },
+            { ejercicioId: exercise.id, seriesSugeridas: 1, repsSugeridas: 8, pesoSugerido: null },
           ],
         },
       ],
@@ -213,7 +213,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
             ejercicios: body.dias[0]!.ejercicios.map((e) => ({
               ...e,
               repsSugeridas: 10,
-              pesoSugerido: 30,
+              pesoSugerido: null,
             })),
           },
         ],
@@ -256,10 +256,10 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await page.reload();
     await expect(page.locator('.student-series-card')).toHaveCount(1);
     await page.getByRole('button', { name: /posición 2$/ }).click();
-    await expect(page.getByLabel('Serie realizada *', { exact: true })).toHaveValue('2');
-    await expect(page.getByLabel('Repeticiones realizadas *', { exact: true })).toHaveValue('');
+    await expect(page.getByLabel('Serie realizada', { exact: true })).toHaveValue('2');
+    await expect(page.getByLabel('Repeticiones realizadas', { exact: true })).toHaveValue('');
     await expect(page.getByLabel('Peso realizado (opcional)', { exact: true })).toHaveValue('');
-    await page.getByLabel('Repeticiones realizadas *', { exact: true }).fill('8');
+    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill('8');
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill('0');
     await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
     await confirm(page);
@@ -288,7 +288,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
       page.getByRole('button', { name: 'Finalizar entrenamiento', exact: true }),
     ).toBeDisabled();
     await page.getByRole('button', { name: /posición 1$/ }).click();
-    await page.getByLabel('Repeticiones realizadas *', { exact: true }).fill('0');
+    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill('0');
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill('-1');
     await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
     await expect(page.getByRole('alert')).toContainText('enteros positivos');
@@ -327,30 +327,30 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await login(page);
     await page.goto(`/alumno/sesiones/${s.id}`);
     await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
-    await page.getByLabel('Repeticiones corregidas *', { exact: true }).fill('12');
+    await page.getByLabel('Repeticiones corregidas', { exact: true }).fill('12');
     await page.getByLabel('Peso corregido (opcional)', { exact: true }).fill('22');
     await page
-      .getByLabel('Motivo de la serie *', { exact: true })
+      .getByLabel('Motivo de la serie', { exact: true })
       .fill('Corrección de peso y repeticiones');
     await page.getByRole('button', { name: 'Confirmar corrección', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
     await page.getByRole('button', { name: `Anular serie 2`, exact: true }).click();
-    await page.getByLabel('Motivo de la serie *', { exact: true }).fill('Anotación a revisar');
+    await page.getByLabel('Motivo de la serie', { exact: true }).fill('Anotación a revisar');
     await page.getByRole('button', { name: 'Confirmar anulación', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
     await expect(page.getByRole('button', { name: `Anular serie 1`, exact: true })).toBeDisabled();
     await page.getByRole('button', { name: `Restaurar serie 2`, exact: true }).click();
-    await page.getByLabel('Motivo de la serie *', { exact: true }).fill('Registro verificado');
+    await page.getByLabel('Motivo de la serie', { exact: true }).fill('Registro verificado');
     await page.getByRole('button', { name: 'Confirmar restauración', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
     await expect(page.locator('.student-series-card')).toHaveCount(2);
     const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
     await page.getByRole('button', { name: 'Corregir fecha', exact: true }).click();
-    await page.getByLabel('Nueva fecha efectiva *', { exact: true }).fill(yesterday);
-    await page.getByLabel('Motivo de la fecha *', { exact: true }).fill('Ajuste de fecha efectiva');
+    await page.getByLabel('Nueva fecha efectiva', { exact: true }).fill(yesterday);
+    await page.getByLabel('Motivo de la fecha', { exact: true }).fill('Ajuste de fecha efectiva');
     await page.getByRole('button', { name: 'Guardar fecha corregida', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
@@ -376,8 +376,8 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await login(page);
     await page.goto(`/alumno/sesiones/${s.id}`);
     await page.getByRole('button', { name: /posición 1$/ }).click();
-    await page.getByLabel('Serie realizada *', { exact: true }).fill('1');
-    await page.getByLabel('Repeticiones realizadas *', { exact: true }).fill('8');
+    await page.getByLabel('Serie realizada', { exact: true }).fill('1');
+    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill('8');
     await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
     await confirm(page);
     await expect(page.getByRole('alert')).toContainText('Recargá');
@@ -394,16 +394,16 @@ test.describe('ALUMNO · backend real y móvil', () => {
       },
     });
     expect(concurrent.status()).toBe(200);
-    await page.getByLabel('Repeticiones corregidas *', { exact: true }).fill('13');
+    await page.getByLabel('Repeticiones corregidas', { exact: true }).fill('13');
     await page
-      .getByLabel('Motivo de la serie *', { exact: true })
+      .getByLabel('Motivo de la serie', { exact: true })
       .fill('Mi corrección desactualizada');
     await page.getByRole('button', { name: 'Confirmar corrección', exact: true }).click();
     await confirm(page);
     await expect(page.getByRole('alert')).toContainText('Recargá');
     await page.getByRole('button', { name: 'Recargar sesión', exact: true }).click();
     await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
-    await expect(page.getByLabel('Repeticiones corregidas *', { exact: true })).toHaveValue('15');
+    await expect(page.getByLabel('Repeticiones corregidas', { exact: true })).toHaveValue('15');
   });
   test('own routine history and progress graphs use only personal endpoints', async ({ page }) => {
     const forbidden: string[] = [];
@@ -470,7 +470,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
   }) => {
     await login(page);
     await page.goto('/alumno/perfil');
-    await page.getByLabel('Nombre del alumno *', { exact: true }).fill('Autogestion');
+    await page.getByLabel('Nombre del alumno', { exact: true }).fill('Autogestion');
     await page.getByLabel('Fecha de nacimiento (opcional)', { exact: true }).fill('2000-01-01');
     await page
       .getByLabel('Email de contacto (opcional)', { exact: true })
@@ -479,9 +479,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await confirm(page);
     await expect(page.getByText('Perfil actualizado correctamente.')).toBeVisible();
     await page.reload();
-    await expect(page.getByLabel('Nombre del alumno *', { exact: true })).toHaveValue(
-      'Autogestion',
-    );
+    await expect(page.getByLabel('Nombre del alumno', { exact: true })).toHaveValue('Autogestion');
     await expect(page.getByLabel('Fecha de nacimiento (opcional)', { exact: true })).toHaveValue(
       '2000-01-01',
     );
@@ -496,8 +494,8 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await page.getByRole('button', { name: 'Email de acceso', exact: true }).click();
     await expect(page.getByRole('heading', { name: 'Cambiar email de acceso' })).toBeVisible();
     const email = 'changed-alumno-' + unique() + '@example.test';
-    await page.getByLabel('Nuevo email de acceso *', { exact: true }).fill(email);
-    await page.getByLabel('Contraseña actual *', { exact: true }).fill(isolated.account.password);
+    await page.getByLabel('Nuevo email de acceso', { exact: true }).fill(email);
+    await page.getByLabel('Contraseña actual', { exact: true }).fill(isolated.account.password);
     await page.getByRole('button', { name: 'Actualizar email', exact: true }).click();
     await confirm(page);
     await expect(
@@ -518,9 +516,9 @@ test.describe('ALUMNO · backend real y móvil', () => {
       page.getByRole('heading', { name: 'Cambiar contraseña', exact: true }),
     ).toBeVisible();
     const password = randomBytes(20).toString('base64url');
-    await page.getByLabel('Contraseña actual *', { exact: true }).fill(isolated.account.password);
-    await page.getByLabel('Nueva contraseña *', { exact: true }).fill(password);
-    await page.getByLabel('Confirmar nueva contraseña *', { exact: true }).fill(password);
+    await page.getByLabel('Contraseña actual', { exact: true }).fill(isolated.account.password);
+    await page.getByLabel('Nueva contraseña', { exact: true }).fill(password);
+    await page.getByLabel('Confirmar nueva contraseña', { exact: true }).fill(password);
     await page.getByRole('button', { name: 'Actualizar contraseña', exact: true }).click();
     await confirm(page);
     await expect(

@@ -70,8 +70,8 @@ public class RutinaController {
 
     @PostMapping("/asignar/alumno/{alumnoId}/rutina/{rutinaId}")
     @PreAuthorize("hasRole('PROFESOR')")
-    public ResponseEntity<AsignacionResponse> asignar(@PathVariable Long alumnoId, @PathVariable Long rutinaId, Authentication authentication) {
-        return ResponseEntity.ok(rutinaService.asignarRutinaMe(alumnoId, rutinaId, authentication));
+    public ResponseEntity<AsignacionResponse> asignar(@PathVariable Long alumnoId, @PathVariable Long rutinaId, @jakarta.validation.Valid @RequestBody(required=false) utn.simulacro_nombreAlumno.model.request.PesosAsignacionRequest pesos, Authentication authentication) {
+        return ResponseEntity.ok((pesos==null ? rutinaService.asignarRutinaMe(alumnoId,rutinaId,authentication) : rutinaService.asignarRutinaMe(alumnoId, rutinaId, pesos, authentication)));
     }
 
     @GetMapping("/me/activa")

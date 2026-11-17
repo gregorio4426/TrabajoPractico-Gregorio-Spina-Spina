@@ -1,3 +1,4 @@
+import { routineField } from './entity-picker';
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
@@ -100,12 +101,12 @@ test.describe('Mejoras funcionales · persistencia real', () => {
     await expect(page.getByRole('button', { name: 'Editar ' + muscle, exact: true })).toBeVisible();
     const exercise = 'Ejercicio bloques ' + unique();
     await page.getByRole('button', { name: 'Crear ejercicio', exact: true }).click();
-    await page.getByLabel('Nombre del ejercicio *', { exact: true }).fill(exercise);
+    await page.getByLabel('Nombre del ejercicio', { exact: true }).fill(exercise);
     await page
-      .getByLabel('Descripción del ejercicio *', { exact: true })
+      .getByLabel('Descripción del ejercicio', { exact: true })
       .fill('Personalizado para biserie');
     await page
-      .getByRole('combobox', { name: 'Grupo muscular del ejercicio *', exact: true })
+      .getByRole('combobox', { name: 'Grupo muscular del ejercicio', exact: true })
       .selectOption({ label: muscle });
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
@@ -113,22 +114,22 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       page.getByText('Ejercicio guardado correctamente.', { exact: true }),
     ).toBeVisible();
     await page.goto('/profesor/rutinas/nueva');
-    await page.getByLabel('Nombre de rutina *', { exact: true }).fill('Biserie real ' + unique());
+    await page.getByLabel('Nombre de rutina', { exact: true }).fill('Biserie real ' + unique());
     await page
-      .getByLabel('Descripción de rutina *', { exact: true })
+      .getByLabel('Descripción de rutina', { exact: true })
       .fill('Dos ejercicios con pesos individuales');
-    await page.getByLabel('Nombre del día 1 *', { exact: true }).fill('Día de biseries');
+    await routineField(page, 'Nombre del día 1').fill('Día de biseries');
     await page.getByRole('button', { name: 'Quitar ejercicio 1 del día 1', exact: true }).click();
     await page.getByRole('button', { name: 'Agregar biserie', exact: true }).click();
     await page.getByLabel('Nombre del bloque (opcional)', { exact: true }).fill('Bloque principal');
     await page.getByLabel('Descanso entre vueltas (segundos)', { exact: true }).fill('60');
     for (let i = 1; i <= 2; i++)
       await selectEntity(page, `Ejercicio del día 1, fila ${i}`, exercise);
-    await page.getByLabel('Vueltas día 1, fila 1 *', { exact: true }).fill('2');
-    await expect(page.getByLabel('Vueltas día 1, fila 2 *', { exact: true })).toHaveValue('2');
-    await page.getByLabel('Repeticiones día 1, fila 1 *', { exact: true }).fill('8');
-    await page.getByLabel('Peso sugerido día 1, fila 1', { exact: true }).fill('0');
-    await page.getByLabel('Repeticiones día 1, fila 2 *', { exact: true }).fill('12');
+    await routineField(page, 'Vueltas día 1, fila 1').fill('2');
+    await expect(routineField(page, 'Vueltas día 1, fila 2')).toHaveValue('2');
+    await routineField(page, 'Repeticiones día 1, fila 1').fill('8');
+
+    await routineField(page, 'Repeticiones día 1, fila 2').fill('12');
     await page
       .getByLabel('Descanso después del ejercicio (segundos)', { exact: true })
       .nth(0)
@@ -166,7 +167,7 @@ test.describe('Mejoras funcionales · persistencia real', () => {
         ],
       ),
     ).toEqual([
-      [2, 8, 0],
+      [2, 8, null],
       [2, 12, null],
     ]);
     expect(
@@ -206,7 +207,7 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       await expect(studentPage).toHaveURL(/\/alumno\/sesiones\/\d+/);
       const sessionId = Number(studentPage.url().split('/').at(-1));
       await studentPage.getByRole('button', { name: /Registrar .*posición 1$/ }).click();
-      await studentPage.getByLabel('Repeticiones realizadas *', { exact: true }).fill('8');
+      await studentPage.getByLabel('Repeticiones realizadas', { exact: true }).fill('8');
       await studentPage.getByLabel('Peso realizado (opcional)', { exact: true }).fill('0');
       await studentPage.getByRole('button', { name: 'Guardar serie', exact: true }).click();
       await confirm(studentPage);

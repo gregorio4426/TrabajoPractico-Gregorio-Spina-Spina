@@ -29,15 +29,13 @@ test.describe('ADMIN · API real', () => {
     const email = `admin-ui-${unique()}@example.test`;
     const type = role === 'ALUMNO' ? 'alumnos' : 'profesores';
     await page.goto(`/admin/${type}/nuevo`);
-    await page.getByRole('textbox', { name: 'Email de acceso *', exact: true }).fill(email);
+    await page.getByRole('textbox', { name: 'Email de acceso', exact: true }).fill(email);
     await page.getByLabel('Contraseña inicial').fill(randomBytes(20).toString('base64url'));
-    await page.getByLabel('Nombre *', { exact: true }).fill('Prueba');
-    await page.getByLabel('Apellido *', { exact: true }).fill('Admin');
+    await page.getByLabel('Nombre', { exact: true }).fill('Prueba');
+    await page.getByLabel('Apellido', { exact: true }).fill('Admin');
     if (role === 'ALUMNO') {
-      await page.getByLabel('Edad *', { exact: true }).fill('25');
-      await page
-        .getByRole('combobox', { name: 'Nivel *', exact: true })
-        .selectOption('PRINCIPIANTE');
+      await page.getByLabel('Edad', { exact: true }).fill('25');
+      await page.getByRole('combobox', { name: 'Nivel', exact: true }).selectOption('PRINCIPIANTE');
       await page
         .getByRole('combobox', { name: 'Categoría de objetivo (opcional)', exact: true })
         .selectOption('MEJORAR_RESISTENCIA');
@@ -92,7 +90,7 @@ test.describe('ADMIN · API real', () => {
     const reemplazo = await createPerson(page, 'PROFESOR');
     await page.goto(`/admin/alumnos/${alumno.id}`);
     await page.getByRole('button', { name: 'Editar perfil', exact: true }).click();
-    await page.getByLabel('Nombre *', { exact: true }).fill('Actualizado');
+    await page.getByLabel('Nombre', { exact: true }).fill('Actualizado');
     await confirm(page);
     await expect(page.getByText('Cambio guardado correctamente.')).toBeVisible();
     await page.getByRole('button', { name: 'Vincular profesor', exact: true }).click();
@@ -127,13 +125,13 @@ test.describe('ADMIN · API real', () => {
     await reason(page, 'Reactivar para prueba');
     await page.getByRole('button', { name: 'Cambiar email', exact: true }).click();
     const newEmail = `changed-${unique()}@example.test`;
-    await page.getByRole('textbox', { name: 'Email de acceso *', exact: true }).fill(newEmail);
+    await page.getByRole('textbox', { name: 'Email de acceso', exact: true }).fill(newEmail);
     await reason(page, 'Identidad verificada en prueba');
     await expect(page.getByText(newEmail, { exact: true })).toBeVisible();
     await page.getByRole('button', { name: 'Cambiar rol', exact: true }).click();
-    await page.getByRole('combobox', { name: 'Rol *', exact: true }).selectOption('PROFESOR');
-    await page.getByLabel('Nombre *', { exact: true }).fill('Nuevo');
-    await page.getByLabel('Apellido *', { exact: true }).fill('Profesor');
+    await page.getByRole('combobox', { name: 'Rol', exact: true }).selectOption('PROFESOR');
+    await page.getByLabel('Nombre', { exact: true }).fill('Nuevo');
+    await page.getByLabel('Apellido', { exact: true }).fill('Profesor');
     await page.getByLabel('Especialidad').fill('Movilidad');
     await reason(page, 'Cambio de rol para prueba');
     await page.getByRole('link', { name: 'Perfil alumno', exact: true }).click();
@@ -215,7 +213,7 @@ test.describe('ADMIN · API real', () => {
           nombre: 'Día de prueba',
           numeroOrden: 1,
           ejercicios: [
-            { ejercicioId: exerciseId, seriesSugeridas: 2, repsSugeridas: 8, pesoSugerido: 20 },
+            { ejercicioId: exerciseId, seriesSugeridas: 2, repsSugeridas: 8, pesoSugerido: null },
           ],
         },
       ],
@@ -294,7 +292,7 @@ test.describe('ADMIN · API real', () => {
     };
     await page.getByRole('button', { name: 'Cambiar email', exact: true }).click();
     await page
-      .getByRole('textbox', { name: 'Email de acceso *', exact: true })
+      .getByRole('textbox', { name: 'Email de acceso', exact: true })
       .fill(accounts.ADMIN.email);
     await page.getByLabel('Motivo de la operación').fill('Comprobar protección de identidad');
     await confirm(page);
@@ -310,7 +308,7 @@ test.describe('ADMIN · API real', () => {
     const email = `self-${unique()}@example.test`,
       password = randomBytes(20).toString('base64url');
     await page.goto('/admin/usuarios/nuevo');
-    await page.getByRole('textbox', { name: 'Email de acceso *', exact: true }).fill(email);
+    await page.getByRole('textbox', { name: 'Email de acceso', exact: true }).fill(email);
     await page.getByLabel('Contraseña inicial').fill(password);
     await confirm(page);
     await expect(page).toHaveURL(/\/admin\/usuarios\?/);
@@ -335,7 +333,7 @@ test.describe('ADMIN · API real', () => {
     await page.goto('/admin/usuarios/' + id);
     await page.getByRole('button', { name: 'Cambiar email', exact: true }).click();
     await page
-      .getByRole('textbox', { name: 'Email de acceso *', exact: true })
+      .getByRole('textbox', { name: 'Email de acceso', exact: true })
       .fill(`updated-${unique()}@example.test`);
     await page.getByLabel('Motivo de la operación').fill('Actualización propia verificada');
     await confirm(page);

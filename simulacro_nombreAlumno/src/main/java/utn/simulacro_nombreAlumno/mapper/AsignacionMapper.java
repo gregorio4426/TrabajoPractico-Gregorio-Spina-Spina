@@ -8,6 +8,7 @@ import utn.simulacro_nombreAlumno.model.response.AsignacionResponse;
 @Mapper(componentModel = "spring")
 public interface AsignacionMapper {
 
+    @Mapping(target="pesosSugeridos", expression="java(pesos(asignacionRutina))")
     @Mapping(target = "rutinaId", source = "rutina.idRaiz")
     @Mapping(target = "rutinaVersionId", source = "rutina.id")
     @Mapping(target = "numeroVersion", source = "rutina.numeroVersion")
@@ -18,4 +19,8 @@ public interface AsignacionMapper {
     @Mapping(target = "alumnoNombre", expression = "java(asignacionRutina.getAlumno() == null ? null : asignacionRutina.getAlumno().getNombre() + \" \" + asignacionRutina.getAlumno().getApellido())")
     AsignacionResponse toResponse (AsignacionRutina asignacionRutina);
 
+    default java.util.List<utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse> pesos(AsignacionRutina a) {
+        if(a.getRutina()==null || a.getRutina().getDias()==null)return java.util.List.of();
+        return a.getRutina().getDias().stream().flatMap(d->d.getEjercicios().stream()).map(e->new utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse(e.getId(),e.getNombreHistorico(),a.getPesosSugeridos().get(e.getId()))).toList();
+    }
 }

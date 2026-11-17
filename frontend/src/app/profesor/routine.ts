@@ -1,3 +1,4 @@
+import { AssignmentWeights } from './assignment-weights';
 import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -12,7 +13,7 @@ import * as D from '../admin/contracts';
 import { positiveInteger, profesorError } from './utils';
 @Component({
   selector: 'app-teacher-routine',
-  imports: [RouterLink, ReactiveFormsModule, Confirm, RecordView, EntityPicker],
+  imports: [RouterLink, ReactiveFormsModule, Confirm, RecordView, EntityPicker, AssignmentWeights],
   templateUrl: './routine.html',
 })
 export class Routine {
@@ -20,6 +21,8 @@ export class Routine {
   private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
   private readonly confirmation = viewChild.required<Confirm>('confirmation');
+  readonly weights = viewChild<AssignmentWeights>('weights');
+  readonly assignedId = signal<number | null>(null);
   readonly data = signal<D.RutinaResponse | null>(null);
   readonly versions = signal<D.RutinaResponse[]>([]);
   readonly students = signal<D.AlumnoResponse[]>([]);
@@ -37,6 +40,9 @@ export class Routine {
     alumnoId: ['', [Validators.required, positiveInteger]],
   });
   constructor() {
+    this.form.controls.alumnoId.valueChanges.subscribe(() => {
+      this.weights()?.reset();
+    });
     const saved = this.route.snapshot.queryParamMap.get('guardada');
     if (saved) this.success.set('Rutina guardada correctamente. Versión ' + saved + '.');
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((p) => {
@@ -89,6 +95,10 @@ export class Routine {
       (action === 'assign' && this.form.invalid)
     )
       return;
+    if (action === 'assign' && this.weights()?.form.invalid) {
+      this.error.set('Revisá los pesos individuales: deben ser finitos y no negativos.');
+      return;
+    }
     this.action.set(action);
     this.confirmation().open();
   }
@@ -105,8 +115,14 @@ export class Routine {
           this.success.set('Rutina archivada. Las versiones y los entrenamientos se conservan.');
       } else {
         const result = await firstValueFrom(
-          this.api.assign(Number(this.form.controls.alumnoId.value), this.id()),
+          this.api.assign(
+            Number(this.form.controls.alumnoId.value),
+            this.id(),
+            this.weights()?.payload(),
+          ),
         );
+        this.assignedId.set(result.id ?? null);
+        this.weights()?.reset();
         this.success.set(
           `Rutina asignada: versión ${result.numeroVersion}. La asignación anterior del alumno se desactiva.`,
         );

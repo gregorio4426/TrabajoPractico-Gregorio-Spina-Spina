@@ -86,6 +86,11 @@
   @if (tab() === 'rutinas') {
     <section class="admin-panel">
       <h3>Rutina activa</h3>
+      @if (active()?.asignacionId && active()?.profesorId === auth.session()?.perfilId) {
+        <a class="admin-link" [routerLink]="['/profesor/asignaciones', active()?.asignacionId]"
+          >Editar pesos individuales</a
+        >
+      }
       @if (active(); as r) {
         <p>{{ r.nombre }} · versión {{ r.numeroVersion }}</p>
         <a

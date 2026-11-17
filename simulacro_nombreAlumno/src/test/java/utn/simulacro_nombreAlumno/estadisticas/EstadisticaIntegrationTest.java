@@ -231,7 +231,7 @@ class EstadisticaIntegrationTest {
         assertThat(spec.get("paths").get("/api/admin/usuarios").get("get").get("parameters").toString()).contains("pagina","tamanio","rol").doesNotContain("\"name\":\"f\"");
         mvc.perform(get("/swagger-ui/index.html")).andExpect(status().isOk()).andExpect(content().contentTypeCompatibleWith(MediaType.TEXT_HTML));
     }
-    private String definition(){return "{\"nombre\":\"Plan original\",\"descripcion\":\"Histórico\",\"dias\":[{\"nombre\":\"Día\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":"+pressId+",\"seriesSugeridas\":3,\"repsSugeridas\":8,\"pesoSugerido\":50},{\"ejercicioId\":"+squatId+",\"seriesSugeridas\":1,\"repsSugeridas\":10,\"pesoSugerido\":20}]}]}";}
+    private String definition(){return "{\"nombre\":\"Plan original\",\"descripcion\":\"Histórico\",\"dias\":[{\"nombre\":\"Día\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":"+pressId+",\"seriesSugeridas\":3,\"repsSugeridas\":8},{\"ejercicioId\":"+squatId+",\"seriesSugeridas\":1,\"repsSugeridas\":10}]}]}";}
     private Alumno alumno(Usuario u,String nombre,Profesor p){return alumnos.save(Alumno.builder().nombre(nombre).apellido("Rios").edad(25).email(u.getEmail()).usuario(u).nivel(Nivel.INTERMEDIO).objetivo(Objetivo.MEJORAR_RESISTENCIA).profesores(new ArrayList<>(List.of(p))).build());}
     private Usuario user(String n,Rol r){return users.save(Usuario.builder().email(n+"@test.com").rol(r).password(encoder.encode("InitialPassword123!")).build());}
     private String token(Usuario u){return jwt.generateToken(new CustomUserDetails(u));}

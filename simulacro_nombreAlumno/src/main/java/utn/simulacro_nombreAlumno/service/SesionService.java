@@ -58,7 +58,7 @@ public class SesionService {
 
         Sesion sesion = Sesion.builder()
                 .alumno(alumno).diaRutina(diaRutina).asignacion(activa).estadoVinculoAsignacion("REGISTRADA")
-                .fecha(request.getFecha()).completada(false).build();
+                .fecha(request.getFecha()).completada(false).pesosSugeridos(new java.util.LinkedHashMap<>(activa.getPesosSugeridos())).build();
         return sesionMapper.toDto(sesionRepository.save(sesion));
     }
 

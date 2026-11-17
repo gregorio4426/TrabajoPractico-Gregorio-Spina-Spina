@@ -9,12 +9,14 @@ import { record, text } from './admin-utils';
         <dt>{{ label(item[0]) }}</dt>
         <dd>
           @if (isObject(item[1])) {
-            <div class="nested"><app-record-view [value]="item[1]" /></div>
+            <div class="nested">
+              <app-record-view [value]="item[1]" [hiddenFields]="hiddenFields()" />
+            </div>
           } @else if (isArray(item[1])) {
             @for (child of array(item[1]); track $index) {
               <div class="nested">
                 @if (isObject(child)) {
-                  <app-record-view [value]="child" />
+                  <app-record-view [value]="child" [hiddenFields]="hiddenFields()" />
                 } @else {
                   {{ text(child) }}
                 }
@@ -32,12 +34,14 @@ import { record, text } from './admin-utils';
 })
 export class RecordView {
   readonly value = input<unknown>();
+  readonly hiddenFields = input<string[]>([]);
   readonly label = label;
   readonly text = text;
   entries() {
     return Object.entries(record(this.value()))
       .filter(
         ([key]) =>
+          !this.hiddenFields().includes(key) &&
           key !== 'id' &&
           !key.endsWith('Id') &&
           !key.toLowerCase().endsWith('_id') &&

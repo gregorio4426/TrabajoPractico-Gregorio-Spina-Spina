@@ -261,7 +261,7 @@ class AuthenticationIntegrationTest {
     private String routinePath() { return "/api/rutinas/" + rutinaId; }
     private String assignPath() { return "/api/rutinas/asignar/alumno/" + alumno.getId() + "/rutina/" + rutinaId; }
     private String definition(String name, int reps, long exerciseId) {
-        return "{\"nombre\":\"" + name + "\",\"descripcion\":\"Descripción\",\"dias\":[{\"nombre\":\"Día 1\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":" + exerciseId + ",\"seriesSugeridas\":3,\"repsSugeridas\":" + reps + ",\"pesoSugerido\":50.0}]}]}";
+        return "{\"nombre\":\"" + name + "\",\"descripcion\":\"Descripción\",\"dias\":[{\"nombre\":\"Día 1\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":" + exerciseId + ",\"seriesSugeridas\":3,\"repsSugeridas\":" + reps + "}]}]}";
     }
     private Usuario user(String name, Rol rol) {
         return usuarios.save(Usuario.builder().email(name + "@test.com").rol(rol).password(passwords.encode("TestPassword123!")).build());

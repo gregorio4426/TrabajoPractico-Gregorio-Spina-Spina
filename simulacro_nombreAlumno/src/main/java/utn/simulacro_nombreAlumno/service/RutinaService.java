@@ -207,6 +207,10 @@ public class RutinaService {
 
     @Transactional
     public AsignacionResponse asignarRutinaMe(Long alumnoId, Long rutinaId, Authentication auth) {
+        return asignarRutinaMe(alumnoId,rutinaId,null,auth);
+    }
+    @Transactional
+    public AsignacionResponse asignarRutinaMe(Long alumnoId, Long rutinaId, utn.simulacro_nombreAlumno.model.request.PesosAsignacionRequest pesos, Authentication auth) {
         Profesor profesor = acceso.profesorPropio(auth);
         Alumno alumno = alumnoService.gestionarEntity(alumnoId, auth);
         Rutina raiz = raizBloqueada(rutinaId);
@@ -220,7 +224,38 @@ public class RutinaService {
         });
         AsignacionRutina asignacion = AsignacionRutina.builder().rutina(rutina).alumno(alumno)
                 .fechaInicio(LocalDateTime.now()).activa(true).build();
-        return asignacionMapper.toResponse(asignacionRutinaRepository.save(asignacion));
+        if(pesos!=null) configurarPesos(asignacion,pesos);
+        else for(var dia:rutina.getDias())for(var e:dia.getEjercicios()) if(e.getPesoSugerido()!=null)asignacion.getPesosSugeridos().put(e.getId(),e.getPesoSugerido());
+        return asignacionMapper.toResponse(asignacionRutinaRepository.saveAndFlush(asignacion));
+    }
+
+    @Transactional
+    public RutinaResponse getAsignacion(Long id, Authentication auth) {
+        var asignacion=asignacionRutinaRepository.findById(id).orElseThrow(()->new RecursoNoEncontradoException("Asignación no encontrada"));
+        acceso.leerAlumno(asignacion.getAlumno().getId(),auth);
+        return historial(asignacion,auth);
+    }
+    @Transactional
+    public RutinaResponse editarPesos(Long id,utn.simulacro_nombreAlumno.model.request.PesosAsignacionRequest request,Authentication auth) {
+        var profesor=acceso.profesorPropio(auth);
+        var asignacion=asignacionRutinaRepository.bloquear(id).orElseThrow(()->new RecursoNoEncontradoException("Asignación no encontrada"));
+        alumnoService.gestionarEntity(asignacion.getAlumno().getId(),auth);
+        exigirCreador(asignacion.getRutina(),profesor);
+        if(!asignacion.isActiva())throw new utn.simulacro_nombreAlumno.exception.ConflictoEntrenamientoException("La asignación ya no está activa");
+        if(request==null || request.revision()==null || request.revision()!=asignacion.getRevision())throw new utn.simulacro_nombreAlumno.exception.ConflictoEntrenamientoException("La asignación cambió; recargá los datos");
+        configurarPesos(asignacion,request);asignacionRutinaRepository.saveAndFlush(asignacion);
+        return historial(asignacion,auth);
+    }
+    private void configurarPesos(AsignacionRutina asignacion,utn.simulacro_nombreAlumno.model.request.PesosAsignacionRequest request) {
+        // Validación también para llamadas internas, no solamente desde HTTP.
+        validacion.validar(request);
+        var permitidos=asignacion.getRutina().getDias().stream().flatMap(d->d.getEjercicios().stream()).map(e->e.getId()).collect(java.util.stream.Collectors.toSet());
+        var nuevos=new java.util.LinkedHashMap<Long,Double>();var vistos=new java.util.HashSet<Long>();
+        for(var peso:request.pesos()) {
+            if(!permitidos.contains(peso.diaEjercicioId()) || !vistos.add(peso.diaEjercicioId()))throw new ReglaNegocioException("Seleccioná ejercicios de la versión asignada, sin repetir posiciones");
+            if(peso.pesoSugerido()!=null)nuevos.put(peso.diaEjercicioId(),peso.pesoSugerido());
+        }
+        asignacion.getPesosSugeridos().clear();asignacion.getPesosSugeridos().putAll(nuevos);
     }
 
     @Transactional

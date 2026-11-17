@@ -126,8 +126,13 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
             nombre: 'Día estadístico',
             numeroOrden: 1,
             ejercicios: [
-              { ejercicioId: exercise.id, seriesSugeridas: 4, repsSugeridas: 10, pesoSugerido: 50 },
-              { ejercicioId: other.id, seriesSugeridas: 1, repsSugeridas: 10, pesoSugerido: 25 },
+              {
+                ejercicioId: exercise.id,
+                seriesSugeridas: 4,
+                repsSugeridas: 10,
+                pesoSugerido: null,
+              },
+              { ejercicioId: other.id, seriesSugeridas: 1, repsSugeridas: 10, pesoSugerido: null },
             ],
           },
         ],

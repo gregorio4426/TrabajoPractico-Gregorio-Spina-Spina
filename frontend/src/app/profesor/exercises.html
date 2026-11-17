@@ -34,14 +34,14 @@
     <h2>{{ selected() ? 'Editar ' + selected()?.nombre : 'Nuevo ejercicio' }}</h2>
     <form [formGroup]="form" (ngSubmit)="ask('save')">
       <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
-        <label>Nombre del ejercicio *<input formControlName="nombre" maxlength="60" /></label
+        <label>Nombre del ejercicio<input formControlName="nombre" maxlength="60" /></label
         ><label
-          >Descripción del ejercicio *<textarea
+          >Descripción del ejercicio<textarea
             formControlName="descripcion"
             maxlength="255"
           ></textarea></label
         ><label
-          >Grupo muscular del ejercicio *<select formControlName="grupoMuscular">
+          >Grupo muscular del ejercicio<select formControlName="grupoMuscular">
             <option value="">Seleccionar</option>
             @for (group of groups(); track group.id) {
               <option [value]="groupValue(group)">{{ group.nombre }}</option>

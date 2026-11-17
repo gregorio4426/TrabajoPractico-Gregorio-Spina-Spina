@@ -45,4 +45,5 @@ public class SesionResponse {
     private java.time.LocalDateTime finalizadaEn;
 
     private String comentario;
+    private java.util.List<PesoSugeridoResponse> pesosSugeridos;
 }

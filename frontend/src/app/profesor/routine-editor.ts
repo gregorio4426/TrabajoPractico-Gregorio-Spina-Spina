@@ -58,7 +58,6 @@ export class RoutineEditor {
       ejercicioId: [initial?.ejercicioId ?? null, [Validators.required, positiveInteger]],
       seriesSugeridas: [initial?.seriesSugeridas ?? 1, [Validators.required, positiveInteger]],
       repsSugeridas: [initial?.repsSugeridas ?? 1, [Validators.required, positiveInteger]],
-      pesoSugerido: [initial?.pesoSugerido ?? null, optionalWeight],
     });
   }
   day(initial?: D.DiaRutinaResponse, order = 1) {
@@ -245,7 +244,7 @@ export class RoutineEditor {
       this.days.controls.some((d) => d.controls.ejercicios.length === 0)
     ) {
       this.error.set(
-        'Revisá los campos: se requiere al menos un día y un ejercicio por día; órdenes de día únicos, ejercicios seleccionados, series/repeticiones enteras positivas y pesos opcionales finitos no negativos.',
+        'Revisá los campos: se requiere al menos un día y un ejercicio por día; órdenes de día únicos, ejercicios seleccionados, series/repeticiones enteras positivas y descansos opcionales enteros no negativos.',
       );
       return;
     }
@@ -277,10 +276,6 @@ export class RoutineEditor {
           ejercicioId: Number(e.ejercicioId),
           seriesSugeridas: Number(e.seriesSugeridas),
           repsSugeridas: Number(e.repsSugeridas),
-          pesoSugerido:
-            e.pesoSugerido === null || String(e.pesoSugerido) === ''
-              ? null
-              : Number(e.pesoSugerido),
         })),
       })),
     };

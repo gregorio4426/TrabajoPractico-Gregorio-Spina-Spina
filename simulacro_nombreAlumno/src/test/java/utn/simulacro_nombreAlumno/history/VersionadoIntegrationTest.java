@@ -233,10 +233,10 @@ class VersionadoIntegrationTest {
         var rows=(com.fasterxml.jackson.databind.node.ArrayNode)body.at("/dias/0/ejercicios");
         var first=(com.fasterxml.jackson.databind.node.ObjectNode)rows.get(0);
         first.put("bloqueOrden",1).put("bloqueNombre","Biserie").put("vueltas",3).put("ordenEnBloque",1).put("descansoEjercicioSegundos",0).put("descansoVueltaSegundos",60);
-        var second=first.deepCopy();second.put("ordenEnBloque",2).put("repsSugeridas",12).put("pesoSugerido",0);rows.add(second);
+        var second=first.deepCopy();second.put("ordenEnBloque",2).put("repsSugeridas",12);rows.add(second);
         var v2=response(put(routinePath()),teacher,json.writeValueAsString(body),200);
         assertThat(v2.at("/dias/0/ejercicios/1/ordenEnBloque").asInt()).isEqualTo(2);
-        assertThat(v2.at("/dias/0/ejercicios/1/pesoSugerido").asDouble()).isZero();
+        assertThat(v2.at("/dias/0/ejercicios/1/pesoSugerido").isNull()).isTrue();
         first.put("descansoVueltaSegundos",90);second.put("descansoVueltaSegundos",90);
         response(put(routinePath()),teacher,json.writeValueAsString(body),200);
         var old=response(get(routinePath()+"/versiones/2"),teacher,null,200);
@@ -289,12 +289,53 @@ class VersionadoIntegrationTest {
         assertThat(response(get(routinePath()),teacher,null,200).at("/dias/0/ejercicios/0/ejercicioNombre").asText()).isEqualTo("Press original");
     }
 
+    @Test
+    void individualAssignmentWeightsAreIsolatedVersionBoundAndSnapshottedPerSession() throws Exception {
+        var user=user("pesos-"+UUID.randomUUID(),Rol.ALUMNO);
+        var other=alumnos.save(Alumno.builder().nombre("Pedro").apellido("Prueba").edad(25).email(user.getEmail()).nivel(Nivel.INTERMEDIO).objetivo(Objetivo.MEJORAR_RESISTENCIA).usuario(user).profesores(new ArrayList<>(List.of(profesor))).build());
+        var second=response(post("/api/rutinas/asignar/alumno/"+other.getId()+"/rutina/"+rutinaId),teacher,weightBody(prescripcion1,40,0),200);
+        var first=response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,weightBody(prescripcion1,60,0),200);
+        assertThat(first.at("/dias/0/ejercicios/0/pesoSugerido").asDouble()).isEqualTo(60);
+        var revision=first.get("asignacionRevision").asLong();
+        assertThat(response(get("/api/rutinas/me/activa"),student,null,200).at("/dias/0/ejercicios/0/pesoSugerido").asDouble()).isEqualTo(60);
+        assertThat(response(get("/api/rutinas/me/activa"),token(user),null,200).at("/dias/0/ejercicios/0/pesoSugerido").asDouble()).isEqualTo(40);
+        assertThat(response(get(routinePath()),teacher,null,200).at("/dias/0/ejercicios/0/pesoSugerido").isNull()).isTrue();
+        fecha=fecha.minusDays(1);long open=start(dia1).get("id").asLong();
+        var changed=response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,weightBody(prescripcion1,80,revision),200);
+        assertThat(response(get("/api/sesiones/"+open),student,null,200).at("/pesosSugeridos/0/pesoSugerido").asDouble()).isEqualTo(60);
+        assertThat(response(get("/api/asignaciones/"+second.get("id").asLong()),teacher,null,200).at("/dias/0/ejercicios/0/pesoSugerido").asDouble()).isEqualTo(40);
+        response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,weightBody(prescripcion1,20,revision),409);
+        response(put("/api/asignaciones/"+asignacion1+"/pesos"),next,weightBody(prescripcion1,20,changed.get("asignacionRevision").asLong()),403);
+        response(put("/api/asignaciones/"+asignacion1+"/pesos"),student,weightBody(prescripcion1,20,0),403);
+        response(get("/api/asignaciones/"+asignacion1),token(user),null,403);
+        long current=changed.get("asignacionRevision").asLong();
+        response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,weightBody(99999999L,20,current),400);
+        response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,weightBody(prescripcion1,-1,current),400);
+        var zero=response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,weightBody(prescripcion1,0,current),200);
+        assertThat(zero.at("/dias/0/ejercicios/0/pesoSugerido").asDouble()).isZero();
+        var cleared=response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,"{\"pesos\":[],\"revision\":"+zero.get("asignacionRevision").asLong()+"}",200);
+        assertThat(cleared.at("/dias/0/ejercicios/0/pesoSugerido").isNull()).isTrue();
+        response(post(assignPath()),teacher,weightBody(prescripcion1,30,0),200);
+        response(put("/api/asignaciones/"+asignacion1+"/pesos"),teacher,weightBody(prescripcion1,10,cleared.get("asignacionRevision").asLong()),409);
+        assertThat(response(get(routinePath()+"/versiones"),teacher,null,200).size()).isEqualTo(1);
+    }
+    @Test
+    void newTemplateWeightsAreRejectedAndCannotMutateExistingRoutineHistory() throws Exception {
+        var body=(com.fasterxml.jackson.databind.node.ObjectNode)json.readTree(definition("No guardar peso",8,ejercicio.getId()));
+        ((com.fasterxml.jackson.databind.node.ObjectNode)body.at("/dias/0/ejercicios/0")).put("pesoSugerido",60);
+        response(put(routinePath()),teacher,json.writeValueAsString(body),400);
+        assertThat(response(get(routinePath()+"/versiones"),teacher,null,200).size()).isEqualTo(1);
+    }
+    private String weightBody(long prescription,double weight,long revision) {
+        return "{\"pesos\":[{\"diaEjercicioId\":"+prescription+",\"pesoSugerido\":"+weight+"}],\"revision\":"+revision+"}";
+    }
+
     private JsonNode start(long day) throws Exception { return response(post("/api/sesiones"), student, startBody(day), 201); }
     private String startBody(long day) { return "{\"diaRutinaId\":" + day + ",\"fecha\":\"" + fecha + "\"}"; }
     private String routinePath() { return "/api/rutinas/" + rutinaId; }
     private String assignPath() { return "/api/rutinas/asignar/alumno/" + alumno.getId() + "/rutina/" + rutinaId; }
     private String definition(String name, int reps, long exerciseId) {
-        return "{\"nombre\":\"" + name + "\",\"descripcion\":\"Descripción\",\"dias\":[{\"nombre\":\"Día 1\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":" + exerciseId + ",\"seriesSugeridas\":3,\"repsSugeridas\":" + reps + ",\"pesoSugerido\":50.0}]}]}";
+        return "{\"nombre\":\"" + name + "\",\"descripcion\":\"Descripción\",\"dias\":[{\"nombre\":\"Día 1\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":" + exerciseId + ",\"seriesSugeridas\":3,\"repsSugeridas\":" + reps + "}]}]}";
     }
     private Usuario user(String name, Rol rol) {
         return usuarios.save(Usuario.builder().email(name + "@test.com").rol(rol).password(passwords.encode("TestPassword123!")).build());

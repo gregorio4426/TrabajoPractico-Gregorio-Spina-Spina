@@ -30,9 +30,9 @@
   <form [formGroup]="form" (ngSubmit)="confirm()">
     <fieldset [disabled]="pending()" class="teacher-fieldset">
       <section class="admin-panel admin-form">
-        <label>Nombre de rutina *<input formControlName="nombre" maxlength="255" /></label
+        <label>Nombre de rutina<input formControlName="nombre" maxlength="255" /></label
         ><label
-          >Descripción de rutina *<textarea
+          >Descripción de rutina<textarea
             formControlName="descripcion"
             maxlength="255"
             rows="3"
@@ -45,7 +45,12 @@
       </p>
       <div formArrayName="dias">
         @for (day of days.controls; track day; let di = $index) {
-          <section class="teacher-day" [formGroupName]="di">
+          <section
+            class="teacher-day"
+            [formGroupName]="di"
+            role="group"
+            [attr.aria-label]="'Día ' + (di + 1)"
+          >
             <div class="admin-kicker">
               <h2>Día {{ di + 1 }}</h2>
               <button type="button" class="secondary" (click)="removeDay(di)">
@@ -53,21 +58,19 @@
               </button>
             </div>
             <div class="admin-form">
-              <label
-                >Nombre del día {{ di + 1 }} *<input
-                  formControlName="nombre"
-                  maxlength="255" /></label
+              <label>Nombre del día<input formControlName="nombre" maxlength="255" /></label
               ><label
-                >Orden del día {{ di + 1 }} *<input
-                  type="number"
-                  min="1"
-                  step="1"
-                  formControlName="numeroOrden"
+                >Orden del día<input type="number" min="1" step="1" formControlName="numeroOrden"
               /></label>
             </div>
             <div formArrayName="ejercicios">
               @for (exercise of day.controls.ejercicios.controls; track exercise; let ei = $index) {
-                <div class="teacher-exercise-row" [formGroupName]="ei">
+                <div
+                  class="teacher-exercise-row"
+                  [formGroupName]="ei"
+                  role="group"
+                  [attr.aria-label]="'Ejercicio ' + (ei + 1)"
+                >
                   @if (firstInBlock(di, ei)) {
                     <section class="wide training-block-header">
                       <h3>{{ blockType(di, exercise.controls.bloqueOrden.value) }}</h3>
@@ -129,33 +132,23 @@
                   }
                   <app-entity-picker
                     kind="ejercicios"
-                    [label]="'Ejercicio del día ' + (di + 1) + ', fila ' + (ei + 1)"
+                    label="Ejercicio"
                     [options]="exerciseOptions()"
                     formControlName="ejercicioId"
                   />
                   <label
-                    >{{
-                      exercise.controls.bloqueOrden.value === null ? 'Series día' : 'Vueltas día'
-                    }}
-                    {{ di + 1 }}, fila {{ ei + 1 }} *<input
+                    >Series<input
                       type="number"
                       min="1"
                       step="1"
                       formControlName="seriesSugeridas"
                       (input)="syncBlock(di, ei)" /></label
                   ><label
-                    >Repeticiones día {{ di + 1 }}, fila {{ ei + 1 }} *<input
+                    >Repeticiones<input
                       type="number"
                       min="1"
                       step="1"
                       formControlName="repsSugeridas" /></label
-                  ><label
-                    >Peso sugerido día {{ di + 1 }}, fila {{ ei + 1
-                    }}<input
-                      type="number"
-                      min="0"
-                      step="any"
-                      formControlName="pesoSugerido" /></label
                   ><button type="button" class="secondary" (click)="removeExercise(di, ei)">
                     Quitar ejercicio {{ ei + 1 }} del día {{ di + 1 }}
                   </button>
@@ -224,8 +217,7 @@
             <p>
               {{ exerciseName(exercise.controls.ejercicioId.value) }} ·
               {{ exercise.controls.seriesSugeridas.value }} series ×
-              {{ exercise.controls.repsSugeridas.value }} repeticiones · Peso sugerido:
-              {{ exercise.controls.pesoSugerido.value ?? 'Sin peso sugerido' }}
+              {{ exercise.controls.repsSugeridas.value }} repeticiones
             </p>
           }
         }
@@ -250,7 +242,7 @@
     form.controls.nombre.value +
     '. Se guardarán ' +
     days.length +
-    ' días con la prescripción indicada. Los pesos son sugeridos, no resultados realizados.'
+    ' días con la prescripción indicada. Los pesos se configuran individualmente al asignar la rutina a un alumno.'
   "
   (confirmed)="save()"
 />

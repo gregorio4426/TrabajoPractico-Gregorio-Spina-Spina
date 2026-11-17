@@ -51,11 +51,17 @@
           Asignar última versión
         </button>
       </form>
+      <app-assignment-weights #weights [routine]="r" />
       @if (!students().length) {
         <p class="admin-help">No hay alumnos vinculados disponibles para asignación.</p>
       }
     }
-    <app-record-view [value]="r" />
+    @if (assignedId()) {
+      <a class="admin-link" [routerLink]="['/profesor/asignaciones', assignedId()]"
+        >Editar pesos de la asignación</a
+      >
+    }
+    <app-record-view [value]="r" [hiddenFields]="['pesoSugerido']" />
   </section>
   <section class="admin-panel">
     <h2>Versiones conservadas</h2>

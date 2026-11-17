@@ -79,14 +79,14 @@
       <form [formGroup]="addForm" (ngSubmit)="ask('add')">
         <fieldset class="admin-form student-series-form teacher-fieldset" [disabled]="pending()">
           <label
-            >Serie realizada *<input
+            >Serie realizada<input
               type="number"
               min="1"
               step="1"
               inputmode="numeric"
               formControlName="numeroSerie" /></label
           ><label
-            >Repeticiones realizadas *<input
+            >Repeticiones realizadas<input
               type="number"
               min="1"
               step="1"
@@ -131,12 +131,12 @@
       <form [formGroup]="dateForm" (ngSubmit)="ask('date')">
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
           <label
-            >Nueva fecha efectiva *<input
+            >Nueva fecha efectiva<input
               type="date"
               formControlName="fecha"
               [max]="today" /></label
           ><label
-            >Motivo de la fecha *<textarea formControlName="motivo" maxlength="500"></textarea>
+            >Motivo de la fecha<textarea formControlName="motivo" maxlength="500"></textarea>
           </label>
           <div class="wide admin-actions">
             <button class="primary">Guardar fecha corregida</button
@@ -158,13 +158,13 @@
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
           @if (action() !== 'annul') {
             <label
-              >Número corregido *<input
+              >Número corregido<input
                 type="number"
                 min="1"
                 step="1"
                 formControlName="numeroSerie" /></label
             ><label
-              >Repeticiones corregidas *<input
+              >Repeticiones corregidas<input
                 type="number"
                 min="1"
                 step="1"
@@ -178,7 +178,7 @@
             /></label>
           }
           <label class="wide"
-            >Motivo de la serie *<textarea formControlName="motivo" maxlength="500"></textarea>
+            >Motivo de la serie<textarea formControlName="motivo" maxlength="500"></textarea>
           </label>
           <div class="wide admin-actions">
             <button class="primary">

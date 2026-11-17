@@ -30,4 +30,11 @@ public class AsignacionRutina {
     private Alumno alumno;
     @Column(insertable = false, updatable = false, columnDefinition = "bigint GENERATED ALWAYS AS (CASE WHEN activa THEN alumno_id ELSE NULL END)")
     private Long alumnoActivoId;
+    @ElementCollection
+    @CollectionTable(name="pesos_asignacion", joinColumns=@JoinColumn(name="asignacion_id"))
+    @MapKeyColumn(name="dia_ejercicio_id",nullable=false)
+    @Column(name="peso_sugerido",nullable=false)
+    @Builder.Default
+    private java.util.Map<Long,Double> pesosSugeridos = new java.util.LinkedHashMap<>();
+    @Version private long revision;
 }

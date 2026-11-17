@@ -120,7 +120,20 @@ export class StudentSession {
         firstValueFrom(this.api.audit(this.id())),
       ]);
       if (seq !== this.seq) return;
-      this.day.set(routine?.dias?.find((d) => d.id === session.diaRutinaId) ?? null);
+      const day = routine?.dias?.find((d) => d.id === session.diaRutinaId);
+      this.day.set(
+        day
+          ? {
+              ...day,
+              ejercicios: day.ejercicios?.map((e) => ({
+                ...e,
+                pesoSugerido:
+                  session.pesosSugeridos?.find((p) => p.diaEjercicioId === e.id)?.pesoSugerido ??
+                  null,
+              })),
+            }
+          : null,
+      );
       this.audit.set(audit);
       this.dateForm.patchValue({ fecha: session.fechaEfectiva ?? session.fecha ?? '', motivo: '' });
       this.data.set(session);

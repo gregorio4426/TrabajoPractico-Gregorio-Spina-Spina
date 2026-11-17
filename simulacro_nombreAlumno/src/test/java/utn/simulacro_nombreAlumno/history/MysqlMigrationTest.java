@@ -283,6 +283,14 @@ class MysqlMigrationTest {
             script(connection,"/db/mysql/006_mejoras_funcionales.sql");
             assertThat(number(connection,"SELECT COUNT(*) FROM sesiones")).isEqualTo(sessions);
             assertThat(number(connection,"SELECT COUNT(*) FROM series")).isEqualTo(performed);
+            execute(connection,"UPDATE dias_ejercicio SET peso_sugerido=0 WHERE id=1");
+            script(connection,"/db/mysql/007_pesos_por_asignacion.sql");
+            assertThat(number(connection,"SELECT COUNT(*) FROM pesos_asignacion WHERE dia_ejercicio_id=1 AND peso_sugerido=0")).isEqualTo(number(connection,"SELECT COUNT(*) FROM asignaciones_rutina a JOIN dias_rutina d ON d.rutina_id=a.rutina_id WHERE d.id=1"));
+            assertThat(number(connection,"SELECT COUNT(*) FROM pesos_sesion WHERE dia_ejercicio_id=1 AND peso_sugerido=0")).isEqualTo(number(connection,"SELECT COUNT(*) FROM sesiones WHERE dia_rutina_id=1"));
+            execute(connection,"DELETE FROM pesos_asignacion WHERE dia_ejercicio_id=1");
+            script(connection,"/db/mysql/007_pesos_por_asignacion.sql");
+            assertThat(number(connection,"SELECT COUNT(*) FROM pesos_asignacion WHERE dia_ejercicio_id=1")).isZero();
+            assertThat(number(connection,"SELECT COUNT(*) FROM dias_ejercicio WHERE id=1 AND peso_sugerido=0")).isEqualTo(1);
             assertThat(number(connection,"SELECT COUNT(*) FROM grupos_musculares")).isEqualTo(6);
             assertThat(number(connection,"SELECT COUNT(*) FROM dias_ejercicio WHERE bloque_orden IS NOT NULL")).isZero();
         }

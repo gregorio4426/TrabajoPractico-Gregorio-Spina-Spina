@@ -62,26 +62,20 @@ describe('PROFESOR routine forms', () => {
     editor.days.at(1).controls.numeroOrden.setValue(1);
     expect(editor.days.hasError('duplicateOrder')).toBe(true);
   });
-  it('preserves known zero and absent suggested weight separately', async () => {
+  it('never copies legacy template weights into new template payloads or controls', async () => {
     const editor = await setup();
-    editor.form.patchValue({ nombre: ' Plan ', descripcion: ' Real ' });
-    const day = editor.days.at(0);
-    day.patchValue({ nombre: ' Día ', numeroOrden: 1 });
-    day.controls.ejercicios
-      .at(0)
-      .patchValue({ ejercicioId: 3, seriesSugeridas: 2, repsSugeridas: 8, pesoSugerido: 0 });
-    expect(editor.payload().dias[0]?.ejercicios[0]?.pesoSugerido).toBe(0);
-    day.controls.ejercicios.at(0).controls.pesoSugerido.setValue(null);
-    expect(editor.payload().dias[0]?.ejercicios[0]?.pesoSugerido).toBeNull();
-    expect(editor.payload().nombre).toBe('Plan');
-  });
-  it('rejects fractional repetitions and negative suggested weight', async () => {
-    const editor = await setup();
-    const row = editor.days.at(0).controls.ejercicios.at(0);
+    const row = editor.exercise({
+      ejercicioId: 3,
+      repsSugeridas: 8,
+      seriesSugeridas: 2,
+      pesoSugerido: 60,
+    });
+    editor.days.at(0).controls.ejercicios.clear();
+    editor.days.at(0).controls.ejercicios.push(row);
+    expect(Object.keys(row.controls)).not.toContain('pesoSugerido');
+    expect(editor.payload().dias[0]!.ejercicios[0]).not.toHaveProperty('pesoSugerido');
     row.controls.repsSugeridas.setValue(1.5);
-    row.controls.pesoSugerido.setValue(-1);
-    expect(row.controls.repsSugeridas.invalid).toBe(true);
-    expect(row.controls.pesoSugerido.invalid).toBe(true);
+    expect(row.invalid).toBe(true);
   });
   it('does not expose an editor for another author even with a manipulated URL', async () => {
     const editor = await setup(true, 99);
@@ -91,20 +85,11 @@ describe('PROFESOR routine forms', () => {
   });
   it('serializes reordered exercises without losing their individual prescriptions', async () => {
     const e = await setup();
-    e.days
-      .at(0)
-      .controls.ejercicios.at(0)
-      .patchValue({ ejercicioId: 3, repsSugeridas: 8, pesoSugerido: 0 });
+    e.days.at(0).controls.ejercicios.at(0).patchValue({ ejercicioId: 3, repsSugeridas: 8 });
     e.addExercise(0);
-    e.days
-      .at(0)
-      .controls.ejercicios.at(1)
-      .patchValue({ ejercicioId: 3, repsSugeridas: 12, pesoSugerido: null });
+    e.days.at(0).controls.ejercicios.at(1).patchValue({ ejercicioId: 3, repsSugeridas: 12 });
     e.moveExercise(0, 1, -1);
-    expect(e.payload().dias[0]?.ejercicios.map((x) => [x.repsSugeridas, x.pesoSugerido])).toEqual([
-      [12, null],
-      [8, 0],
-    ]);
+    expect(e.payload().dias[0]?.ejercicios.map((x) => x.repsSugeridas)).toEqual([12, 8]);
   });
   it('duplicates the selected historical version as a new routine instead of editing its family', async () => {
     const e = await setup(false, 1, true);
@@ -112,31 +97,27 @@ describe('PROFESOR routine forms', () => {
     expect(e.form.controls.nombre.value).toBe('Plan (copia)');
     expect(e.copyVersion).toBe(1);
   });
-  it('persists biseries with shared rounds and individual reps, weights and rests', async () => {
+  it('persists biseries with shared rounds and individual reps and rests', async () => {
     const e = await setup();
     e.removeExercise(0, 0);
     e.addBlock(0, 2);
     const rows = e.days.at(0).controls.ejercicios;
-    rows
-      .at(0)
-      .patchValue({
-        ejercicioId: 3,
-        bloqueNombre: 'Fuerza',
-        seriesSugeridas: 3,
-        repsSugeridas: 8,
-        pesoSugerido: 0,
-        descansoVueltaSegundos: 60,
-        descansoEjercicioSegundos: 0,
-      });
+    rows.at(0).patchValue({
+      ejercicioId: 3,
+      bloqueNombre: 'Fuerza',
+      seriesSugeridas: 3,
+      repsSugeridas: 8,
+
+      descansoVueltaSegundos: 60,
+      descansoEjercicioSegundos: 0,
+    });
     e.syncBlock(0, 0);
-    rows
-      .at(1)
-      .patchValue({
-        ejercicioId: 3,
-        repsSugeridas: 12,
-        pesoSugerido: null,
-        descansoEjercicioSegundos: 20,
-      });
+    rows.at(1).patchValue({
+      ejercicioId: 3,
+      repsSugeridas: 12,
+
+      descansoEjercicioSegundos: 20,
+    });
     const result = e.payload().dias[0]!.ejercicios;
     expect(
       result.map((r) => [
@@ -150,11 +131,9 @@ describe('PROFESOR routine forms', () => {
       ['Fuerza', 3, 3, 1, 60],
       ['Fuerza', 3, 3, 2, 60],
     ]);
-    expect(
-      result.map((r) => [r.repsSugeridas, r.pesoSugerido, r.descansoEjercicioSegundos]),
-    ).toEqual([
-      [8, 0, 0],
-      [12, null, 20],
+    expect(result.map((r) => [r.repsSugeridas, r.descansoEjercicioSegundos])).toEqual([
+      [8, 0],
+      [12, 20],
     ]);
     e.moveExercise(0, 1, -1);
     expect(e.payload().dias[0]!.ejercicios.map((r) => r.repsSugeridas)).toEqual([12, 8]);

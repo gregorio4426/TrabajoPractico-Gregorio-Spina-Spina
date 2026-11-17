@@ -24,6 +24,7 @@ public class ValidacionEntrenamiento {
                 var bloques = new java.util.HashMap<Integer, java.util.List<Object>>();
                 var posiciones = new java.util.HashSet<String>();
                 for(var ejercicio:dia.getEjercicios()) {
+                    if(ejercicio.getPesoSugerido()!=null)throw new ReglaNegocioException("El peso sugerido se configura al asignar la rutina a un alumno, no en la plantilla");
                     if(ejercicio.getBloqueOrden()==null) {
                         if(ejercicio.getVueltas()!=null || ejercicio.getOrdenEnBloque()!=null || ejercicio.getBloqueNombre()!=null || ejercicio.getDescansoEjercicioSegundos()!=null || ejercicio.getDescansoVueltaSegundos()!=null)
                             throw new ReglaNegocioException("La configuración de bloque requiere un orden de bloque");

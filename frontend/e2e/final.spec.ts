@@ -119,7 +119,12 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
             nombre: 'Día de fuerza',
             numeroOrden: 1,
             ejercicios: [
-              { ejercicioId: exercise.id, seriesSugeridas: 2, repsSugeridas: 10, pesoSugerido: 25 },
+              {
+                ejercicioId: exercise.id,
+                seriesSugeridas: 2,
+                repsSugeridas: 10,
+                pesoSugerido: null,
+              },
             ],
           },
         ],
@@ -277,9 +282,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
                 name: /posición 1$/,
               })
               .click();
-            await expect(
-              page.getByLabel('Repeticiones realizadas *', { exact: true }),
-            ).toBeFocused();
+            await expect(page.getByLabel('Repeticiones realizadas', { exact: true })).toBeFocused();
             expect(
               await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
               'Formulario móvil de series',
@@ -308,8 +311,8 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     const name = routine.nombre + ' v2';
     try {
       await enter(tp, teacher, `/profesor/rutinas/${routine.id}/editar`);
-      await tp.getByLabel('Nombre de rutina *', { exact: true }).fill(name);
-      await tp.getByLabel('Repeticiones día 1, fila 1 *', { exact: true }).fill('12');
+      await tp.getByLabel('Nombre de rutina', { exact: true }).fill(name);
+      await tp.getByLabel('Repeticiones día 1, fila 1', { exact: true }).fill('12');
       await tp.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
       await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
       await expect(tp).toHaveURL(/guardada=2$/);
@@ -352,7 +355,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     try {
       await enter(ap!, admin, `/admin/alumnos/${student.perfilId}`);
       await ap!.getByRole('button', { name: 'Editar perfil', exact: true }).click();
-      await ap!.getByLabel('Nombre *', { exact: true }).fill('AlumnoActualizado');
+      await ap!.getByLabel('Nombre', { exact: true }).fill('AlumnoActualizado');
       // The existing ADMIN editor requires a reason and an explicit confirmation.
       const reason = ap!.getByLabel(/Motivo/);
       if (await reason.count()) await reason.fill('Actualización visible entre roles');
@@ -364,7 +367,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
         tp!.getByRole('heading', { name: 'AlumnoActualizado Integracion', exact: true }),
       ).toBeVisible();
       await enter(sp!, student, '/alumno/perfil');
-      await expect(sp!.getByLabel('Nombre del alumno *', { exact: true })).toHaveValue(
+      await expect(sp!.getByLabel('Nombre del alumno', { exact: true })).toHaveValue(
         'AlumnoActualizado',
       );
       await sp!.goto(`/alumno/sesiones/${open.id}`);
@@ -373,7 +376,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
           name: /posición 1$/,
         })
         .click();
-      await sp!.getByLabel('Repeticiones realizadas *', { exact: true }).fill('10');
+      await sp!.getByLabel('Repeticiones realizadas', { exact: true }).fill('10');
       await sp!.getByLabel('Peso realizado (opcional)').fill('12.5');
       await sp!.getByRole('button', { name: 'Guardar serie', exact: true }).click();
       await sp!.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
@@ -411,7 +414,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     await page.setViewportSize({ width: 360, height: 800 });
     await enter(page, student, '/alumno/perfil');
     await expect(page.locator('main')).toBeFocused();
-    const name = page.getByLabel('Nombre del alumno *', { exact: true });
+    const name = page.getByLabel('Nombre del alumno', { exact: true });
     await expect(name).toBeVisible();
     expect(
       await name.evaluate((el) => parseFloat(getComputedStyle(el).fontSize)),
@@ -512,7 +515,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     await page.getByRole('link', { name: /Volver a usuarios/i }).click();
     await expect(page).toHaveURL(/\/admin\/usuarios$/);
     await enter(page, student, '/alumno/perfil');
-    await expect(page.getByLabel('Nombre del alumno *', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Nombre del alumno', { exact: true })).toBeVisible();
     const current = await api(request, 'get', `/api/admin/usuarios/${studentUser}`, admin);
     await api(request, 'put', `/api/admin/usuarios/${studentUser}/estado`, admin, {
       activo: false,

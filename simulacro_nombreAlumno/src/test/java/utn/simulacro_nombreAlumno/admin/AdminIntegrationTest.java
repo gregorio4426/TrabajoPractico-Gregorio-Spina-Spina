@@ -42,7 +42,7 @@ class AdminIntegrationTest {
         alumno=alumnos.save(Alumno.builder().nombre("Luis").apellido("Rios").edad(25).email(su.getEmail()).usuario(su).nivel(Nivel.INTERMEDIO).objetivo(Objetivo.MEJORAR_RESISTENCIA).profesores(new ArrayList<>(List.of(profesor))).build());
         teacher=token(pu);next=token(nu);student=token(su);admin=token(au);
         var exercise=ejercicios.save(Ejercicio.builder().nombre("Press").descripcion("Press histórico").grupoMuscular(GrupoMuscular.PECHO).build());
-        String definition="{\"nombre\":\"Plan original\",\"descripcion\":\"Plan\",\"dias\":[{\"nombre\":\"Día\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":"+exercise.getId()+",\"seriesSugeridas\":2,\"repsSugeridas\":8,\"pesoSugerido\":40}]}]}";
+        String definition="{\"nombre\":\"Plan original\",\"descripcion\":\"Plan\",\"dias\":[{\"nombre\":\"Día\",\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":"+exercise.getId()+",\"seriesSugeridas\":2,\"repsSugeridas\":8}]}]}";
         var r=call(post("/api/rutinas"),teacher,definition,201);routine=r.get("id").asLong();day=r.at("/dias/0/id").asLong();prescription=r.at("/dias/0/ejercicios/0/id").asLong();
         assignment=call(post("/api/rutinas/asignar/alumno/"+alumno.getId()+"/rutina/"+routine),teacher,null,200).get("id").asLong();
         session=call(post("/api/sesiones"),student,"{\"diaRutinaId\":"+day+",\"fecha\":\""+LocalDate.now()+"\"}",201).get("id").asLong();

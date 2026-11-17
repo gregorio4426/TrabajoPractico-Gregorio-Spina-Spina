@@ -23,7 +23,7 @@
     <fieldset class="admin-form" [disabled]="pending()" style="border: 0; padding: 0; margin: 0">
       @for (field of fields(); track field.key) {
         <label [class.wide]="field.type === 'textarea'"
-          >{{ field.label }} {{ field.required ? '*' : '(opcional)' }}
+          >{{ field.label }} {{ field.required ? '' : '(opcional)' }}
           @if (['profesorId', 'profesorAnteriorId', 'profesorNuevoId'].includes(field.key)) {
             <app-entity-picker
               kind="profesores"

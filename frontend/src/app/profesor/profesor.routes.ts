@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 export const profesorRoutes: Routes = [
+  {path:'asignaciones/:id',loadComponent:()=>import('./assignment').then(m=>m.AssignmentEditor),title:'Pesos individuales · Profesor'},
   {
     path: '',
     loadComponent: () => import('./dashboard').then((m) => m.TeacherDashboard),

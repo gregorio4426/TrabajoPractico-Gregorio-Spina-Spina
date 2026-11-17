@@ -93,10 +93,29 @@ export class ProfesorApi {
   archive(id: number) {
     return this.http.delete<void>(`${this.base}/rutinas/${id}`);
   }
-  assign(studentId: number, routineId: number) {
+  assignment(id: number) {
+    return this.get<D.RutinaResponse>('/asignaciones/' + id);
+  }
+  updateAssignmentWeights(
+    id: number,
+    body: {
+      pesos: Array<{ diaEjercicioId: number; pesoSugerido: number | null }>;
+      revision: number | null;
+    },
+  ) {
+    return this.http.put<D.RutinaResponse>(this.base + '/asignaciones/' + id + '/pesos', body);
+  }
+  assign(
+    studentId: number,
+    routineId: number,
+    body?: {
+      pesos: Array<{ diaEjercicioId: number; pesoSugerido: number | null }>;
+      revision?: number | null;
+    },
+  ) {
     return this.http.post<D.AsignacionResponse>(
       `${this.base}/rutinas/asignar/alumno/${studentId}/rutina/${routineId}`,
-      null,
+      body ?? null,
     );
   }
   exercises(query: Query = {}) {

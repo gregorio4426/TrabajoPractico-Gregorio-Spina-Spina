@@ -1,3 +1,4 @@
+import { routineField } from './entity-picker';
 import { selectEntity } from './entity-picker';
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
@@ -110,7 +111,7 @@ test.describe('PROFESOR · backend real', () => {
           nombre: 'Día 1',
           numeroOrden: 1,
           ejercicios: [
-            { ejercicioId: exercise.id, seriesSugeridas: 2, repsSugeridas: 8, pesoSugerido: 20 },
+            { ejercicioId: exercise.id, seriesSugeridas: 2, repsSugeridas: 8, pesoSugerido: null },
           ],
         },
       ],
@@ -232,17 +233,17 @@ test.describe('PROFESOR · backend real', () => {
     await login(page);
     await page.goto('/profesor/rutinas/nueva');
     const name = 'Plan UI ' + unique();
-    await page.getByLabel('Nombre de rutina *', { exact: true }).fill(name);
+    await page.getByLabel('Nombre de rutina', { exact: true }).fill(name);
     await page
-      .getByLabel('Descripción de rutina *', { exact: true })
+      .getByLabel('Descripción de rutina', { exact: true })
       .fill('Dos días con prescripción real');
-    await page.getByLabel('Nombre del día 1 *', { exact: true }).fill('Pecho');
+    await routineField(page, 'Nombre del día 1').fill('Pecho');
     await selectEntity(page, 'Ejercicio del día 1, fila 1', exercise.nombre);
-    await page.getByLabel('Series día 1, fila 1 *', { exact: true }).fill('2');
-    await page.getByLabel('Repeticiones día 1, fila 1 *', { exact: true }).fill('8');
-    await page.getByLabel('Peso sugerido día 1, fila 1', { exact: true }).fill('0');
+    await routineField(page, 'Series día 1, fila 1').fill('2');
+    await routineField(page, 'Repeticiones día 1, fila 1').fill('8');
+
     await page.getByRole('button', { name: 'Agregar día', exact: true }).click();
-    await page.getByLabel('Nombre del día 2 *', { exact: true }).fill('Técnica');
+    await routineField(page, 'Nombre del día 2').fill('Técnica');
     await selectEntity(page, 'Ejercicio del día 2, fila 1', exercise.nombre);
     await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
     await confirm(page);
@@ -254,7 +255,7 @@ test.describe('PROFESOR · backend real', () => {
     await confirm(page);
     await expect(page.getByText(/Rutina asignada: versión 1/)).toBeVisible();
     await page.getByRole('link', { name: 'Editar última versión', exact: true }).click();
-    await page.getByLabel('Nombre de rutina *', { exact: true }).fill(name + ' v2');
+    await page.getByLabel('Nombre de rutina', { exact: true }).fill(name + ' v2');
     await page.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
     await confirm(page);
     await expect(page).toHaveURL(/guardada=2$/);
@@ -280,21 +281,19 @@ test.describe('PROFESOR · backend real', () => {
     await login(page);
     await page.goto('/profesor/rutinas/nueva');
     const name = 'Rutina flexible ' + unique();
-    await page.getByLabel('Nombre de rutina *', { exact: true }).fill(name);
+    await page.getByLabel('Nombre de rutina', { exact: true }).fill(name);
     await page
-      .getByLabel('Descripción de rutina *', { exact: true })
+      .getByLabel('Descripción de rutina', { exact: true })
       .fill('Selección y orden reales');
-    await page.getByLabel('Nombre del día 1 *', { exact: true }).fill('Fuerza');
+    await routineField(page, 'Nombre del día 1').fill('Fuerza');
     await selectEntity(page, 'Ejercicio del día 1, fila 1', exercise.nombre);
-    await page.getByLabel('Repeticiones día 1, fila 1 *', { exact: true }).fill('8');
-    await page.getByLabel('Peso sugerido día 1, fila 1', { exact: true }).fill('0');
+    await routineField(page, 'Repeticiones día 1, fila 1').fill('8');
+
     await page.getByRole('button', { name: 'Agregar ejercicio al día 1', exact: true }).click();
     await selectEntity(page, 'Ejercicio del día 1, fila 2', exercise.nombre);
-    await page.getByLabel('Repeticiones día 1, fila 2 *', { exact: true }).fill('12');
+    await routineField(page, 'Repeticiones día 1, fila 2').fill('12');
     await page.getByRole('button', { name: 'Subir ejercicio 2 del día 1', exact: true }).click();
-    await expect(page.getByLabel('Repeticiones día 1, fila 1 *', { exact: true })).toHaveValue(
-      '12',
-    );
+    await expect(routineField(page, 'Repeticiones día 1, fila 1')).toHaveValue('12');
     await expect(
       page.getByRole('heading', { name: 'Vista previa de la rutina', exact: true }),
     ).toBeVisible();
@@ -323,10 +322,10 @@ test.describe('PROFESOR · backend real', () => {
       ),
     ).toEqual([
       [12, null],
-      [8, 0],
+      [8, null],
     ]);
     await page.getByRole('link', { name: 'Duplicar rutina', exact: true }).click();
-    await expect(page.getByLabel('Nombre de rutina *', { exact: true })).toHaveValue(
+    await expect(page.getByLabel('Nombre de rutina', { exact: true })).toHaveValue(
       name + ' (copia)',
     );
     await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
@@ -355,10 +354,10 @@ test.describe('PROFESOR · backend real', () => {
     await page.goto('/profesor/ejercicios');
     const name = 'Catálogo UI ' + unique();
     await page.getByRole('button', { name: 'Crear ejercicio', exact: true }).click();
-    await page.getByLabel('Nombre del ejercicio *', { exact: true }).fill(name);
-    await page.getByLabel('Descripción del ejercicio *', { exact: true }).fill('Catálogo real');
+    await page.getByLabel('Nombre del ejercicio', { exact: true }).fill(name);
+    await page.getByLabel('Descripción del ejercicio', { exact: true }).fill('Catálogo real');
     await page
-      .getByRole('combobox', { name: 'Grupo muscular del ejercicio *', exact: true })
+      .getByRole('combobox', { name: 'Grupo muscular del ejercicio', exact: true })
       .selectOption('ESPALDA');
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
@@ -371,7 +370,7 @@ test.describe('PROFESOR · backend real', () => {
       .getByRole('button', { name: /Editar / })
       .click();
     await page
-      .getByLabel('Descripción del ejercicio *', { exact: true })
+      .getByLabel('Descripción del ejercicio', { exact: true })
       .fill('Descripción actualizada');
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
@@ -400,7 +399,7 @@ test.describe('PROFESOR · backend real', () => {
     await login(page);
     await page.goto(`/profesor/rutinas/${foreign.id}/editar`);
     await expect(page.getByRole('alert')).toContainText('propias');
-    await expect(page.getByLabel('Nombre de rutina *', { exact: true })).toHaveCount(0);
+    await expect(page.getByLabel('Nombre de rutina', { exact: true })).toHaveCount(0);
     expect(
       (
         await request.put(`/api/rutinas/${foreign.id}`, {
@@ -451,9 +450,7 @@ test.describe('PROFESOR · backend real', () => {
   test('personal profile and mobile navigation preserve ADMIN separation', async ({ page }) => {
     await login(page);
     await page.goto('/profesor/perfil');
-    await page
-      .getByLabel('Especialidad del profesor *', { exact: true })
-      .fill('Movilidad y fuerza');
+    await page.getByLabel('Especialidad del profesor', { exact: true }).fill('Movilidad y fuerza');
     await page
       .getByLabel('Email de contacto (opcional)', { exact: true })
       .fill('contacto@example.test');
@@ -461,7 +458,7 @@ test.describe('PROFESOR · backend real', () => {
     await confirm(page);
     await expect(page.getByText('Perfil actualizado correctamente.')).toBeVisible();
     await page.reload();
-    await expect(page.getByLabel('Especialidad del profesor *', { exact: true })).toHaveValue(
+    await expect(page.getByLabel('Especialidad del profesor', { exact: true })).toHaveValue(
       'Movilidad y fuerza',
     );
     await page.setViewportSize({ width: 390, height: 844 });
@@ -484,8 +481,8 @@ test.describe('PROFESOR · backend real', () => {
     const old = await page.evaluate(
       () => (JSON.parse(localStorage.getItem('gym.session.v1')!) as { token: string }).token,
     );
-    await page.getByLabel('Nuevo email de acceso *', { exact: true }).fill(email);
-    await page.getByLabel('Contraseña actual *', { exact: true }).fill(account.password);
+    await page.getByLabel('Nuevo email de acceso', { exact: true }).fill(email);
+    await page.getByLabel('Contraseña actual', { exact: true }).fill(account.password);
     await page.getByRole('button', { name: 'Actualizar email', exact: true }).click();
     await confirm(page);
     await expect(
@@ -505,9 +502,9 @@ test.describe('PROFESOR · backend real', () => {
       page.getByRole('heading', { name: 'Cambiar contraseña', exact: true }),
     ).toBeVisible();
     const password = randomBytes(20).toString('base64url');
-    await page.getByLabel('Contraseña actual *', { exact: true }).fill(account.password);
-    await page.getByLabel('Nueva contraseña *', { exact: true }).fill(password);
-    await page.getByLabel('Confirmar nueva contraseña *', { exact: true }).fill(password);
+    await page.getByLabel('Contraseña actual', { exact: true }).fill(account.password);
+    await page.getByLabel('Nueva contraseña', { exact: true }).fill(password);
+    await page.getByLabel('Confirmar nueva contraseña', { exact: true }).fill(password);
     await page.getByRole('button', { name: 'Actualizar contraseña', exact: true }).click();
     await confirm(page);
     await expect(

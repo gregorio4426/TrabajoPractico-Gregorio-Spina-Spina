@@ -51,12 +51,12 @@
       <form [formGroup]="profile" (ngSubmit)="confirm()">
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
           <label
-            >Nombre del alumno *<input
+            >Nombre del alumno<input
               formControlName="nombre"
               maxlength="20"
               autocomplete="given-name" /></label
           ><label
-            >Apellido del alumno *<input
+            >Apellido del alumno<input
               formControlName="apellido"
               maxlength="20"
               autocomplete="family-name" /></label
@@ -65,7 +65,7 @@
               type="date"
               formControlName="fechaDeNacimiento" /></label
           ><label
-            >Nivel *<select formControlName="nivel">
+            >Nivel<select formControlName="nivel">
               @for (level of levels; track level) {
                 <option [value]="level">{{ level }}</option>
               }
@@ -108,13 +108,13 @@
       <form [formGroup]="email" (ngSubmit)="confirm()">
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
           <label
-            >Nuevo email de acceso *<input
+            >Nuevo email de acceso<input
               type="email"
               formControlName="email"
               maxlength="150"
               autocomplete="username" /></label
           ><label
-            >Contraseña actual *<input
+            >Contraseña actual<input
               type="password"
               formControlName="passwordActual"
               autocomplete="current-password"
@@ -131,17 +131,17 @@
       <form [formGroup]="password" (ngSubmit)="confirm()">
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
           <label
-            >Contraseña actual *<input
+            >Contraseña actual<input
               type="password"
               formControlName="passwordActual"
               autocomplete="current-password" /></label
           ><label
-            >Nueva contraseña *<input
+            >Nueva contraseña<input
               type="password"
               formControlName="nuevaPassword"
               autocomplete="new-password" /></label
           ><label
-            >Confirmar nueva contraseña *<input
+            >Confirmar nueva contraseña<input
               type="password"
               formControlName="confirmacion"
               autocomplete="new-password"

@@ -32,6 +32,7 @@ export interface FinalizarSesionRequest {
 }
 
 export interface SesionResponse {
+  pesosSugeridos?: Array<{diaEjercicioId:number;ejercicioNombre?:string;pesoSugerido?:number|null}> | null;
   id?: number | null;
   fecha?: string | null;
   completada?: boolean | null;
@@ -105,6 +106,7 @@ export interface DiaRutinaResponse {
 }
 
 export interface RutinaResponse {
+  asignacionRevision?: number | null;
   nombre?: string | null;
   descripcion?: string | null;
   dias?: Array<DiaRutinaResponse> | null;

@@ -15,6 +15,8 @@ public class AsignacionResponse {
     private String rutinaNombre;
     private String alumnoNombre;
 
+    private long revision;
+    private java.util.List<PesoSugeridoResponse> pesosSugeridos;
     private Long id;
     private Long rutinaId;
     private Long alumnoId;

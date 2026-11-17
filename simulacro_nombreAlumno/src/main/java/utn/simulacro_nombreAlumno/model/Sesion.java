@@ -54,4 +54,10 @@ public class Sesion {
     public LocalDate getFechaEfectiva() { return fechaCorregida == null ? fecha : fechaCorregida; }
     @jakarta.persistence.Column(length=2000)
     private String comentario;
+    @ElementCollection
+    @CollectionTable(name="pesos_sesion", joinColumns=@JoinColumn(name="sesion_id"))
+    @MapKeyColumn(name="dia_ejercicio_id",nullable=false)
+    @Column(name="peso_sugerido",nullable=false)
+    @Builder.Default
+    private java.util.Map<Long,Double> pesosSugeridos = new java.util.LinkedHashMap<>();
 }
