@@ -39,3 +39,11 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible,
 }
 
 @include neon-theme.apply;
+
+.entity-picker { min-width: 0; }
+.entity-picker-trigger { width: 100%; display:flex; justify-content:space-between; gap:12px; text-align:left; }
+.entity-picker-panel { padding:16px; margin:10px 0; border:1px solid var(--line); border-radius:10px; background:var(--surface); max-height:460px; overflow:auto; }
+.entity-picker-panel input { width:100%; padding:12px; background:var(--field);color:var(--ink);border:1px solid var(--line);border-radius:8px; }
+.entity-picker-option { display:flex; flex-direction:column; width:100%; padding:14px; text-align:left; background:var(--surface-raised);color:var(--ink);border-radius:8px;margin:8px 0;gap:6px; }
+.entity-picker-option small {color:var(--muted);overflow-wrap:anywhere;}
+.entity-picker-option:hover,.entity-picker-option[aria-pressed=true] {outline:1px solid var(--accent);}

@@ -1,3 +1,4 @@
+import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -11,7 +12,7 @@ import * as D from '../admin/contracts';
 import { positiveInteger, profesorError } from './utils';
 @Component({
   selector: 'app-teacher-routine',
-  imports: [RouterLink, ReactiveFormsModule, Confirm, RecordView],
+  imports: [RouterLink, ReactiveFormsModule, Confirm, RecordView, EntityPicker],
   templateUrl: './routine.html',
 })
 export class Routine {
@@ -31,6 +32,7 @@ export class Routine {
   readonly action = signal<'assign' | 'archive'>('assign');
   private seq = 0;
   readonly own = computed(() => this.data()?.profesorId === this.auth.session()?.perfilId);
+  readonly studentOptions = () => this.students().map(entityOption);
   readonly form = inject(FormBuilder).nonNullable.group({
     alumnoId: ['', [Validators.required, positiveInteger]],
   });

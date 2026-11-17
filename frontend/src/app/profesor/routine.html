@@ -34,16 +34,7 @@
     }
     @if (own() && !r.archivada && selectedVersion() === null) {
       <form class="admin-filters" [formGroup]="form" (ngSubmit)="ask('assign')">
-        <label
-          >Alumno vinculado<select formControlName="alumnoId">
-            <option value="">Seleccionar alumno</option>
-            @for (s of students(); track s.id) {
-              <option [value]="s.id">
-                #{{ s.id }} · {{ s.nombre }} {{ s.apellido }} · {{ s.email }}
-              </option>
-            }
-          </select></label
-        ><button class="primary" [disabled]="pending() || students().length === 0">
+        <app-entity-picker kind="alumnos" label="Alumno vinculado" [options]="studentOptions()" formControlName="alumnoId" /><button class="primary" [disabled]="pending() || students().length === 0">
           Asignar última versión
         </button>
       </form>

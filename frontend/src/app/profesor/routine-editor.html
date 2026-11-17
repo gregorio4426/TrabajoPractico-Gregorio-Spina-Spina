@@ -64,18 +64,7 @@
             <div formArrayName="ejercicios">
               @for (exercise of day.controls.ejercicios.controls; track exercise; let ei = $index) {
                 <div class="teacher-exercise-row" [formGroupName]="ei">
-                  <label
-                    >Ejercicio día {{ di + 1 }}, fila {{ ei + 1 }} *<select
-                      formControlName="ejercicioId"
-                    >
-                      <option [ngValue]="null">Seleccionar ejercicio</option>
-                      @for (item of exercises(); track item.id) {
-                        <option [ngValue]="item.id">
-                          #{{ item.id }} · {{ item.nombre }} · {{ item.grupoMuscular }}
-                        </option>
-                      }
-                    </select></label
-                  ><label
+                  <app-entity-picker kind="ejercicios" [label]="'Ejercicio del día ' + (di+1) + ', fila ' + (ei+1)" [options]="exerciseOptions()" formControlName="ejercicioId" /> <label
                     >Series día {{ di + 1 }}, fila {{ ei + 1 }} *<input
                       type="number"
                       min="1"

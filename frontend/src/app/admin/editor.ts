@@ -1,3 +1,4 @@
+import { EntityPicker, entityOption } from '../shared/entity-picker';
 import {
   Component,
   ElementRef,
@@ -38,7 +39,7 @@ const bytePassword: ValidatorFn = (control) =>
   new TextEncoder().encode(String(control.value ?? '')).length <= 72 ? null : { bytes: true };
 @Component({
   selector: 'app-admin-editor',
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, EntityPicker],
   templateUrl: './editor.html',
 })
 export class Editor implements OnInit {
@@ -178,11 +179,11 @@ export class Editor implements OnInit {
       fields.push(this.field('emailContacto', 'Email de contacto', 'email', false, 150));
     }
     if (mode === 'link' || mode === 'unlink')
-      fields.push(this.field('profesorId', 'ID del profesor', 'number'));
+      fields.push(this.field('profesorId', 'Profesor', 'number'));
     if (mode === 'replace')
       fields.push(
-        this.field('profesorAnteriorId', 'ID del profesor anterior', 'number'),
-        this.field('profesorNuevoId', 'ID del nuevo profesor', 'number'),
+        this.field('profesorAnteriorId', 'Profesor anterior', 'number'),
+        this.field('profesorNuevoId', 'Nuevo profesor', 'number'),
       );
     if (!['create', 'profile'].includes(mode))
       fields.push(this.field('motivo', 'Motivo de la operación', 'textarea', true, 500));

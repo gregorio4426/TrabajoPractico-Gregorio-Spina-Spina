@@ -1,3 +1,4 @@
+import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import {
   FormArray,
@@ -21,7 +22,7 @@ export const uniqueDayOrder: ValidatorFn = (control) => {
 };
 @Component({
   selector: 'app-teacher-routine-editor',
-  imports: [ReactiveFormsModule, RouterLink, Confirm],
+  imports: [ReactiveFormsModule, RouterLink, Confirm, EntityPicker],
   templateUrl: './routine-editor.html',
 })
 export class RoutineEditor {
@@ -38,6 +39,7 @@ export class RoutineEditor {
   readonly pending = signal(false);
   readonly error = signal('');
   readonly ready = signal(false);
+  readonly exerciseOptions = () => this.exercises().map(entityOption);
   exercise(initial?: D.DiaEjercicioResponse) {
     return this.fb.group({
       ejercicioId: [initial?.ejercicioId ?? null, [Validators.required, positiveInteger]],

@@ -1,3 +1,4 @@
+import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
@@ -9,7 +10,7 @@ import { RutinaResponse } from '../admin/contracts';
 import { profesorError } from './utils';
 @Component({
   selector: 'app-teacher-routines',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, EntityPicker],
   template: `<div class="page-intro admin-kicker">
       <div>
         <span class="eyebrow muted">PLANIFICACIÓN</span>
@@ -19,7 +20,7 @@ import { profesorError } from './utils';
     </div>
     <p class="admin-help">
       El catálogo compartido devuelve solo familias no archivadas. Solo podés modificar y asignar
-      tus propias rutinas. Las archivadas se pueden consultar por su ID o desde un historial.
+      tus propias rutinas. Las archivadas se pueden consultar desde el historial.
     </p>
     <form class="admin-filters" [formGroup]="filters" (ngSubmit)="load()">
       <label>Buscar rutina<input type="search" formControlName="q" /></label
@@ -31,13 +32,7 @@ import { profesorError } from './utils';
       ><button class="secondary" [disabled]="loading()">Recargar catálogo</button>
     </form>
     <form class="admin-filters" (submit)="$event.preventDefault(); lookup()">
-      <label
-        >Consultar ID de rutina<input
-          type="number"
-          min="1"
-          step="1"
-          [formControl]="filters.controls.id" /></label
-      ><button class="secondary">Consultar por ID</button>
+      <app-entity-picker kind="rutinas" label="Rutina" [formControl]="filters.controls.id" /><button class="secondary">Abrir rutina seleccionada</button>
     </form>
     @if (error()) {
       <p class="error-message" role="alert">{{ error() }}</p>

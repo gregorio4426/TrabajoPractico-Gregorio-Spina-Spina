@@ -1,3 +1,4 @@
+import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { FormControl, FormRecord, ReactiveFormsModule } from '@angular/forms';
@@ -9,7 +10,7 @@ import { adminError, at, text, idOf } from './admin-utils';
 import { RecordView } from './record-view';
 @Component({
   selector: 'app-admin-browser',
-  imports: [ReactiveFormsModule, RouterLink, RecordView],
+  imports: [ReactiveFormsModule, RouterLink, RecordView, EntityPicker],
   templateUrl: './browser.html',
 })
 export class Browser {

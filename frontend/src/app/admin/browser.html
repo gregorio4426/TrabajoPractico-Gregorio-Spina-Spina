@@ -21,7 +21,9 @@
   @for (filter of filters; track filter.key) {
     <label
       >{{ filter.label }}
-      @if (filter.options) {
+      @if (['alumnos','profesores','rutinas','usuarios'].includes(filter.type ?? '')) {
+ <app-entity-picker [kind]="$any(filter.type)" [label]="filter.label" [formControlName]="filter.key" />
+ } @else if (filter.options) {
         <select [formControlName]="filter.key">
           <option value="">Todos</option>
           @for (option of filter.options; track option) {
