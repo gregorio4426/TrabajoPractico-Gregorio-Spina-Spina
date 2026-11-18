@@ -1,5 +1,7 @@
 # Bloques, catálogo personalizado, objetivos y comentarios
 
+**Actualización 007:** los pesos se configuran por asignación, no en escrituras de plantillas. Las sesiones guardan una copia histórica. Ver [pesos por asignación](../../frontend/PESOS-POR-ASIGNACION.md).
+
 La migración aditiva `006_mejoras_funcionales.sql` se aplica después de 005, con escritores detenidos y copia de seguridad verificada. No borra ni reinterpreta rutinas, asignaciones, sesiones o series existentes. Puede repetirse y conserva valores ya registrados. Las instalaciones nuevas de Compose ejecutan todos los SQL; los volúmenes existentes requieren aplicar 006 explícitamente antes de arrancar la nueva API. No eliminar el volumen para actualizar.
 
 ## Contratos compatibles

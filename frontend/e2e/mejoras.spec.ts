@@ -34,6 +34,7 @@ test.describe('Mejoras funcionales · persistencia real', () => {
     browser,
   }) => {
     test.setTimeout(120000);
+    page.setDefaultTimeout(10000);
     const errors: string[] = [];
     page.on('pageerror', (e) => errors.push(e.message));
     const accounts = JSON.parse(readFileSync(process.env['GYM_E2E_CREDENTIALS_FILE']!, 'utf8')) as {
@@ -101,7 +102,7 @@ test.describe('Mejoras funcionales · persistencia real', () => {
     await expect(page.getByRole('button', { name: 'Editar ' + muscle, exact: true })).toBeVisible();
     const exercise = 'Ejercicio bloques ' + unique();
     await page.getByRole('button', { name: 'Crear ejercicio', exact: true }).click();
-    await page.getByLabel('Nombre del ejercicio', { exact: true }).fill(exercise);
+    await page.getByRole('textbox', { name: 'Nombre del ejercicio', exact: true }).fill(exercise);
     await page
       .getByLabel('Descripción del ejercicio', { exact: true })
       .fill('Personalizado para biserie');

@@ -23,7 +23,7 @@ import { profesorError } from './utils';
       <p class="notice" role="status">{{ success() }}</p>
     }
     @if (data(); as r) {
-      <h2>{{ r.nombre }} · Versión {{ r.numeroVersion }}</h2>
+      <h2>{{ r.alumnoNombre }} · {{ r.nombre }} · Versión {{ r.numeroVersion }}</h2>
       @if (r.activa && r.profesorId === auth.session()?.perfilId) {
         <fieldset [disabled]="pending()" class="teacher-fieldset">
           <app-assignment-weights #weights [routine]="r" [existing]="true" />

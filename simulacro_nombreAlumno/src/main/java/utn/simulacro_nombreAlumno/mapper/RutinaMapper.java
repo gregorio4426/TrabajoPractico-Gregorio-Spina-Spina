@@ -22,6 +22,7 @@ public interface RutinaMapper {
     @Mapping(target = "rutinaVersionId", source = "id")
     @Mapping(target = "archivada", source = "archivadaEfectiva")
     @Mapping(target = "profesorId", source = "profesor.id")
+    @Mapping(target = "alumnoNombre", ignore = true)
     @Mapping(target = "asignacionRevision", ignore = true)
     @Mapping(target = "asignacionId", ignore = true)
     @Mapping(target = "fechaInicio", ignore = true)
@@ -41,6 +42,7 @@ public interface RutinaMapper {
     default RutinaResponse toHistorialDto(utn.simulacro_nombreAlumno.model.AsignacionRutina asignacion) {
         RutinaResponse response = toDto(asignacion.getRutina());
         response.setAsignacionId(asignacion.getId());
+        response.setAlumnoNombre(asignacion.getAlumno()==null ? null : asignacion.getAlumno().getNombre()+" "+asignacion.getAlumno().getApellido());
         response.setAsignacionRevision(asignacion.getRevision());
         if(response.getDias()!=null) for(var dia:response.getDias()) if(dia.getEjercicios()!=null)
             for(var ejercicio:dia.getEjercicios()) ejercicio.setPesoSugerido(asignacion.getPesosSugeridos().get(ejercicio.getId()));

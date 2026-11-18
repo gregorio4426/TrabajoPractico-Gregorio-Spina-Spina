@@ -42,6 +42,7 @@ export class Routine {
   constructor() {
     this.form.controls.alumnoId.valueChanges.subscribe(() => {
       this.weights()?.reset();
+      this.assignedId.set(null);
     });
     const saved = this.route.snapshot.queryParamMap.get('guardada');
     if (saved) this.success.set('Rutina guardada correctamente. Versión ' + saved + '.');

@@ -152,7 +152,7 @@ public class RutinaService {
                         .bloqueOrden(e.getBloqueOrden()).bloqueNombre(e.getBloqueNombre()).vueltas(e.getVueltas())
                         .ordenEnBloque(e.getOrdenEnBloque()).descansoEjercicioSegundos(e.getDescansoEjercicioSegundos())
                         .descansoVueltaSegundos(e.getDescansoVueltaSegundos())
-                        .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas()).pesoSugerido(e.getPesoSugerido())
+                        .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas())
                         .ejercicioNombreSnapshot(ejercicio.getNombre()).ejercicioDescripcionSnapshot(ejercicio.getDescripcion())
                         .grupoMuscularSnapshot(ejercicio.getGrupoNombre()).build());
             }
@@ -169,7 +169,7 @@ public class RutinaService {
                         .bloqueOrden(e.getBloqueOrden()).bloqueNombre(e.getBloqueNombre()).vueltas(e.getVueltas())
                         .ordenEnBloque(e.getOrdenEnBloque()).descansoEjercicioSegundos(e.getDescansoEjercicioSegundos())
                         .descansoVueltaSegundos(e.getDescansoVueltaSegundos())
-                        .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas()).pesoSugerido(e.getPesoSugerido())
+                        .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas())
                         .ejercicioNombreSnapshot(e.getNombreHistorico()).grupoMuscularSnapshot(e.getGrupoHistorico())
                         .ejercicioDescripcionSnapshot(e.getEjercicioDescripcionSnapshot()).build());
             }

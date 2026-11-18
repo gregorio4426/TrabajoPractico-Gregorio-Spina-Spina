@@ -22,6 +22,7 @@ public class RutinaResponse {
     private Long profesorId;
     private Long asignacionId;
     private Long asignacionRevision;
+    private String alumnoNombre;
     private LocalDateTime fechaInicio;
     private LocalDateTime fechaFin;
     private Boolean activa;

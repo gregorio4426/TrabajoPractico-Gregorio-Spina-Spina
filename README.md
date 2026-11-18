@@ -14,7 +14,8 @@ Los tres espacios incluyen validaciones, confirmaciones, estados de carga/vacío
 
 ### Mejoras funcionales actuales
 
-- **Bloques de entrenamiento persistentes:** series, biseries y circuitos; nombre opcional, vueltas, orden, descansos entre ejercicios/vueltas y repeticiones/pesos por ejercicio. Se pueden agregar, quitar y reordenar ejercicios y bloques, con vista previa.
+- **Bloques de entrenamiento persistentes:** series, biseries y circuitos; nombre opcional, vueltas, orden, descansos entre ejercicios/vueltas y repeticiones por ejercicio. Se pueden agregar, quitar y reordenar ejercicios y bloques, con vista previa.
+- **Pesos por alumno:** la plantilla no incluye pesos; cada asignación configura valores opcionales por ejercicio, independientes de otros alumnos. Las sesiones conservan una copia al iniciarse. Ver [pesos por asignación y migración 007](frontend/PESOS-POR-ASIGNACION.md).
 - **Catálogo personalizado:** creación y administración de grupos musculares y ejercicios. Se evitan nuevos duplicados por normalización del nombre y se conservan las referencias existentes.
 - **Objetivo del alumno:** descripción libre editable de hasta 2000 caracteres, con categoría anterior opcional. Debe informarse una descripción o una categoría.
 - **Comentarios de entrenamiento:** texto opcional de hasta 2000 caracteres al finalizar una sesión, consultable por el alumno y sus profesores actualmente vinculados mediante el historial/detalle autorizado.
@@ -66,19 +67,19 @@ docker compose logs --tail=100 backend
 
 El volumen de MySQL conserva la información al detener o recrear contenedores. **`docker compose down -v` elimina los datos del volumen.** No regenerar las claves de MySQL/JWT de una instalación existente sin un procedimiento de cambio.
 
-### Actualizar una instalación existente: migración 006
+### Actualizar una instalación existente: migraciones 006 y 007
 
-Esta versión incorpora `006_mejoras_funcionales.sql`, posterior a 005. Es una migración aditiva y repetible que conserva rutinas, versiones, asignaciones y entrenamientos existentes.
+Esta versión requiere `006_mejoras_funcionales.sql` y `007_pesos_por_asignacion.sql`, posteriores a 005. Las migraciones son aditivas y conservan rutinas, versiones, asignaciones y entrenamientos existentes. Si ya tenés 006, aplicar solo 007.
 
 **Reconstruir las imágenes no aplica SQL sobre un volumen ya inicializado.** Antes de iniciar la nueva versión:
 
 1. Actualizar el código de la rama `codex/mejoras-rutinas-selectores`.
 2. Detener frontend y backend para evitar escrituras.
 3. Hacer un backup y verificar su restauración en una base separada.
-4. Aplicar únicamente las migraciones pendientes, incluida 006.
+4. Aplicar únicamente las migraciones pendientes, incluida 007.
 5. Reconstruir e iniciar el sistema.
 
-Seguir los [comandos completos de actualización para Docker y PowerShell](docker/README.md#actualizar-un-volumen-existente-a-las-mejoras-funcionales). **No ejecutar 001 sobre una base existente ni eliminar el volumen para actualizar.**
+Seguir los [comandos completos de actualización para Docker y PowerShell](docker/README.md#actualizar-desde-006-pesos-por-asignación). **No ejecutar 001 sobre una base existente ni eliminar el volumen para actualizar.**
 
 Ver también la [guía de Docker](docker/README.md) y los [resultados de validación](docker/VALIDACION.md).
 
@@ -89,7 +90,7 @@ Requisitos: Java 21, MySQL 8.4, Node **24.15+ dentro de 24.x**, npm y Maven Wrap
 ### Backend
 
 1. Crear una base de desarrollo y un usuario MySQL con acceso a ella.
-2. En una base vacía, aplicar en orden los scripts **001 a 006** de [`simulacro_nombreAlumno/src/main/resources/db/mysql/`](simulacro_nombreAlumno/src/main/resources/db/mysql/). En una base existente, aplicar solo los pendientes con backup y escritores detenidos.
+2. En una base vacía, aplicar en orden los scripts **001 a 007** de [`simulacro_nombreAlumno/src/main/resources/db/mysql/`](simulacro_nombreAlumno/src/main/resources/db/mysql/). En una base existente, aplicar solo los pendientes con backup y escritores detenidos.
 3. Copiar `simulacro_nombreAlumno/.env.example` a `simulacro_nombreAlumno/.env` y completar:
 
    | Variable | Uso |
@@ -153,9 +154,9 @@ Configurar `GYM_E2E_PRODUCTION=1` para probar Angular en modo producción, o `GY
 
 | Verificación | Resultado |
 | --- | --- |
-| Backend, incluidos contratos HTTP, seguridad y MySQL | **213 pruebas aprobadas, sin omisiones** |
-| Angular: unitarias e integración HTTP | **113 pruebas aprobadas** |
-| Chromium con Angular en configuración de producción | **55 aprobadas**: 47 con API real y 8 de interfaz aislada |
+| Backend, incluidos contratos HTTP, seguridad y MySQL | **216 pruebas aprobadas, sin omisiones** |
+| Angular: unitarias e integración HTTP | **114 pruebas aprobadas** |
+| Chromium con Angular en configuración de producción | **56 aprobadas**: 48 con API real y 8 de interfaz aislada |
 | Compilación de producción y construcción de imágenes Docker | Aprobadas |
 
 Los recorridos incluyen regresión de los tres roles, permisos, versiones, sesiones parciales, comentarios, estadísticas y pantallas de escritorio/tablet/celular. Ver el [informe funcional](frontend/MEJORAS-FUNCIONALES.md).

@@ -31,8 +31,13 @@ export interface FinalizarSesionRequest {
   comentario?: string | null;
 }
 
+export interface PesoSugeridoResponse {
+  diaEjercicioId?: number | null;
+  ejercicioNombre?: string | null;
+  pesoSugerido?: number | null;
+}
+
 export interface SesionResponse {
-  pesosSugeridos?: Array<{diaEjercicioId:number;ejercicioNombre?:string;pesoSugerido?:number|null}> | null;
   id?: number | null;
   fecha?: string | null;
   completada?: boolean | null;
@@ -55,6 +60,7 @@ export interface SesionResponse {
   fechaEfectiva?: string | null;
   finalizadaEn?: string | null;
   comentario?: string | null;
+  pesosSugeridos?: Array<PesoSugeridoResponse> | null;
 }
 
 export interface DiaEjercicioRequest {
@@ -106,7 +112,6 @@ export interface DiaRutinaResponse {
 }
 
 export interface RutinaResponse {
-  asignacionRevision?: number | null;
   nombre?: string | null;
   descripcion?: string | null;
   dias?: Array<DiaRutinaResponse> | null;
@@ -115,6 +120,8 @@ export interface RutinaResponse {
   id?: number | null;
   profesorId?: number | null;
   asignacionId?: number | null;
+  asignacionRevision?: number | null;
+  alumnoNombre?: string | null;
   fechaInicio?: string | null;
   fechaFin?: string | null;
   activa?: boolean | null;
@@ -154,7 +161,7 @@ export interface Vista {
 export interface EjercicioRequest {
   nombre: string;
   descripcion: string;
-  grupoMuscular?: "PECHO" | "ESPALDA" | "PIERNAS" | "BRAZOS" | "HOMBROS" | "ABDOMINALES" | null;
+  grupoMuscular?: 'PECHO' | 'ESPALDA' | 'PIERNAS' | 'BRAZOS' | 'HOMBROS' | 'ABDOMINALES' | null;
   grupoId?: number | null;
   grupoInformado?: boolean | null;
 }
@@ -163,7 +170,7 @@ export interface EjercicioResponse {
   nombre?: string | null;
   descripcion?: string | null;
   id?: number | null;
-  grupoMuscular?: "PECHO" | "ESPALDA" | "PIERNAS" | "BRAZOS" | "HOMBROS" | "ABDOMINALES" | null;
+  grupoMuscular?: 'PECHO' | 'ESPALDA' | 'PIERNAS' | 'BRAZOS' | 'HOMBROS' | 'ABDOMINALES' | null;
   grupoId?: number | null;
   grupoMuscularNombre?: string | null;
 }
@@ -185,12 +192,22 @@ export interface CambioEmailRequest {
   passwordActual: string;
 }
 
+export interface Peso {
+  diaEjercicioId: number;
+  pesoSugerido?: number | null;
+}
+
+export interface PesosAsignacionRequest {
+  pesos: Array<Peso>;
+  revision?: number | null;
+}
+
 export interface AlumnoRequest {
   nombre: string;
   apellido: string;
   email?: string | null;
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo?: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA" | null;
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo?: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA' | null;
   emailContacto?: string | null;
   objetivoPersonalizado?: string | null;
   fechaDeNacimiento?: string | null;
@@ -204,8 +221,8 @@ export interface AlumnoResponse {
   edad?: number | null;
   fechaNacimiento?: string | null;
   id?: number | null;
-  nivel?: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO" | null;
-  objetivo?: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA" | null;
+  nivel?: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO' | null;
+  objetivo?: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA' | null;
   profesores?: Array<ProfesorResumenResponse> | null;
   emailContacto?: string | null;
   objetivoPersonalizado?: string | null;
@@ -223,15 +240,15 @@ export interface AlumnoDatos {
   apellido: string;
   edad: number;
   fechaNacimiento?: string | null;
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo?: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA" | null;
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo?: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA' | null;
   emailContacto?: string | null;
   objetivoPersonalizado?: string | null;
   objetivoInformado?: boolean | null;
 }
 
 export interface CambioRol {
-  rol: "ALUMNO" | "PROFESOR" | "ADMIN";
+  rol: 'ALUMNO' | 'PROFESOR' | 'ADMIN';
   revision: number;
   motivo: string;
   alumno?: AlumnoDatos | null;
@@ -248,7 +265,7 @@ export interface ProfesorDatos {
 export interface UsuarioVista {
   id?: number | null;
   email?: string | null;
-  rol?: "ALUMNO" | "PROFESOR" | "ADMIN" | null;
+  rol?: 'ALUMNO' | 'PROFESOR' | 'ADMIN' | null;
   activo?: boolean | null;
   revision?: number | null;
   alumnoId?: number | null;
@@ -307,6 +324,8 @@ export interface AsignacionResponse {
   activa?: boolean | null;
   rutinaNombre?: string | null;
   alumnoNombre?: string | null;
+  revision?: number | null;
+  pesosSugeridos?: Array<PesoSugeridoResponse> | null;
   id?: number | null;
   rutinaId?: number | null;
   alumnoId?: number | null;
@@ -331,8 +350,8 @@ export interface RegisterAlumnoRequest {
   apellido: string;
   edad: number;
   fechaNacimiento?: string | null;
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA";
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA';
 }
 
 export interface LoginRequest {
@@ -343,7 +362,7 @@ export interface LoginRequest {
 export interface CrearUsuario {
   email: string;
   password: string;
-  rol: "ALUMNO" | "PROFESOR" | "ADMIN";
+  rol: 'ALUMNO' | 'PROFESOR' | 'ADMIN';
   alumno?: AlumnoDatos | null;
   profesor?: ProfesorDatos | null;
 }
@@ -372,8 +391,8 @@ export interface CorreccionSesionRequest {
 }
 
 export interface SeguimientoAlumnoRequest {
-  nivel: "PRINCIPIANTE" | "INTERMEDIO" | "AVANZADO";
-  objetivo?: "PERDER_PESO" | "GANAR_MASA_MUSCULAR" | "MEJORAR_RESISTENCIA" | null;
+  nivel: 'PRINCIPIANTE' | 'INTERMEDIO' | 'AVANZADO';
+  objetivo?: 'PERDER_PESO' | 'GANAR_MASA_MUSCULAR' | 'MEJORAR_RESISTENCIA' | null;
   objetivoPersonalizado?: string | null;
   objetivoInformado?: boolean | null;
 }
@@ -390,8 +409,7 @@ export interface AuditoriaEntrenamientoResponse {
   creadaEn?: string | null;
 }
 
-export interface JsonNode {
-}
+export interface JsonNode {}
 
 export interface UltimoEjercicioResponse {
   sesionId?: number | null;

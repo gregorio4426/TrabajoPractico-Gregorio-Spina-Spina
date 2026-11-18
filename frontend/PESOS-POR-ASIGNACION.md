@@ -15,7 +15,7 @@ Un cliente anterior puede seguir asignando sin cuerpo: se copian los pesos legad
 ## API
 
 - `POST /api/rutinas/asignar/alumno/{alumnoId}/rutina/{rutinaId}` acepta cuerpo opcional `{ "pesos": [{ "diaEjercicioId": 123, "pesoSugerido": 60 }] }`.
-- `GET /api/asignaciones/{id}` devuelve la versión exacta y los pesos asignados en `dias[].ejercicios[].pesoSugerido`, más `asignacionRevision`.
+- `GET /api/asignaciones/{id}` devuelve la versión exacta y los pesos asignados en `dias[].ejercicios[].pesoSugerido`, más `asignacionRevision` y `alumnoNombre` para identificar al propietario en la edición.
 - `PUT /api/asignaciones/{id}/pesos` recibe `{ "revision": 0, "pesos": [...] }`. Reemplaza la configuración individual; posiciones no incluidas quedan sin peso. Solo PROFESOR autor y vinculado, asignación activa.
 - `GET /api/rutinas/me/activa` e historiales devuelven los pesos de la asignación correspondiente. `SesionResponse.pesosSugeridos` devuelve la copia capturada al iniciar.
 
@@ -23,4 +23,10 @@ Los identificadores viajan solo dentro de los DTOs y las rutas; los formularios 
 
 ## Verificación
 
-Angular compilado; 114 pruebas unitarias/HTTP aprobadas. La suite backend incorpora aislamiento entre alumnos, snapshots de sesión, cero/vacío, posiciones ajenas, permisos, revisiones obsoletas y rechazo de pesos en plantillas. Verificación completa de MySQL y Chromium en curso.
+- Backend: 216 pruebas aprobadas sin omisiones, incluyendo MySQL real, migración repetida, aislamiento entre alumnos, snapshots, cero/vacío, posiciones ajenas, permisos y revisiones obsoletas. Las ediciones parciales de rutinas legadas conservan los pesos de la versión anterior sin copiarlos a la nueva plantilla.
+- DTOs finales: 32 pruebas de contratos, mapeos e integración aprobadas después de incorporar el nombre del alumno a la asignación.
+- Angular: compilación de producción y 114 pruebas unitarias/HTTP aprobadas.
+- Chromium: 56 aprobadas con Angular en configuración de producción (48 con API real, 8 aisladas), incluida regresión ADMIN/PROFESOR/ALUMNO. El caso nuevo verifica dos alumnos con 60/40, edición a 80, referencia histórica de sesión, cero, vacío, recuperación tras recargar y plantilla sin cambios.
+- Docker: tres imágenes construidas y guía de actualización del volumen existente documentada. La prueba Chromium usó el backend/MySQL locales y el servidor Angular de pruebas en modo producción; no reemplazó el stack Compose existente.
+
+Los secretos, backups, capturas y archivos generados se mantienen fuera de Git. No se hizo merge a master.

@@ -12,7 +12,7 @@ import { optionalWeight } from './utils';
       un peso conocido. No modifican la plantilla ni otros alumnos.
     </p>
     <div formArrayName="pesos">
-      @for (row of rows.controls; track row; let i = $index) {
+      @for (row of rows.controls; track row.controls.diaEjercicioId.value; let i = $index) {
         <div
           class="admin-form"
           [formGroupName]="i"
@@ -58,15 +58,11 @@ export class AssignmentWeights {
   }
   payload() {
     return {
-      pesos: this.rows
-        .getRawValue()
-        .map((r) => ({
-          diaEjercicioId: Number(r.diaEjercicioId),
-          pesoSugerido:
-            r.pesoSugerido === null || String(r.pesoSugerido) === ''
-              ? null
-              : Number(r.pesoSugerido),
-        })),
+      pesos: this.rows.getRawValue().map((r) => ({
+        diaEjercicioId: Number(r.diaEjercicioId),
+        pesoSugerido:
+          r.pesoSugerido === null || String(r.pesoSugerido) === '' ? null : Number(r.pesoSugerido),
+      })),
       revision: this.routine().asignacionRevision ?? null,
     };
   }

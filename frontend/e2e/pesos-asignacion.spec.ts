@@ -27,6 +27,7 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
     'Requiere backend de pruebas real y credenciales privadas.',
   );
   test.setTimeout(120000);
+  page.setDefaultTimeout(10000);
   const accounts = JSON.parse(readFileSync(process.env['GYM_E2E_CREDENTIALS_FILE']!, 'utf8')) as {
     ADMIN: Account;
   };
@@ -128,6 +129,7 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
   expect(opened.status()).toBe(201);
   const session = await opened.json();
   await page.goto('/profesor/asignaciones/' + first.asignacionId);
+  await expect(page.getByRole('heading', { name: /Juan Pesos/ })).toBeVisible();
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveValue('60');
   await page.getByLabel('Peso sugerido', { exact: true }).fill('80');
   await page.getByRole('button', { name: 'Guardar pesos individuales', exact: true }).click();

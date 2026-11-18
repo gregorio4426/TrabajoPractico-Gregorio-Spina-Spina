@@ -36,3 +36,9 @@ Spring Boot aprobó 213 pruebas, sin omisiones, con MySQL de pruebas habilitado;
 Esta validación construye las imágenes actualizadas; el stack Compose instalado anteriormente conserva su volumen. Para actualizarlo, aplicar [el procedimiento con backup y migración 006](README.md#actualizar-un-volumen-existente-a-las-mejoras-funcionales). No se hizo merge a master.
 
 La regresión Chromium final aprobó 55 pruebas sin omisiones, con Angular en configuración de producción y la API/MySQL locales reales: 47 recorridos reales y 8 de interfaz aislada. Esta corrida no usó el Nginx de Compose; las imágenes actualizadas se construyeron por separado.
+
+## Pesos por asignación (007)
+
+Construcción de las tres imágenes actualizadas aprobada, usando la adaptación privada de proxy Cloud sin incorporarla al repositorio. Backend: 216 pruebas aprobadas con MySQL habilitado; Angular: compilación de producción y 114 pruebas unitarias/HTTP. Chromium en configuración de producción: 56 aprobadas (48 reales y 8 aisladas), con pesos separados para dos alumnos y conservación de referencias de sesiones iniciadas. Las pruebas finales de DTOs agregaron el nombre del alumno al editor y aprobaron 32 casos de contratos/mapeos/integración.
+
+La migración 007 conserva los pesos legados y su reejecución no restaura pesos limpiados después. Los volúmenes existentes necesitan [backup y aplicación explícita de 007](README.md#actualizar-desde-006-pesos-por-asignación); construir imágenes no ejecuta SQL sobre esos volúmenes. No se desplegó sobre el stack Compose existente.

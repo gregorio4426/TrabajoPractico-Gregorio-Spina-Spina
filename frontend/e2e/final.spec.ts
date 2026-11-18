@@ -1,3 +1,4 @@
+import { routineField } from './entity-picker';
 import { selectEntity } from './entity-picker';
 import { test, expect, APIRequestContext, Page } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
@@ -312,7 +313,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     try {
       await enter(tp, teacher, `/profesor/rutinas/${routine.id}/editar`);
       await tp.getByLabel('Nombre de rutina', { exact: true }).fill(name);
-      await tp.getByLabel('Repeticiones día 1, fila 1', { exact: true }).fill('12');
+      await routineField(tp, 'Repeticiones día 1, fila 1').fill('12');
       await tp.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
       await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
       await expect(tp).toHaveURL(/guardada=2$/);

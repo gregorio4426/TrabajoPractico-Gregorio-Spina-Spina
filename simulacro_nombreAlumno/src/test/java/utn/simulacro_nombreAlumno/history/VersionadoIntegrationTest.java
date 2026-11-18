@@ -326,6 +326,17 @@ class VersionadoIntegrationTest {
         response(put(routinePath()),teacher,json.writeValueAsString(body),400);
         assertThat(response(get(routinePath()+"/versiones"),teacher,null,200).size()).isEqualTo(1);
     }
+    @Test
+    void metadataOnlyEditDoesNotCopyLegacyWeightsIntoTheNewTemplateVersion() throws Exception {
+        var legacy=Rutina.builder().nombre("Legada con peso").descripcion("Original").profesor(profesor).build();
+        var day=DiaRutina.builder().nombre("Día legado").numeroOrden(1).rutina(legacy).build();
+        day.getEjercicios().add(DiaEjercicio.builder().diaRutina(day).ejercicio(ejercicio).seriesSugeridas(3).repsSugeridas(8).pesoSugerido(60.0).build());
+        legacy.getDias().add(day);legacy=rutinas.saveAndFlush(legacy);
+        var updated=response(put("/api/rutinas/"+legacy.getId()),teacher,"{\"nombre\":\"Legada actualizada\",\"descripcion\":\"Nueva plantilla\"}",200);
+        assertThat(updated.at("/dias/0/ejercicios/0/pesoSugerido").isNull()).isTrue();
+        assertThat(response(get("/api/rutinas/"+legacy.getId()+"/versiones/1"),teacher,null,200).at("/dias/0/ejercicios/0/pesoSugerido").asDouble()).isEqualTo(60);
+    }
+
     private String weightBody(long prescription,double weight,long revision) {
         return "{\"pesos\":[{\"diaEjercicioId\":"+prescription+",\"pesoSugerido\":"+weight+"}],\"revision\":"+revision+"}";
     }

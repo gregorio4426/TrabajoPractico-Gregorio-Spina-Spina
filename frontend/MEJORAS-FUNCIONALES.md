@@ -1,5 +1,7 @@
 # Mejoras funcionales — selección y rutinas
 
+**Actualización:** [pesos individuales por asignación y migración 007](PESOS-POR-ASIGNACION.md). El editor de plantillas no incluye pesos y las etiquetas no muestran asteriscos ni la palabra «fila».
+
 Base: `de53c3a30a48668827fedc614716145a3557716c` (Docker y frontend completo). El pedido adjunto autoriza ampliar backend y migraciones; se preservan JWT, ámbitos de acceso y los historiales anteriores.
 
 ## Arquitectura y compatibilidad

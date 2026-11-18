@@ -354,7 +354,7 @@ test.describe('PROFESOR · backend real', () => {
     await page.goto('/profesor/ejercicios');
     const name = 'Catálogo UI ' + unique();
     await page.getByRole('button', { name: 'Crear ejercicio', exact: true }).click();
-    await page.getByLabel('Nombre del ejercicio', { exact: true }).fill(name);
+    await page.getByRole('textbox', { name: 'Nombre del ejercicio', exact: true }).fill(name);
     await page.getByLabel('Descripción del ejercicio', { exact: true }).fill('Catálogo real');
     await page
       .getByRole('combobox', { name: 'Grupo muscular del ejercicio', exact: true })

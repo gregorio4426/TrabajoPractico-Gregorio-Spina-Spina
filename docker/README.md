@@ -23,7 +23,7 @@ Después del primer login, cambiar `GYM_BOOTSTRAP_ADMIN_ENABLED=false`, vaciar l
 
 ## Base de datos y persistencia
 
-En un volumen nuevo, la imagen derivada de MySQL ejecuta los scripts 001–006 del repositorio en orden. Se copian sin cambios a la imagen con permisos de lectura; no depende de permisos ni rutas de montaje del host. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
+En un volumen nuevo, la imagen derivada de MySQL ejecuta los scripts 001–007 del repositorio en orden. Se copian sin cambios a la imagen con permisos de lectura; no depende de permisos ni rutas de montaje del host. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
 
 `docker compose stop`, `start`, `restart` y `down` conservan datos. **`docker compose down -v` elimina el volumen y sus datos**: usarlo únicamente para descartar una base de pruebas. Cambiar contraseñas de `.env` no cambia las de un MySQL ya inicializado. No regenerar `.env` para un volumen existente.
 
@@ -98,3 +98,23 @@ docker compose ps
 ```
 
 Los comandos de `exec` anteriores funcionan también en PowerShell y no imprimen contraseñas. La migración es aditiva y repetible: conserva las rutinas/versiones actuales y sus sesiones; los campos nuevos son opcionales para registros anteriores. Si el SQL falla, dejar frontend/backend detenidos y revisar la causa antes de reintentar. No marcar manualmente 006 como aplicada.
+
+## Actualizar desde 006: pesos por asignación
+
+Si el volumen ya tiene 006, aplicar **solo 007**, con escritores detenidos. Desde la raíz del repositorio:
+
+```sh
+docker compose stop frontend backend
+docker compose exec -T db sh -c 'MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysqldump -uroot --single-transaction --routines --triggers --no-tablespaces -r /tmp/gimnasio-antes-007.sql gimnasio'
+```
+
+Crear `docker/backups` si no existe, copiar el backup y verificar su restauración en una base separada antes de migrar:
+
+```sh
+docker compose cp db:/tmp/gimnasio-antes-007.sql docker/backups/gimnasio-antes-007.sql
+docker compose cp simulacro_nombreAlumno/src/main/resources/db/mysql/007_pesos_por_asignacion.sql db:/tmp/gym-007.sql
+docker compose exec -T db sh -c 'MYSQL_PWD=$MYSQL_ROOT_PASSWORD mysql -uroot gimnasio < /tmp/gym-007.sql'
+docker compose up -d --build --wait --wait-timeout 300
+```
+
+Estos comandos también funcionan en PowerShell. No regenerar `.env`, no ejecutar 001 y no eliminar el volumen. Si falta 006, aplicar primero el procedimiento anterior y luego 007, manteniendo los escritores detenidos entre ambas migraciones. La migración 007 copia los pesos anteriores a asignaciones y sesiones, conserva los valores originales y no restaura pesos limpiados al repetirse. Ver [contrato y permisos](../frontend/PESOS-POR-ASIGNACION.md).

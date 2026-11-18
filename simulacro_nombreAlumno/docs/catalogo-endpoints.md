@@ -1,6 +1,6 @@
 # Catálogo de endpoints del backend
 
-Generado desde OpenAPI 3.0.1: **112 operaciones HTTP en 92 rutas**. Incluye las 24 consultas nuevas de dashboards y estadísticas.
+Generado desde OpenAPI 3.0.1: **114 operaciones HTTP en 94 rutas**. Incluye las 24 consultas nuevas de dashboards y estadísticas.
 
 El rol listado no sustituye las verificaciones de propiedad, vínculos vigentes, autoría y estado. Ver [informe de etapa 7](etapa-7-dashboards.md) y [contrato completo con DTOs y parámetros](openapi.json). El servidor del contrato exportado se normaliza a `/`; al generar un cliente externo configurar la URL de la API, por ejemplo `http://localhost:8080`.
 
@@ -125,3 +125,12 @@ El rol listado no sustituye las verificaciones de propiedad, vínculos vigentes,
 | DELETE | `/api/grupos-musculares/{id}` | PROFESOR | 204 | Eliminar solo grupos personalizados sin ejercicios |
 
 Se amplían los DTOs existentes de rutinas, ejercicios, perfil/seguimiento y finalización de sesiones, sin retirar las rutas ni campos anteriores. Ver [contratos, compatibilidad y migración 006](mejoras-funcionales.md). Conflictos de catálogo responden 409; datos inválidos 400 y permisos insuficientes 403.
+
+## Pesos individuales por asignación (007)
+
+| Método | Ruta | Permisos | Resultado |
+| --- | --- | --- | --- |
+| GET | `/api/asignaciones/{id}` | ADMIN, propietario ALUMNO o PROFESOR actualmente vinculado | Versión exacta con pesos individuales y revisión |
+| PUT | `/api/asignaciones/{id}/pesos` | PROFESOR autor, vinculado, asignación activa | Reemplazo validado de pesos individuales |
+
+La asignación existente admite cuerpo opcional con `pesos`. Las plantillas rechazan pesos no nulos con 400. Posiciones ajenas/duplicadas son inválidas; revisiones obsoletas y asignaciones cerradas responden 409. Ver [migración y DTOs](../../frontend/PESOS-POR-ASIGNACION.md).
