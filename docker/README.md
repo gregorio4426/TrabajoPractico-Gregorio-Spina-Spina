@@ -118,3 +118,13 @@ docker compose up -d --build --wait --wait-timeout 300
 ```
 
 Estos comandos también funcionan en PowerShell. No regenerar `.env`, no ejecutar 001 y no eliminar el volumen. Si falta 006, aplicar primero el procedimiento anterior y luego 007, manteniendo los escritores detenidos entre ambas migraciones. La migración 007 copia los pesos anteriores a asignaciones y sesiones, conserva los valores originales y no restaura pesos limpiados al repetirse. Ver [contrato y permisos](../frontend/PESOS-POR-ASIGNACION.md).
+
+## Actualización de bloques y buscadores
+
+Esta revisión necesita frontend y backend actualizados: la descripción del ejercicio es opcional y los buscadores permiten crearlo dentro del editor. Si el volumen ya tiene las migraciones hasta **007**, no hay SQL adicional. Desde la raíz del código actualizado:
+
+```sh
+docker compose up -d --build --wait --wait-timeout 300
+```
+
+Se conserva el volumen y la configuración `.env`. Si todavía hay migraciones pendientes, aplicar primero los procedimientos documentados arriba con backup y escritores detenidos. Ver [cambios y pruebas](../frontend/BLOQUES-Y-BUSCADORES.md).

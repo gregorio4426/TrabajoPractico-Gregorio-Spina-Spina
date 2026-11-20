@@ -134,3 +134,7 @@ Se amplían los DTOs existentes de rutinas, ejercicios, perfil/seguimiento y fin
 | PUT | `/api/asignaciones/{id}/pesos` | PROFESOR autor, vinculado, asignación activa | Reemplazo validado de pesos individuales |
 
 La asignación existente admite cuerpo opcional con `pesos`. Las plantillas rechazan pesos no nulos con 400. Posiciones ajenas/duplicadas son inválidas; revisiones obsoletas y asignaciones cerradas responden 409. Ver [migración y DTOs](../../frontend/PESOS-POR-ASIGNACION.md).
+
+## Revisión de buscadores y bloques
+
+Se conservan las rutas y permisos existentes. `EjercicioRequest.descripcion` ahora es opcional, con límite de 255 caracteres; el backend guarda cadena vacía cuando se omite. El grupo sigue siendo obligatorio por validación y el nombre conserva su unicidad normalizada. Los bloques usan los metadatos versionados existentes y los pesos siguen asociados a la asignación individual. Ver [diagnóstico y aceptación](../../frontend/BLOQUES-Y-BUSCADORES.md).

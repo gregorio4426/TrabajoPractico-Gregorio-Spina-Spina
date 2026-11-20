@@ -14,8 +14,11 @@ Los tres espacios incluyen validaciones, confirmaciones, estados de carga/vacío
 
 ### Mejoras funcionales actuales
 
+Nueva revisión: [bloques completos, buscadores y creación inline de ejercicios](frontend/BLOQUES-Y-BUSCADORES.md). Los circuitos tienen un solo número de vueltas para el bloque completo y conservan su estructura al guardar y volver a abrir.
+
 - **Bloques de entrenamiento persistentes:** series, biseries y circuitos; nombre opcional, vueltas, orden, descansos entre ejercicios/vueltas y repeticiones por ejercicio. Se pueden agregar, quitar y reordenar ejercicios y bloques, con vista previa.
 - **Pesos por alumno:** la plantilla no incluye pesos; cada asignación configura valores opcionales por ejercicio, independientes de otros alumnos. Las sesiones conservan una copia al iniciarse. Ver [pesos por asignación y migración 007](frontend/PESOS-POR-ASIGNACION.md).
+- **Buscadores y alta inline:** ejercicios y grupos musculares con búsqueda, teclado y creación desde el editor de rutinas, sin salir de la pantalla. La descripción del ejercicio es opcional.
 - **Catálogo personalizado:** creación y administración de grupos musculares y ejercicios. Se evitan nuevos duplicados por normalización del nombre y se conservan las referencias existentes.
 - **Objetivo del alumno:** descripción libre editable de hasta 2000 caracteres, con categoría anterior opcional. Debe informarse una descripción o una categoría.
 - **Comentarios de entrenamiento:** texto opcional de hasta 2000 caracteres al finalizar una sesión, consultable por el alumno y sus profesores actualmente vinculados mediante el historial/detalle autorizado.
@@ -154,9 +157,9 @@ Configurar `GYM_E2E_PRODUCTION=1` para probar Angular en modo producción, o `GY
 
 | Verificación | Resultado |
 | --- | --- |
-| Backend, incluidos contratos HTTP, seguridad y MySQL | **216 pruebas aprobadas, sin omisiones** |
-| Angular: unitarias e integración HTTP | **114 pruebas aprobadas** |
-| Chromium con Angular en configuración de producción | **56 aprobadas**: 48 con API real y 8 de interfaz aislada |
+| Backend, incluidos contratos HTTP, seguridad y MySQL | **217 pruebas aprobadas, sin omisiones** |
+| Angular: unitarias e integración HTTP | **121 pruebas aprobadas** |
+| Chromium con Angular en configuración de producción | **57 aprobadas**: 49 con API real y 8 de interfaz aislada |
 | Compilación de producción y construcción de imágenes Docker | Aprobadas |
 
 Los recorridos incluyen regresión de los tres roles, permisos, versiones, sesiones parciales, comentarios, estadísticas y pantallas de escritorio/tablet/celular. Ver el [informe funcional](frontend/MEJORAS-FUNCIONALES.md).

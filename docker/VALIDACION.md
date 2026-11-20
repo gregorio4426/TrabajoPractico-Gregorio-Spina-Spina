@@ -42,3 +42,9 @@ La regresión Chromium final aprobó 55 pruebas sin omisiones, con Angular en co
 Construcción de las tres imágenes actualizadas aprobada, usando la adaptación privada de proxy Cloud sin incorporarla al repositorio. Backend: 216 pruebas aprobadas con MySQL habilitado; Angular: compilación de producción y 114 pruebas unitarias/HTTP. Chromium en configuración de producción: 56 aprobadas (48 reales y 8 aisladas), con pesos separados para dos alumnos y conservación de referencias de sesiones iniciadas. Las pruebas finales de DTOs agregaron el nombre del alumno al editor y aprobaron 32 casos de contratos/mapeos/integración.
 
 La migración 007 conserva los pesos legados y su reejecución no restaura pesos limpiados después. Los volúmenes existentes necesitan [backup y aplicación explícita de 007](README.md#actualizar-desde-006-pesos-por-asignación); construir imágenes no ejecuta SQL sobre esos volúmenes. No se desplegó sobre el stack Compose existente.
+
+## Buscadores y bloques completos
+
+Imágenes de frontend, backend y MySQL construidas con la revisión de bloques y alta inline. Backend: 217 pruebas con MySQL aprobadas sin omisiones; Angular: producción y 121 unitarias/HTTP; Chromium: 57 aprobadas (49 reales y 8 aisladas), incluida creación móvil de un circuito de tres ejercicios/tres vueltas y recuperación exacta después de cerrar y reabrir.
+
+No hay SQL adicional para volúmenes que ya tengan 007. La validación Chromium utilizó Angular en modo producción y backend/MySQL locales; el stack Compose existente no se reemplazó. Ver [diagnóstico y aceptación](../frontend/BLOQUES-Y-BUSCADORES.md).

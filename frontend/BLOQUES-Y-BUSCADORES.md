@@ -21,4 +21,12 @@ La revisión de textos no encontró «Crear artículo» en la rama actual. Se un
 
 ## Verificación
 
-Compilación Angular y pruebas unitarias/HTTP en curso de cierre; la suite incluye búsqueda por teclado, reutilización de un ejercicio existente, descripción opcional y movimientos entre bloques. La aceptación Chromium exige guardar tres ejercicios con tres vueltas, cerrar la pantalla, volver a editar y recuperar exactamente la estructura, además de asignarla a dos alumnos con pesos diferentes.
+- Backend: **217 pruebas aprobadas sin omisiones**, con MySQL habilitado; incluye descripción opcional, permisos, unicidad e historial.
+- Angular: compilación de producción y **121 pruebas unitarias/HTTP aprobadas**. Cubren teclado, reutilización de ejercicios existentes, descripción opcional, movimientos entre bloques y conservación del nombre al cambiar vueltas y descansos.
+- Chromium: **57 aprobadas**, con Angular en configuración de producción: 49 contra Spring Boot/MySQL reales y 8 de interfaz aislada. Regresión ADMIN/PROFESOR/ALUMNO y revisión responsive en 1440/820/360 px.
+- Aceptación específica a **390 px desde el inicio**: crear tres ejercicios en el editor (uno con grupo nuevo y sin descripciones), configurar Bloque A con tres vueltas, repeticiones 12/10/15 y descansos; guardar, salir, volver a editar y comprobar exactamente nombre, vueltas, ejercicios, orden y valores. Añadir un cuarto ejercicio, moverlo a otro bloque, guardar versión nueva y verificar que la anterior siga intacta. Asignar a dos alumnos con pesos 60/40 y comprobar agrupación y vueltas en la interfaz del alumno.
+- Tres imágenes Docker construidas. La adaptación privada de proxy Cloud queda fuera del repositorio; no se reemplazó el stack Compose existente.
+
+La primera ejecución detectó pérdida del nombre del bloque por leer controles antes de actualizar su valor; se corrigió tomando el valor del evento y sincronizando desde el encabezado único. La aceptación completa volvió a pasar después de la corrección.
+
+No se hizo merge a master. No se agregan migraciones y no se eliminan datos. Los backups, credenciales, informes y capturas quedan fuera de Git.

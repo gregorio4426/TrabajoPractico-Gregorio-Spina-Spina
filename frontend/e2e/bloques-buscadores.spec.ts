@@ -28,6 +28,7 @@ async function createInline(
   await row.getByRole('option', { name: 'Crear ejercicio: ' + name, exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Crear ejercicio', exact: true });
   await expect(dialog).toBeVisible();
+  expect(await dialog.evaluate((e) => e.scrollWidth <= e.clientWidth + 1)).toBe(true);
   await expect(dialog.getByLabel('Nombre del ejercicio', { exact: true })).toHaveValue(name);
   const group = dialog.getByRole('combobox', { name: 'Grupo muscular', exact: true });
   await group.fill(muscle);
@@ -111,6 +112,7 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
   const name = 'Tren superior ' + unique(),
     muscle = 'Movilidad ' + unique(),
     exerciseNames = ['Press', 'Remo', 'Flexiones'].map((x) => x + ' ' + unique());
+  await page.setViewportSize({ width: 390, height: 844 });
   await login(page, teacher);
   await page.goto('/profesor/rutinas/nueva');
   await page.getByLabel('Nombre de rutina', { exact: true }).fill(name);

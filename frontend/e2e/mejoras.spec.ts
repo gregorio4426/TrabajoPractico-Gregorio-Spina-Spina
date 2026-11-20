@@ -196,7 +196,9 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       );
       await studentPage.goto('/alumno/rutina');
       await expect(
-        studentPage.getByRole('heading', { name: 'Bloque principal · Biserie', exact: true }),
+        studentPage
+          .getByRole('region', { name: 'Bloque principal', exact: true })
+          .getByRole('heading', { name: /Bloque principal.*2 vueltas/ }),
       ).toBeVisible();
       await studentPage
         .getByRole('button', { name: 'Iniciar Día de biseries', exact: true })
