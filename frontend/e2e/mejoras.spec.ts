@@ -1,3 +1,4 @@
+import { selectMuscle } from './entity-picker';
 import { routineField } from './entity-picker';
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
 import { randomBytes } from 'node:crypto';
@@ -103,12 +104,8 @@ test.describe('Mejoras funcionales · persistencia real', () => {
     const exercise = 'Ejercicio bloques ' + unique();
     await page.getByRole('button', { name: 'Crear ejercicio', exact: true }).click();
     await page.getByRole('textbox', { name: 'Nombre del ejercicio', exact: true }).fill(exercise);
-    await page
-      .getByLabel('Descripción del ejercicio', { exact: true })
-      .fill('Personalizado para biserie');
-    await page
-      .getByRole('combobox', { name: 'Grupo muscular del ejercicio', exact: true })
-      .selectOption({ label: muscle });
+    await page.getByLabel('Descripción', { exact: true }).fill('Personalizado para biserie');
+    await selectMuscle(page, 'Grupo muscular del ejercicio', muscle);
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
     await expect(

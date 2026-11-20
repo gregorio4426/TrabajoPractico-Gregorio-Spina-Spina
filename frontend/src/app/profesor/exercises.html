@@ -11,14 +11,13 @@
 </p>
 <form class="admin-filters" [formGroup]="filters" (ngSubmit)="load()">
   <label>Nombre del ejercicio<input type="search" formControlName="nombre" /></label
-  ><label
-    >Grupo muscular<select formControlName="grupoMuscular">
-      <option value="">Todos</option>
-      @for (group of groups(); track group.id) {
-        <option [value]="groupValue(group)">{{ group.nombre }}</option>
-      }
-    </select></label
-  ><button class="secondary" [disabled]="loading()">Buscar ejercicios</button>
+  ><app-muscle-picker
+    label="Grupo muscular"
+    formControlName="grupoMuscular"
+    [supplied]="groups()"
+    [allowCreate]="false"
+  />
+  <button class="secondary" [disabled]="loading()">Buscar ejercicios</button>
 </form>
 @if (error()) {
   <p class="error-message" role="alert">{{ error() }}</p>
@@ -36,18 +35,13 @@
       <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
         <label>Nombre del ejercicio<input formControlName="nombre" maxlength="60" /></label
         ><label
-          >Descripción del ejercicio<textarea
-            formControlName="descripcion"
-            maxlength="255"
-          ></textarea></label
-        ><label
-          >Grupo muscular del ejercicio<select formControlName="grupoMuscular">
-            <option value="">Seleccionar</option>
-            @for (group of groups(); track group.id) {
-              <option [value]="groupValue(group)">{{ group.nombre }}</option>
-            }
-          </select></label
-        >
+          >Descripción<textarea formControlName="descripcion" maxlength="255"></textarea></label
+        ><app-muscle-picker
+          label="Grupo muscular del ejercicio"
+          formControlName="grupoMuscular"
+          [supplied]="groups()"
+          (created)="groupCreated($event)"
+        />
         <div class="wide admin-actions">
           <button class="primary">Guardar ejercicio</button
           ><button class="secondary" type="button" (click)="editing.set(false)">

@@ -341,6 +341,17 @@ class VersionadoIntegrationTest {
         return "{\"pesos\":[{\"diaEjercicioId\":"+prescription+",\"pesoSugerido\":"+weight+"}],\"revision\":"+revision+"}";
     }
 
+    @Test
+    void exerciseDescriptionIsOptionalButNamesGroupsAndPermissionsRemainValidated() throws Exception {
+        String name="Sin descripción "+UUID.randomUUID();
+        var body=json.writeValueAsString(java.util.Map.of("nombre",name,"grupoMuscular","PECHO"));
+        var created=response(post("/api/ejercicios"),teacher,body,201);
+        assertThat(created.get("descripcion").asText()).isEmpty();
+        response(post("/api/ejercicios"),student,body,403);
+        response(post("/api/ejercicios"),teacher,body,409);
+        response(post("/api/ejercicios"),teacher,json.writeValueAsString(java.util.Map.of("nombre","Otro "+UUID.randomUUID(),"grupoMuscular","PECHO","descripcion","x".repeat(256))),400);
+    }
+
     private JsonNode start(long day) throws Exception { return response(post("/api/sesiones"), student, startBody(day), 201); }
     private String startBody(long day) { return "{\"diaRutinaId\":" + day + ",\"fecha\":\"" + fecha + "\"}"; }
     private String routinePath() { return "/api/rutinas/" + rutinaId; }

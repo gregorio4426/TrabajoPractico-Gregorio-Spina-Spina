@@ -1,3 +1,4 @@
+import { DayPlan } from '../shared/day-plan';
 import { AssignmentWeights } from './assignment-weights';
 import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
@@ -13,7 +14,15 @@ import * as D from '../admin/contracts';
 import { positiveInteger, profesorError } from './utils';
 @Component({
   selector: 'app-teacher-routine',
-  imports: [RouterLink, ReactiveFormsModule, Confirm, RecordView, EntityPicker, AssignmentWeights],
+  imports: [
+    RouterLink,
+    ReactiveFormsModule,
+    Confirm,
+    RecordView,
+    EntityPicker,
+    AssignmentWeights,
+    DayPlan,
+  ],
   templateUrl: './routine.html',
 })
 export class Routine {

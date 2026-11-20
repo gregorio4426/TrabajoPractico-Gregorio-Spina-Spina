@@ -154,4 +154,31 @@ describe('PROFESOR routine forms', () => {
     e.removeBlock(0, first);
     expect(rows.length).toBe(4);
   });
+  it('moves an exercise between blocks, applying target rounds without losing individual reps or rest', async () => {
+    const e = await setup();
+    e.removeExercise(0, 0);
+    e.addBlock(0, 3);
+    e.addBlock(0, 1);
+    const rows = e.days.at(0).controls.ejercicios;
+    rows.at(0).patchValue({ seriesSugeridas: 3, bloqueNombre: 'A', descansoVueltaSegundos: 60 });
+    e.syncBlock(0, 0);
+    rows.at(1).patchValue({ repsSugeridas: 12, descansoEjercicioSegundos: 20 });
+    rows.at(3).patchValue({ seriesSugeridas: 2, bloqueNombre: 'B', descansoVueltaSegundos: 90 });
+    e.syncBlock(0, 3);
+    const moved = rows.at(1);
+    e.moveToBlock(0, 1, 1);
+    expect(e.blocks(0).map((b) => b.rows.length)).toEqual([2, 2]);
+    expect(moved.controls.seriesSugeridas.value).toBe(2);
+    expect(moved.controls.bloqueNombre.value).toBe('B');
+    expect(moved.controls.repsSugeridas.value).toBe(12);
+    expect(moved.controls.descansoEjercicioSegundos.value).toBe(20);
+    expect(
+      e.payload().dias[0]!.ejercicios.map((r) => [r.bloqueNombre, r.vueltas, r.ordenEnBloque]),
+    ).toEqual([
+      ['A', 3, 1],
+      ['A', 3, 2],
+      ['B', 2, 1],
+      ['B', 2, 2],
+    ]);
+  });
 });

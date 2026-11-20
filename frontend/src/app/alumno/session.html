@@ -39,27 +39,13 @@
     @if (day(); as d) {
       <section class="admin-panel">
         <h2>Elegí el ejercicio que estás haciendo</h2>
-        @for (e of d.ejercicios ?? []; track e.id; let ei = $index) {
-          @if (
-            e.bloqueOrden != null &&
-            (ei === 0 || d.ejercicios?.[ei - 1]?.bloqueOrden !== e.bloqueOrden)
-          ) {
-            <app-training-block [row]="e" [exercises]="d.ejercicios ?? []" />
-          }
-          <div class="student-prescription">
-            <strong>{{ e.ejercicioNombre }}</strong>
-            @if (e.descansoEjercicioSegundos != null) {
-              <p>Descanso después del ejercicio: {{ e.descansoEjercicioSegundos }} s</p>
-            }
-            <p>
-              Sugerido: {{ e.seriesSugeridas }} series × {{ e.repsSugeridas }} repeticiones · Peso
-              {{ text(e.pesoSugerido) }}
-            </p>
-            <button class="primary" (click)="choose(e)" [disabled]="pending()">
-              Registrar {{ e.ejercicioNombre }} · posición {{ $index + 1 }}
-            </button>
-          </div>
-        }
+        <app-day-plan
+          [exercises]="d.ejercicios ?? []"
+          [showWeights]="true"
+          [selectable]="true"
+          [disabled]="pending()"
+          (chosen)="choose($event)"
+        />
       </section>
     } @else {
       <p class="notice">
@@ -131,10 +117,7 @@
       <form [formGroup]="dateForm" (ngSubmit)="ask('date')">
         <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
           <label
-            >Nueva fecha efectiva<input
-              type="date"
-              formControlName="fecha"
-              [max]="today" /></label
+            >Nueva fecha efectiva<input type="date" formControlName="fecha" [max]="today" /></label
           ><label
             >Motivo de la fecha<textarea formControlName="motivo" maxlength="500"></textarea>
           </label>

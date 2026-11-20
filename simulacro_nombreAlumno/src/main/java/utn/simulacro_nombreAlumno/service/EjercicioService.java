@@ -46,7 +46,7 @@ public class EjercicioService {
             throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.CONFLICT,"Ya existe un ejercicio con ese nombre");
         ejercicio.setNombre(datos.getNombre().strip());
         if(!legadoSinRenombrar)ejercicio.setNombreNormalizado(normalizado);
-        ejercicio.setDescripcion(datos.getDescripcion());ejercicio.setGrupoMuscular(datos.getGrupoMuscular());
+        ejercicio.setDescripcion(datos.getDescripcion()==null?"":datos.getDescripcion().strip());ejercicio.setGrupoMuscular(datos.getGrupoMuscular());
         if(datos.getGrupoId()!=null) {
             var grupo=grupos.buscar(datos.getGrupoId());ejercicio.setGrupoPersonalizado(grupo);
             ejercicio.setGrupoMuscular(java.util.Arrays.stream(GrupoMuscular.values()).filter(v->GrupoMuscularService.normalizar(v.name()).equals(grupo.getNormalizado())).findFirst().orElse(null));

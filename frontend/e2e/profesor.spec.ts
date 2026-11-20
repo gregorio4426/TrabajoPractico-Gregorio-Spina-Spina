@@ -1,3 +1,4 @@
+import { selectMuscle } from './entity-picker';
 import { routineField } from './entity-picker';
 import { selectEntity } from './entity-picker';
 import { test, expect, Page, APIRequestContext } from '@playwright/test';
@@ -355,10 +356,8 @@ test.describe('PROFESOR · backend real', () => {
     const name = 'Catálogo UI ' + unique();
     await page.getByRole('button', { name: 'Crear ejercicio', exact: true }).click();
     await page.getByRole('textbox', { name: 'Nombre del ejercicio', exact: true }).fill(name);
-    await page.getByLabel('Descripción del ejercicio', { exact: true }).fill('Catálogo real');
-    await page
-      .getByRole('combobox', { name: 'Grupo muscular del ejercicio', exact: true })
-      .selectOption('ESPALDA');
+    await page.getByLabel('Descripción', { exact: true }).fill('Catálogo real');
+    await selectMuscle(page, 'Grupo muscular del ejercicio', 'ESPALDA');
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Ejercicio guardado correctamente.')).toBeVisible();
@@ -369,9 +368,7 @@ test.describe('PROFESOR · backend real', () => {
       .filter({ has: page.getByRole('cell', { name: new RegExp(name) }) })
       .getByRole('button', { name: /Editar / })
       .click();
-    await page
-      .getByLabel('Descripción del ejercicio', { exact: true })
-      .fill('Descripción actualizada');
+    await page.getByLabel('Descripción', { exact: true }).fill('Descripción actualizada');
     await page.getByRole('button', { name: 'Guardar ejercicio', exact: true }).click();
     await confirm(page);
     await expect(

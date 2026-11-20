@@ -20,10 +20,8 @@
 }
 @if (ready() && !exercises().length) {
   <p class="notice">
-    No hay ejercicios en el catálogo.
-    <a class="admin-link" routerLink="/profesor/ejercicios"
-      >Crear un ejercicio antes de armar la rutina</a
-    >.
+    Todavía no hay ejercicios. Podés crearlos escribiendo su nombre en el buscador de la rutina.
+    <a class="admin-link" routerLink="/profesor/ejercicios">Administrar ejercicios</a>.
   </p>
 }
 @if (ready()) {
@@ -64,21 +62,45 @@
               /></label>
             </div>
             <div formArrayName="ejercicios">
-              @for (exercise of day.controls.ejercicios.controls; track exercise; let ei = $index) {
-                <div
-                  class="teacher-exercise-row"
-                  [formGroupName]="ei"
+              @for (block of blocks(di); track block.key; let bi = $index) {
+                <section
+                  class="routine-block"
                   role="group"
-                  [attr.aria-label]="'Ejercicio ' + (ei + 1)"
+                  [attr.aria-label]="'Bloque ' + (bi + 1)"
                 >
-                  @if (firstInBlock(di, ei)) {
-                    <section class="wide training-block-header">
-                      <h3>{{ blockType(di, exercise.controls.bloqueOrden.value) }}</h3>
+                  <header class="routine-block-heading" [formGroupName]="block.first">
+                    <div class="admin-kicker">
+                      <h3>
+                        {{ block.rows[0]!.controls.bloqueNombre.value || 'Bloque ' + (bi + 1) }} ·
+                        {{ blockType(di, block.rows[0]!.controls.bloqueOrden.value) }}
+                      </h3>
+                      <button
+                        type="button"
+                        class="secondary"
+                        (click)="
+                          block.rows[0]!.controls.bloqueOrden.value === null
+                            ? removeExercise(di, block.first)
+                            : removeBlock(di, block.rows[0]!.controls.bloqueOrden.value)
+                        "
+                      >
+                        Quitar bloque {{ bi + 1 }}
+                      </button>
+                    </div>
+                    <div class="admin-form">
                       <label
                         >Nombre del bloque (opcional)<input
                           formControlName="bloqueNombre"
                           maxlength="100"
-                          (input)="syncBlock(di, ei)"
+                          (input)="syncBlock(di, block.first)"
+                      /></label>
+                      <label
+                        >{{ block.rows.length === 1 ? 'Series' : 'Vueltas'
+                        }}<input
+                          type="number"
+                          min="1"
+                          step="1"
+                          formControlName="seriesSugeridas"
+                          (input)="syncBlock(di, block.first)"
                       /></label>
                       <label
                         >Descanso entre vueltas (segundos)<input
@@ -86,99 +108,116 @@
                           min="0"
                           step="1"
                           formControlName="descansoVueltaSegundos"
-                          (input)="syncBlock(di, ei)"
+                          (input)="syncBlock(di, block.first)"
+                      /></label>
+                    </div>
+                    @if (block.rows.length > 1) {
+                      <p class="admin-help">
+                        Completá todos los ejercicios en orden y repetí el bloque completo
+                        {{ block.rows[0]!.controls.seriesSugeridas.value }} vueltas.
+                      </p>
+                    }
+                    <div class="admin-actions">
+                      <button
+                        type="button"
+                        class="secondary"
+                        [disabled]="bi === 0"
+                        (click)="moveBlock(di, block.rows[0]!.controls.bloqueOrden.value, -1)"
+                      >
+                        Subir bloque
+                      </button>
+                      <button
+                        type="button"
+                        class="secondary"
+                        [disabled]="bi + 1 === blocks(di).length"
+                        (click)="moveBlock(di, block.rows[0]!.controls.bloqueOrden.value, 1)"
+                      >
+                        Bajar bloque
+                      </button>
+                    </div>
+                  </header>
+                  @for (exercise of block.rows; track exercise; let localIndex = $index) {
+                    <div
+                      class="teacher-exercise-row block-exercise"
+                      [formGroupName]="block.indexes[localIndex]!"
+                      role="group"
+                      [attr.aria-label]="'Ejercicio ' + (block.indexes[localIndex]! + 1)"
+                    >
+                      <app-exercise-picker
+                        [catalogue]="exercises()"
+                        formControlName="ejercicioId"
+                        (created)="exerciseCreated($event)"
+                      />
+                      <label
+                        >Repeticiones<input
+                          type="number"
+                          min="1"
+                          step="1"
+                          formControlName="repsSugeridas"
+                      /></label>
+                      <label
+                        >Descanso después del ejercicio (segundos)<input
+                          type="number"
+                          min="0"
+                          step="1"
+                          formControlName="descansoEjercicioSegundos"
+                          (input)="syncBlock(di, block.indexes[localIndex]!)"
                       /></label>
                       <div class="admin-actions">
                         <button
                           type="button"
                           class="secondary"
-                          (click)="addToBlock(di, exercise.controls.bloqueOrden.value)"
+                          (click)="removeExercise(di, block.indexes[localIndex]!)"
                         >
-                          Agregar ejercicio al bloque
+                          Quitar ejercicio {{ block.indexes[localIndex]! + 1 }} del día {{ di + 1 }}
                         </button>
                         <button
                           type="button"
                           class="secondary"
-                          (click)="moveBlock(di, exercise.controls.bloqueOrden.value, -1)"
+                          [disabled]="localIndex === 0"
+                          (click)="moveExercise(di, block.indexes[localIndex]!, -1)"
                         >
-                          Subir bloque
+                          Subir ejercicio {{ block.indexes[localIndex]! + 1 }} del día {{ di + 1 }}
                         </button>
                         <button
                           type="button"
                           class="secondary"
-                          (click)="moveBlock(di, exercise.controls.bloqueOrden.value, 1)"
+                          [disabled]="localIndex + 1 === block.rows.length"
+                          (click)="moveExercise(di, block.indexes[localIndex]!, 1)"
                         >
-                          Bajar bloque
+                          Bajar ejercicio {{ block.indexes[localIndex]! + 1 }} del día {{ di + 1 }}
                         </button>
                         <button
                           type="button"
                           class="secondary"
-                          (click)="removeBlock(di, exercise.controls.bloqueOrden.value)"
+                          [disabled]="bi === 0"
+                          (click)="moveToBlock(di, block.indexes[localIndex]!, -1)"
                         >
-                          Quitar bloque
+                          Mover al bloque anterior
+                        </button>
+                        <button
+                          type="button"
+                          class="secondary"
+                          [disabled]="bi + 1 === blocks(di).length"
+                          (click)="moveToBlock(di, block.indexes[localIndex]!, 1)"
+                        >
+                          Mover al bloque siguiente
                         </button>
                       </div>
-                    </section>
+                    </div>
                   }
-
-                  @if (exercise.controls.bloqueOrden.value !== null) {
-                    <label
-                      >Descanso después del ejercicio (segundos)<input
-                        type="number"
-                        min="0"
-                        step="1"
-                        formControlName="descansoEjercicioSegundos"
-                    /></label>
-                  }
-                  <app-entity-picker
-                    kind="ejercicios"
-                    label="Ejercicio"
-                    [options]="exerciseOptions()"
-                    formControlName="ejercicioId"
-                  />
-                  <label
-                    >Series<input
-                      type="number"
-                      min="1"
-                      step="1"
-                      formControlName="seriesSugeridas"
-                      (input)="syncBlock(di, ei)" /></label
-                  ><label
-                    >Repeticiones<input
-                      type="number"
-                      min="1"
-                      step="1"
-                      formControlName="repsSugeridas" /></label
-                  ><button type="button" class="secondary" (click)="removeExercise(di, ei)">
-                    Quitar ejercicio {{ ei + 1 }} del día {{ di + 1 }}
+                  <button
+                    type="button"
+                    class="primary"
+                    (click)="
+                      block.rows[0]!.controls.bloqueOrden.value === null
+                        ? convertAndAdd(di, block.first)
+                        : addToBlock(di, block.rows[0]!.controls.bloqueOrden.value)
+                    "
+                  >
+                    Agregar ejercicio al bloque
                   </button>
-                  <div class="admin-actions">
-                    <button
-                      type="button"
-                      class="secondary"
-                      [disabled]="
-                        ei === 0 ||
-                        exercise.controls.bloqueOrden.value !==
-                          day.controls.ejercicios.at(ei - 1).controls.bloqueOrden.value
-                      "
-                      (click)="moveExercise(di, ei, -1)"
-                    >
-                      Subir ejercicio {{ ei + 1 }} del día {{ di + 1 }}
-                    </button>
-                    <button
-                      type="button"
-                      class="secondary"
-                      [disabled]="
-                        ei + 1 === day.controls.ejercicios.length ||
-                        exercise.controls.bloqueOrden.value !==
-                          day.controls.ejercicios.at(ei + 1).controls.bloqueOrden.value
-                      "
-                      (click)="moveExercise(di, ei, 1)"
-                    >
-                      Bajar ejercicio {{ ei + 1 }} del día {{ di + 1 }}
-                    </button>
-                  </div>
-                </div>
+                </section>
               }
             </div>
             <div class="admin-actions">
@@ -203,22 +242,28 @@
         <h3>{{ form.controls.nombre.value }}</h3>
         @for (day of days.controls; track day; let previewDay = $index) {
           <h4>{{ day.controls.nombre.value || 'Día sin nombre' }}</h4>
-          @for (exercise of day.controls.ejercicios.controls; track exercise; let ei = $index) {
-            @if (firstInBlock(previewDay, ei)) {
+          @for (block of blocks(previewDay); track block.key) {
+            <section class="routine-block-preview">
               <h5>
                 {{
-                  exercise.controls.bloqueNombre.value ||
-                    blockType(previewDay, exercise.controls.bloqueOrden.value)
+                  block.rows[0]!.controls.bloqueNombre.value ||
+                    blockType(previewDay, block.rows[0]!.controls.bloqueOrden.value)
                 }}
-                · {{ exercise.controls.seriesSugeridas.value }} vueltas · Descanso entre vueltas:
-                {{ exercise.controls.descansoVueltaSegundos.value ?? 'Sin indicar' }} s
+                · {{ block.rows[0]!.controls.seriesSugeridas.value }}
+                {{ block.rows.length === 1 ? 'series' : 'vueltas completas' }}
               </h5>
-            }
-            <p>
-              {{ exerciseName(exercise.controls.ejercicioId.value) }} ·
-              {{ exercise.controls.seriesSugeridas.value }} series ×
-              {{ exercise.controls.repsSugeridas.value }} repeticiones
-            </p>
+              <ol>
+                @for (exercise of block.rows; track exercise) {
+                  <li>
+                    {{ exerciseName(exercise.controls.ejercicioId.value) }} ·
+                    {{ exercise.controls.repsSugeridas.value }} repeticiones
+                    @if (exercise.controls.descansoEjercicioSegundos.value !== null) {
+                      · Descanso: {{ exercise.controls.descansoEjercicioSegundos.value }} s
+                    }
+                  </li>
+                }
+              </ol>
+            </section>
           }
         }
       </section>

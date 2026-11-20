@@ -67,3 +67,21 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible,
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+/* Searchable, keyboard-accessible selectors share the application's neon palette. */
+.search-select { position: relative; min-width: 0; }
+.search-select input { width: 100%; min-width: 0; border-radius: .65rem; }
+.search-select-panel { position: relative; z-index: 5; margin-top: .4rem; padding: .5rem; background: #151811; border: 1px solid #687043; border-radius: .75rem; box-shadow: 0 10px 28px #0008; max-height: 22rem; overflow: auto; }
+.search-select-panel [role=option] { display: flex; flex-direction: column; gap: .3rem; width: 100%; min-height: 46px; padding: .7rem .8rem; text-align: left; background: transparent; border: 1px solid transparent; border-radius: .5rem; color: #edf0e6; cursor: pointer; overflow-wrap: anywhere; }
+.search-select-panel [role=option]:hover,.search-select-panel [role=option].is-active { background: #303820; border-color: var(--accent,#e6ff00); }
+.search-select-panel small { color: #b8bea9; }
+.search-select-panel .search-select-create { color: var(--accent,#e6ff00); border-top: 1px solid #454c32; }
+.search-select-clear { margin-top: .4rem; }
+.exercise-create-dialog { width: min(620px,calc(100vw - 28px)); max-height: 90dvh; overflow: auto; }
+.routine-block { margin: 1rem 0; padding: 1rem; border: 1px solid #535b33; border-left: 4px solid var(--accent,#e6ff00); border-radius: .85rem; background: #11150e; min-width: 0; }
+.routine-block-heading { padding-bottom: 1rem; border-bottom: 1px solid #343a28; }
+.routine-block .block-exercise { display: grid; grid-template-columns: minmax(0,2fr) minmax(100px,1fr) minmax(100px,1fr); gap: 1rem; margin: 1rem 0; }
+.block-exercise .admin-actions { grid-column: 1 / -1; }
+.routine-block-preview { margin: .75rem 0; padding: .75rem; border-left: 3px solid var(--accent,#e6ff00); }
+.routine-block-preview li { margin: .6rem 0; overflow-wrap: anywhere; }
+@media(max-width:760px){ .routine-block { padding: .7rem; }.routine-block .block-exercise { grid-template-columns: 1fr; }.routine-block .admin-form { grid-template-columns: 1fr; }.routine-block .admin-kicker { flex-wrap: wrap; } }

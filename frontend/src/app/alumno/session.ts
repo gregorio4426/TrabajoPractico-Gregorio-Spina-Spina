@@ -1,4 +1,4 @@
-import { TrainingBlock } from '../shared/training-block';
+import { DayPlan } from '../shared/day-plan';
 import {
   Component,
   ElementRef,
@@ -32,7 +32,7 @@ import {
 type Action = 'add' | 'finish' | 'correct' | 'annul' | 'restore' | 'date';
 @Component({
   selector: 'app-student-session',
-  imports: [TrainingBlock, RouterLink, ReactiveFormsModule, Confirm, RecordView],
+  imports: [DayPlan, RouterLink, ReactiveFormsModule, Confirm, RecordView],
   templateUrl: './session.html',
 })
 export class StudentSession {

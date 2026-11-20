@@ -1,4 +1,5 @@
-import { EntityPicker, entityOption } from '../shared/entity-picker';
+import { ExercisePicker } from '../shared/exercise-picker';
+import { entityOption } from '../shared/entity-picker';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import {
   FormArray,
@@ -22,7 +23,7 @@ export const uniqueDayOrder: ValidatorFn = (control) => {
 };
 @Component({
   selector: 'app-teacher-routine-editor',
-  imports: [ReactiveFormsModule, RouterLink, Confirm, EntityPicker],
+  imports: [ReactiveFormsModule, RouterLink, Confirm, ExercisePicker],
   templateUrl: './routine-editor.html',
 })
 export class RoutineEditor {
@@ -137,6 +138,61 @@ export class RoutineEditor {
     if (rows.controls.some((e) => e.controls.bloqueOrden.value !== null)) this.addBlock(day, 1);
     else rows.push(this.exercise());
   }
+  blocks(day: number) {
+    const result: Array<{
+      key: unknown;
+      id: unknown;
+      first: number;
+      indexes: number[];
+      rows: Array<ReturnType<RoutineEditor['exercise']>>;
+    }> = [];
+    this.days.at(day).controls.ejercicios.controls.forEach((row, index) => {
+      const id = row.controls.bloqueOrden.value ?? row;
+      let block = result.find((b) => b.id === id);
+      if (!block) {
+        block = { key: row, id, first: index, indexes: [], rows: [] };
+        result.push(block);
+      }
+      block.indexes.push(index);
+      block.rows.push(row);
+    });
+    return result;
+  }
+  exerciseCreated(exercise: D.EjercicioResponse) {
+    this.exercises.update((es) => [...es.filter((e) => e.id !== exercise.id), exercise]);
+  }
+  moveToBlock(day: number, index: number, offset: number) {
+    const list = this.days.at(day).controls.ejercicios,
+      row = list.at(index);
+    const groups = this.blocks(day),
+      current = groups.findIndex((b) => b.rows.includes(row));
+    const target = groups[current + offset];
+    if (!target) return;
+    // Normalize legacy single exercises before grouping so their order remains explicit.
+    let next = Math.max(0, ...list.controls.map((r) => r.controls.bloqueOrden.value ?? 0));
+    for (const r of list.controls)
+      if (r.controls.bloqueOrden.value === null)
+        r.patchValue({ bloqueOrden: ++next, vueltas: r.controls.seriesSugeridas.value });
+    const anchor = target.rows.at(-1)!,
+      source = target.rows[0]!;
+    list.removeAt(index);
+    row.patchValue({
+      bloqueOrden: source.controls.bloqueOrden.value,
+      bloqueNombre: source.controls.bloqueNombre.value,
+      vueltas: source.controls.seriesSugeridas.value,
+      seriesSugeridas: source.controls.seriesSugeridas.value,
+      descansoVueltaSegundos: source.controls.descansoVueltaSegundos.value,
+    });
+    list.insert(list.controls.indexOf(anchor) + 1, row);
+  }
+  convertAndAdd(day: number, index: number) {
+    const rows = this.days.at(day).controls.ejercicios;
+    let next = Math.max(0, ...rows.controls.map((r) => r.controls.bloqueOrden.value ?? 0));
+    for (const row of rows.controls)
+      if (row.controls.bloqueOrden.value === null)
+        row.patchValue({ bloqueOrden: ++next, vueltas: row.controls.seriesSugeridas.value });
+    this.addToBlock(day, rows.at(index).controls.bloqueOrden.value);
+  }
   blockRows(day: number, block: number) {
     return this.days
       .at(day)
@@ -153,6 +209,16 @@ export class RoutineEditor {
   }
   addBlock(day: number, count: number) {
     const rows = this.days.at(day).controls.ejercicios;
+    const empty = rows.length === 1 ? rows.at(0) : null;
+    if (
+      empty &&
+      empty.pristine &&
+      empty.controls.bloqueOrden.value === null &&
+      !empty.controls.ejercicioId.value &&
+      empty.controls.seriesSugeridas.value === 1 &&
+      empty.controls.repsSugeridas.value === 1
+    )
+      rows.clear();
     let next = Math.max(0, ...rows.controls.map((e) => e.controls.bloqueOrden.value ?? 0));
     for (const row of rows.controls)
       if (row.controls.bloqueOrden.value === null)
@@ -181,8 +247,14 @@ export class RoutineEditor {
   }
   syncBlock(day: number, index: number) {
     const source = this.days.at(day).controls.ejercicios.at(index);
-    const block = source.controls.bloqueOrden.value;
-    if (block === null) return;
+    if (source.controls.bloqueOrden.value === null) {
+      const rows = this.days.at(day).controls.ejercicios;
+      let next = Math.max(0, ...rows.controls.map((r) => r.controls.bloqueOrden.value ?? 0));
+      for (const row of rows.controls)
+        if (row.controls.bloqueOrden.value === null)
+          row.patchValue({ bloqueOrden: ++next, vueltas: row.controls.seriesSugeridas.value });
+    }
+    const block = source.controls.bloqueOrden.value!;
     for (const row of this.blockRows(day, block))
       row.patchValue({
         bloqueNombre: source.controls.bloqueNombre.value,

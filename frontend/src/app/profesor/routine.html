@@ -61,7 +61,14 @@
         >Editar pesos de la asignación</a
       >
     }
-    <app-record-view [value]="r" [hiddenFields]="['pesoSugerido']" />
+    @for (day of r.dias ?? []; track day.id) {
+      <h3>{{ day.nombre }}</h3>
+      <app-day-plan [exercises]="day.ejercicios ?? []" />
+    }
+    <details>
+      <summary>Información de la rutina y su versión</summary>
+      <app-record-view [value]="r" [hiddenFields]="['pesoSugerido', 'dias']" />
+    </details>
   </section>
   <section class="admin-panel">
     <h2>Versiones conservadas</h2>

@@ -14,7 +14,7 @@ public class EjercicioRequest {
     @NotBlank @Size(max=60)
     private String nombre;
 
-    @NotBlank
+    @Size(max=255)
     private String descripcion;
 
     private GrupoMuscular grupoMuscular;

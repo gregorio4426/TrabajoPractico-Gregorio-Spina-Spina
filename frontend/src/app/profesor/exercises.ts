@@ -1,3 +1,4 @@
+import { MusclePicker, MuscleOption } from '../shared/muscle-picker';
 import { Component, computed, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
@@ -8,7 +9,7 @@ import { notBlank, profesorError, text } from './utils';
 export const MUSCLES = ['PECHO', 'ESPALDA', 'PIERNAS', 'BRAZOS', 'HOMBROS', 'ABDOMINALES'] as const;
 @Component({
   selector: 'app-teacher-exercises',
-  imports: [ReactiveFormsModule, Confirm],
+  imports: [ReactiveFormsModule, Confirm, MusclePicker],
   templateUrl: './exercises.html',
 })
 export class Exercises {
@@ -26,6 +27,9 @@ export class Exercises {
   readonly groupForm = this.fb.group({ nombre: this.groupName });
   readonly selectedGroup = signal<{ id: number; nombre: string } | null>(null);
   readonly groupAction = signal<'save' | 'delete'>('save');
+  groupCreated(group: MuscleOption) {
+    this.groups.update((gs) => [...gs.filter((g) => g.id !== group.id), group]);
+  }
   groupValue(group: { id: number; nombre: string }) {
     return MUSCLES.includes(group.nombre as (typeof MUSCLES)[number])
       ? group.nombre
@@ -93,14 +97,16 @@ export class Exercises {
         (!name || e.nombre?.toLocaleLowerCase('es').includes(name)) &&
         (!this.applied().grupoMuscular ||
           String(e.grupoId) === this.applied().grupoMuscular ||
-          e.grupoMuscular === this.applied().grupoMuscular),
+          e.grupoMuscular === this.applied().grupoMuscular ||
+          e.grupoMuscular ===
+            this.groups().find((g) => String(g.id) === this.applied().grupoMuscular)?.nombre),
     );
   });
   readonly rows = computed(() => this.visible().slice(this.page() * 20, this.page() * 20 + 20));
   readonly pages = computed(() => Math.ceil(this.visible().length / 20));
   readonly form = this.fb.nonNullable.group({
     nombre: ['', [Validators.required, notBlank, Validators.maxLength(60)]],
-    descripcion: ['', [Validators.required, notBlank, Validators.maxLength(255)]],
+    descripcion: ['', Validators.maxLength(255)],
     grupoMuscular: ['', [Validators.required]],
   });
   constructor() {
@@ -133,7 +139,9 @@ export class Exercises {
     this.form.setValue({
       nombre: exercise?.nombre ?? '',
       descripcion: exercise?.descripcion ?? '',
-      grupoMuscular: exercise?.grupoMuscular ?? (exercise?.grupoId ? String(exercise.grupoId) : ''),
+      grupoMuscular: exercise?.grupoId
+        ? String(exercise.grupoId)
+        : String(this.groups().find((g) => g.nombre === exercise?.grupoMuscular)?.id ?? ''),
     });
   }
   ask(action: 'save' | 'delete', exercise?: D.EjercicioResponse) {
