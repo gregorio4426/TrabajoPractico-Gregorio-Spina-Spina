@@ -160,7 +160,7 @@ export interface Vista {
 
 export interface EjercicioRequest {
   nombre: string;
-  descripcion: string;
+  descripcion?: string | null;
   grupoMuscular?: 'PECHO' | 'ESPALDA' | 'PIERNAS' | 'BRAZOS' | 'HOMBROS' | 'ABDOMINALES' | null;
   grupoId?: number | null;
   grupoInformado?: boolean | null;

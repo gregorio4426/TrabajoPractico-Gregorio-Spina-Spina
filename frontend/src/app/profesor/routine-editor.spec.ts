@@ -181,4 +181,22 @@ describe('PROFESOR routine forms', () => {
       ['B', 2, 2],
     ]);
   });
+  it('keeps the block name while editing rounds and per-exercise rests', async () => {
+    const e = await setup();
+    e.addBlock(0, 3);
+    e.updateBlock(0, 0, 'bloqueNombre', 'Bloque A');
+    e.updateBlock(0, 0, 'seriesSugeridas', '3');
+    e.updateBlock(0, 0, 'descansoVueltaSegundos', '60');
+    e.days.at(0).controls.ejercicios.at(2).controls.descansoEjercicioSegundos.setValue(20);
+    e.syncBlock(0, 2);
+    expect(
+      e
+        .payload()
+        .dias[0]!.ejercicios.map((r) => [r.bloqueNombre, r.vueltas, r.descansoVueltaSegundos]),
+    ).toEqual([
+      ['Bloque A', 3, 60],
+      ['Bloque A', 3, 60],
+      ['Bloque A', 3, 60],
+    ]);
+  });
 });

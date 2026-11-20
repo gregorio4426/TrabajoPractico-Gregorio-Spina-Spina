@@ -293,7 +293,10 @@ test.describe('PROFESOR · backend real', () => {
     await page.getByRole('button', { name: 'Agregar ejercicio al día 1', exact: true }).click();
     await selectEntity(page, 'Ejercicio del día 1, fila 2', exercise.nombre);
     await routineField(page, 'Repeticiones día 1, fila 2').fill('12');
-    await page.getByRole('button', { name: 'Subir ejercicio 2 del día 1', exact: true }).click();
+    await page
+      .getByRole('group', { name: 'Bloque 2', exact: true })
+      .getByRole('button', { name: 'Subir bloque', exact: true })
+      .click();
     await expect(routineField(page, 'Repeticiones día 1, fila 1')).toHaveValue('12');
     await expect(
       page.getByRole('heading', { name: 'Vista previa de la rutina', exact: true }),

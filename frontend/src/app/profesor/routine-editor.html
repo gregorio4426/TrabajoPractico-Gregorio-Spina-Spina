@@ -91,7 +91,9 @@
                         >Nombre del bloque (opcional)<input
                           formControlName="bloqueNombre"
                           maxlength="100"
-                          (input)="syncBlock(di, block.first)"
+                          (input)="
+                            updateBlock(di, block.first, 'bloqueNombre', $any($event.target).value)
+                          "
                       /></label>
                       <label
                         >{{ block.rows.length === 1 ? 'Series' : 'Vueltas'
@@ -100,7 +102,14 @@
                           min="1"
                           step="1"
                           formControlName="seriesSugeridas"
-                          (input)="syncBlock(di, block.first)"
+                          (input)="
+                            updateBlock(
+                              di,
+                              block.first,
+                              'seriesSugeridas',
+                              $any($event.target).value
+                            )
+                          "
                       /></label>
                       <label
                         >Descanso entre vueltas (segundos)<input
@@ -108,7 +117,14 @@
                           min="0"
                           step="1"
                           formControlName="descansoVueltaSegundos"
-                          (input)="syncBlock(di, block.first)"
+                          (input)="
+                            updateBlock(
+                              di,
+                              block.first,
+                              'descansoVueltaSegundos',
+                              $any($event.target).value
+                            )
+                          "
                       /></label>
                     </div>
                     @if (block.rows.length > 1) {
@@ -122,7 +138,7 @@
                         type="button"
                         class="secondary"
                         [disabled]="bi === 0"
-                        (click)="moveBlock(di, block.rows[0]!.controls.bloqueOrden.value, -1)"
+                        (click)="moveBlockAt(di, block.first, -1)"
                       >
                         Subir bloque
                       </button>
@@ -130,7 +146,7 @@
                         type="button"
                         class="secondary"
                         [disabled]="bi + 1 === blocks(di).length"
-                        (click)="moveBlock(di, block.rows[0]!.controls.bloqueOrden.value, 1)"
+                        (click)="moveBlockAt(di, block.first, 1)"
                       >
                         Bajar bloque
                       </button>

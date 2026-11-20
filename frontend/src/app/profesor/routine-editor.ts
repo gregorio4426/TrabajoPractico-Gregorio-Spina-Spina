@@ -245,6 +245,18 @@ export class RoutineEditor {
     });
     rows.insert(rows.controls.indexOf(last) + 1, row);
   }
+  updateBlock(
+    day: number,
+    index: number,
+    field: 'bloqueNombre' | 'seriesSugeridas' | 'descansoVueltaSegundos',
+    value: string,
+  ) {
+    const row = this.days.at(day).controls.ejercicios.at(index);
+    row
+      .get(field)!
+      .setValue(field === 'bloqueNombre' ? value : value === '' ? null : Number(value));
+    this.syncBlock(day, index);
+  }
   syncBlock(day: number, index: number) {
     const source = this.days.at(day).controls.ejercicios.at(index);
     if (source.controls.bloqueOrden.value === null) {
@@ -255,13 +267,22 @@ export class RoutineEditor {
           row.patchValue({ bloqueOrden: ++next, vueltas: row.controls.seriesSugeridas.value });
     }
     const block = source.controls.bloqueOrden.value!;
+    const header = this.blockRows(day, block)[0]!;
     for (const row of this.blockRows(day, block))
       row.patchValue({
-        bloqueNombre: source.controls.bloqueNombre.value,
-        vueltas: source.controls.seriesSugeridas.value,
-        seriesSugeridas: source.controls.seriesSugeridas.value,
-        descansoVueltaSegundos: source.controls.descansoVueltaSegundos.value,
+        bloqueNombre: header.controls.bloqueNombre.value,
+        vueltas: header.controls.seriesSugeridas.value,
+        seriesSugeridas: header.controls.seriesSugeridas.value,
+        descansoVueltaSegundos: header.controls.descansoVueltaSegundos.value,
       });
+  }
+  moveBlockAt(day: number, index: number, offset: number) {
+    const rows = this.days.at(day).controls.ejercicios;
+    let next = Math.max(0, ...rows.controls.map((r) => r.controls.bloqueOrden.value ?? 0));
+    for (const row of rows.controls)
+      if (row.controls.bloqueOrden.value === null)
+        row.patchValue({ bloqueOrden: ++next, vueltas: row.controls.seriesSugeridas.value });
+    this.moveBlock(day, rows.at(index).controls.bloqueOrden.value, offset);
   }
   moveBlock(day: number, block: number | null, offset: number) {
     if (block === null) return;
