@@ -33,6 +33,12 @@ export class ProfesorApi {
   dashboard(query: Query = {}) {
     return this.get<D.DashboardProfesor>('/profesores/me/dashboard', query);
   }
+  availableStudents(q: string, pagina = 0) {
+    return this.get<Page<import('./available-students').AvailableStudent>>('/profesores/me/alumnos-disponibles', {q, pagina, tamanio:20});
+  }
+  linkAvailableStudent(id: number) {
+    return this.http.post<void>(this.base + '/profesores/me/alumnos-disponibles/' + id + '/vincular', null);
+  }
   students() {
     return this.get<D.AlumnoResponse[]>('/profesores/me/alumnos');
   }

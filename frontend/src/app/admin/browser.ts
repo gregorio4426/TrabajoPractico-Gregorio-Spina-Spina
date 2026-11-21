@@ -141,6 +141,7 @@ export class Browser {
     });
   }
   displayCell(row: unknown, key: string) {
+    if (key === 'vinculacion') { const professors = at(row, 'perfil.profesores'); return Array.isArray(professors) && professors.length ? 'Asignado' : 'Sin asignar'; }
     return key.endsWith('Id')
       ? (this.names().get(key + ':' + at(row, key)) ?? 'Registro')
       : text(at(row, key));

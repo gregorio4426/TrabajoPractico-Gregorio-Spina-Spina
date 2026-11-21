@@ -1,3 +1,4 @@
+import { AvailableStudents } from './available-students';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -9,12 +10,13 @@ import { LEVELS, OBJECTIVES } from '../admin/catalog';
 import { profesorError, text } from './utils';
 @Component({
   selector: 'app-teacher-students',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, AvailableStudents],
   template: `<section class="page-intro">
       <span class="eyebrow muted">TU EQUIPO</span>
       <h1>Alumnos vinculados<span class="accent">.</span></h1>
       <p>Solo personas con una vinculación vigente con tu perfil.</p>
     </section>
+    <app-available-students (linked)="load()" />
     <form class="admin-filters" [formGroup]="form" (ngSubmit)="load()">
       <label>Buscar alumno<input type="search" formControlName="q" /></label
       ><label

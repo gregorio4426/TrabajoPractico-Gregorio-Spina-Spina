@@ -38,14 +38,16 @@
   @if (!closed()) {
     @if (day(); as d) {
       <section class="admin-panel">
-        <h2>Elegí el ejercicio que estás haciendo</h2>
+        <h2>Registrá tus series</h2>
+        <app-workout-grid [exercises]="d.ejercicios ?? []" [session]="s" [disabled]="pending() || loading()" (updated)="load()" />
+        <details><summary>Registro avanzado y última ejecución</summary>
         <app-day-plan
           [exercises]="d.ejercicios ?? []"
           [showWeights]="true"
           [selectable]="true"
           [disabled]="pending()"
           (chosen)="choose($event)"
-        />
+        /></details>
       </section>
     } @else {
       <p class="notice">

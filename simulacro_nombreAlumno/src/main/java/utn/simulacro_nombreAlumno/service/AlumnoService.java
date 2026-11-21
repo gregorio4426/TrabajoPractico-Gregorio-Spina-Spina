@@ -27,6 +27,36 @@ public class AlumnoService {
     private final AccesoService acceso;
     private final IdentidadService identidad;
 
+    /** Directorio mínimo: no expone edad, objetivos, rutinas, sesiones ni credenciales. */
+    public record AlumnoDisponible(Long id, String nombre, String apellido, String email) {}
+
+    @Transactional(readOnly = true)
+    public utn.simulacro_nombreAlumno.admin.AdminDtos.Pagina<AlumnoDisponible> disponibles(String texto, int pagina, int tamanio, Authentication auth) {
+        acceso.profesorPropio(auth);
+        final String term = texto == null ? "" : texto.trim().toLowerCase(java.util.Locale.ROOT);
+        org.springframework.data.jpa.domain.Specification<Alumno> spec = (r, q, b) -> {
+            var u = r.join("usuario");
+            var eligible = b.and(b.equal(u.get("rol"), Rol.ALUMNO), b.isTrue(u.get("activo")), b.isEmpty(r.get("profesores")));
+            String pattern = "%" + term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%";
+            return b.and(eligible, b.or(b.like(b.lower(b.concat(b.concat(r.get("nombre"), " "), r.get("apellido"))), pattern, '\\'), b.like(b.lower(u.get("email")), pattern, '\\')));
+        };
+        var result = alumnoRepository.findAll(spec, org.springframework.data.domain.PageRequest.of(pagina, tamanio, org.springframework.data.domain.Sort.by("nombre", "apellido", "id")))
+            .map(a -> new AlumnoDisponible(a.getId(), a.getNombre(), a.getApellido(), a.getUsuario().getEmail()));
+        return utn.simulacro_nombreAlumno.admin.AdminDtos.Pagina.de(result);
+    }
+
+    /** El profesor solo puede vincular su propio perfil con un alumno activo aún libre. */
+    @Transactional
+    public void vincularDisponible(Long alumnoId, Authentication auth) {
+        Profesor profesor = profesorVinculable(acceso.profesorPropio(auth).getId());
+        Alumno alumno = bloquear(alumnoId);
+        exigirAlumnoVigente(alumno);
+        if (!alumno.getUsuario().isActivo() || !alumno.getProfesores().isEmpty())
+            throw new ConflictoEntrenamientoException("El alumno ya no está disponible para vincular");
+        alumno.getProfesores().add(profesor);
+        alumnoRepository.save(alumno);
+    }
+
     public Alumno createAlumno(RegisterAlumnoRequest request, Usuario usuario) {
         return alumnoRepository.save(Alumno.builder().nombre(request.getNombre()).apellido(request.getApellido())
                 .email(request.getEmail()).edad(request.getEdad()).fechaNacimiento(request.getFechaNacimiento())

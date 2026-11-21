@@ -58,6 +58,23 @@ class VinculacionAuthorizationTest {
     private String adminEmail, oldEmail, newEmail, studentEmail, otherEmail;
     private String admin, old, next, student, other;
 
+    @Test void availableDirectoryIsMinimalAndClaimIsScopedAndExclusive() throws Exception {
+        String path = "/api/profesores/me/alumnos-disponibles";
+        mvc.perform(get(path).header("Authorization", "Bearer " + student)).andExpect(status().isForbidden());
+        mvc.perform(get(path).param("q", otherEmail).header("Authorization", "Bearer " + next))
+            .andExpect(status().isOk()).andExpect(jsonPath("$.totalElementos").value(1))
+            .andExpect(jsonPath("$.contenido[0].id").value(ajeno.getId()))
+            .andExpect(jsonPath("$.contenido[0].edad").doesNotExist())
+            .andExpect(jsonPath("$.contenido[0].objetivo").doesNotExist());
+        mvc.perform(get("/api/alumnos/" + ajeno.getId()).header("Authorization", "Bearer " + next)).andExpect(status().isForbidden());
+        mvc.perform(post(path + "/" + ajeno.getId() + "/vincular").header("Authorization", "Bearer " + next)).andExpect(status().isNoContent());
+        mvc.perform(get("/api/alumnos/" + ajeno.getId()).header("Authorization", "Bearer " + next)).andExpect(status().isOk());
+        mvc.perform(get(path).param("q", otherEmail).header("Authorization", "Bearer " + old)).andExpect(jsonPath("$.totalElementos").value(0));
+        mvc.perform(post(path + "/" + ajeno.getId() + "/vincular").header("Authorization", "Bearer " + old)).andExpect(status().isConflict());
+        mvc.perform(get("/api/admin/alumnos").param("q", otherEmail).param("sinProfesor", "true").header("Authorization", "Bearer " + admin)).andExpect(jsonPath("$.totalElementos").value(0));
+        mvc.perform(get(path).param("tamanio", "101").header("Authorization", "Bearer " + next)).andExpect(status().isBadRequest());
+    }
+
     @BeforeEach
     void fixture() throws Exception {
         String suffix = UUID.randomUUID().toString();

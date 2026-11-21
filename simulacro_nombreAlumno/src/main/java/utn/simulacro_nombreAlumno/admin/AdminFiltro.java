@@ -15,6 +15,7 @@ public class AdminFiltro {
     private Boolean activo;
     private Boolean vigente;
     private Boolean sinCuenta;
+    private Boolean sinProfesor;
     private Nivel nivel;
     private Objetivo objetivo;
     @Size(max=100) private String especialidad;

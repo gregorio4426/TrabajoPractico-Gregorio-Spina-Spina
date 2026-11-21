@@ -98,6 +98,7 @@ public class AdminConsultaService {
         Specification<Alumno> spec=(r,q,b)-> {
             List<Predicate> p=new ArrayList<>(); cuenta(p,r,b,f,Rol.ALUMNO);
             if(busca(f)) p.add(texto(b,f,r.get("nombre"),r.get("apellido"),r.get("email")));
+            if(f.getSinProfesor()!=null) p.add(f.getSinProfesor()?b.isEmpty(r.get("profesores")):b.isNotEmpty(r.get("profesores")));
             if(f.getNivel()!=null) p.add(b.equal(r.get("nivel"),f.getNivel()));
             if(f.getObjetivo()!=null) p.add(b.equal(r.get("objetivo"),f.getObjetivo()));
             if(f.getProfesorId()!=null) {p.add(b.equal(r.join("profesores").get("id"),f.getProfesorId()));q.distinct(true);}

@@ -1,3 +1,4 @@
+import { WorkoutGrid } from './workout-grid';
 import { DayPlan } from '../shared/day-plan';
 import {
   Component,
@@ -32,7 +33,7 @@ import {
 type Action = 'add' | 'finish' | 'correct' | 'annul' | 'restore' | 'date';
 @Component({
   selector: 'app-student-session',
-  imports: [DayPlan, RouterLink, ReactiveFormsModule, Confirm, RecordView],
+  imports: [WorkoutGrid, DayPlan, RouterLink, ReactiveFormsModule, Confirm, RecordView],
   templateUrl: './session.html',
 })
 export class StudentSession {
@@ -257,6 +258,7 @@ export class StudentSession {
         return;
       }
     }
+    if (action === 'add' || action === 'correct') { void this.save(); return; }
     this.confirmation().open();
   }
   confirmMessage() {

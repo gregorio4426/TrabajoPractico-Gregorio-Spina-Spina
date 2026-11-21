@@ -1,5 +1,5 @@
 import { Component, input } from '@angular/core';
-export type IconName = 'arrow' | 'grid' | 'bolt' | 'person' | 'shield' | 'menu';
+export type IconName = 'arrow' | 'grid' | 'bolt' | 'person' | 'shield' | 'menu' | 'trash';
 @Component({
   selector: 'app-icon',
   template: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -9,6 +9,7 @@ export type IconName = 'arrow' | 'grid' | 'bolt' | 'person' | 'shield' | 'menu';
       @case ('bolt') { <path d="m13 2-9 12h7l-1 8 10-12h-8l1-8Z"/> }
       @case ('person') { <circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/> }
       @case ('shield') { <path d="m12 2 8 4v6c0 5-8 10-8 10S4 17 4 12V6l8-4Z"/><path d="m8 12 3 3 5-6"/> }
+      @case ('trash') { <path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/> }
       @case ('menu') { <path d="M4 6h16M4 12h16M4 18h16"/> }
     }
   </svg>`,

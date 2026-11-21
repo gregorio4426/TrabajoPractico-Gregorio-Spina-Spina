@@ -16,6 +16,7 @@ import utn.simulacro_nombreAlumno.service.AlumnoService;
 import java.util.List;
 
 
+@org.springframework.validation.annotation.Validated
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/profesores")
@@ -70,4 +71,21 @@ public class ProfesorController {
         alumnoService.desvincularMiAlumno(alumnoId, auth);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/me/alumnos-disponibles")
+    @PreAuthorize("hasRole('PROFESOR')")
+    public utn.simulacro_nombreAlumno.admin.AdminDtos.Pagina<AlumnoService.AlumnoDisponible> disponibles(
+            @RequestParam(defaultValue="") @jakarta.validation.constraints.Size(max=150) String q,
+            @RequestParam(defaultValue="0") @jakarta.validation.constraints.Min(0) int pagina,
+            @RequestParam(defaultValue="20") @jakarta.validation.constraints.Min(1) @jakarta.validation.constraints.Max(100) int tamanio,
+            Authentication auth) {
+        return alumnoService.disponibles(q, pagina, tamanio, auth);
+    }
+
+    @PostMapping("/me/alumnos-disponibles/{alumnoId}/vincular")
+    @PreAuthorize("hasRole('PROFESOR')")
+    public ResponseEntity<Void> vincularDisponible(@PathVariable Long alumnoId, Authentication auth) {
+        alumnoService.vincularDisponible(alumnoId, auth);
+        return ResponseEntity.noContent().build();
+    }
+
 }
