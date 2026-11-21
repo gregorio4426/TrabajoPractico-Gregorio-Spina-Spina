@@ -96,7 +96,7 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
   await page.getByLabel('Descripción de rutina', { exact: true }).fill('Plantilla compartida');
   await page.getByLabel('Nombre del día', { exact: true }).fill('Día 1');
   await selectEntity(page, 'Ejercicio del día 1, fila 1', exercise);
-  await expect(page.getByLabel('Series', { exact: true })).toBeVisible();
+  await expect(page.getByLabel('Vueltas', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Repeticiones', { exact: true })).toBeVisible();
   await expect(page.locator('input[formcontrolname=pesoSugerido]')).toHaveCount(0);
   expect(await page.locator('label').allTextContents()).not.toEqual(
@@ -104,7 +104,6 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
   );
   await expect(page.getByText(/fila/i)).toHaveCount(0);
   await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
-  await confirm(page);
   await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=/);
   const routineId = Number(new URL(page.url()).pathname.split('/').at(-1));
   async function active(student: typeof juan) {

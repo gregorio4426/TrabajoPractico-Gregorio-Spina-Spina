@@ -647,3 +647,18 @@ export interface AnulacionSerieRequest {
   motivo: string;
   revision: number;
 }
+
+export interface AlumnoDisponible {
+  id?: number | null;
+  nombre?: string | null;
+  apellido?: string | null;
+  email?: string | null;
+}
+
+export interface PaginaAlumnoDisponible {
+  contenido?: Array<AlumnoDisponible> | null;
+  pagina?: number | null;
+  tamanio?: number | null;
+  totalElementos?: number | null;
+  totalPaginas?: number | null;
+}

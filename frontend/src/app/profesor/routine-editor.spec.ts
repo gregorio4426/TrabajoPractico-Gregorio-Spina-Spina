@@ -199,4 +199,47 @@ describe('PROFESOR routine forms', () => {
       ['Bloque A', 3, 60],
     ]);
   });
+  it('inserts the next day directly below its source and renumbers after removal', async () => {
+    const e = await setup();
+    e.days.at(0).controls.nombre.setValue('Primero');
+    e.addDay();
+    e.days.at(1).controls.nombre.setValue('Último');
+    e.addDay(0);
+    expect(e.payload().dias.map((d) => d.numeroOrden)).toEqual([1, 2, 3]);
+    expect(e.days.at(2).controls.nombre.value).toBe('Último');
+    e.removeDay(1);
+    expect(e.days.controls.map((d) => d.controls.numeroOrden.value)).toEqual([1, 2]);
+  });
+  it('starts empty blocks and adds exercises only when requested, keeping each block independent', async () => {
+    const e = await setup();
+    e.emptyBlock(0);
+    expect(e.blocks(0)).toHaveLength(2);
+    const row = e.blocks(0)[1]!.rows[0]!;
+    expect(e.isEmpty(row)).toBe(true);
+    e.addToBlock(0, row.controls.bloqueOrden.value);
+    expect(e.isEmpty(row)).toBe(false);
+    row.patchValue({ ejercicioId: 3, repsSugeridas: 14 });
+    e.updateBlock(0, 1, 'seriesSugeridas', '3');
+    expect(e.days.at(0).controls.ejercicios.at(0).controls.seriesSugeridas.value).toBe(1);
+    expect(row.controls.repsSugeridas.value).toBe(14);
+  });
+  it('drops exercises into another block without losing individual repetitions or rests', async () => {
+    const e = await setup();
+    e.removeExercise(0, 0);
+    e.addBlock(0, 2);
+    e.addBlock(0, 1);
+    const rows = e.days.at(0).controls.ejercicios,
+      moved = rows.at(0),
+      target = rows.at(2);
+    moved.patchValue({ ejercicioId: 3, repsSugeridas: 12, descansoEjercicioSegundos: 20 });
+    target.patchValue({ ejercicioId: 3, seriesSugeridas: 4, bloqueNombre: 'Destino' });
+    e.syncBlock(0, 2);
+    e.dropExercise(0, 1, { previousIndex: 0, currentIndex: 1, item: { data: moved } } as Parameters<
+      RoutineEditor['dropExercise']
+    >[2]);
+    expect(e.blocks(0).map((b) => b.rows.length)).toEqual([1, 2]);
+    expect(moved.controls.repsSugeridas.value).toBe(12);
+    expect(moved.controls.descansoEjercicioSegundos.value).toBe(20);
+    expect(moved.controls.seriesSugeridas.value).toBe(4);
+  });
 });

@@ -243,11 +243,10 @@ test.describe('PROFESOR · backend real', () => {
     await routineField(page, 'Series día 1, fila 1').fill('2');
     await routineField(page, 'Repeticiones día 1, fila 1').fill('8');
 
-    await page.getByRole('button', { name: 'Agregar día', exact: true }).click();
+    await page.getByRole('button', { name: '+ Agregar día', exact: true }).click();
     await routineField(page, 'Nombre del día 2').fill('Técnica');
     await selectEntity(page, 'Ejercicio del día 2, fila 1', exercise.nombre);
     await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
-    await confirm(page);
     await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=1$/);
     const id = Number(new URL(page.url()).pathname.split('/').pop());
     await expect(page.getByText('Rutina guardada correctamente. Versión 1.')).toBeVisible();
@@ -258,7 +257,6 @@ test.describe('PROFESOR · backend real', () => {
     await page.getByRole('link', { name: 'Editar última versión', exact: true }).click();
     await page.getByLabel('Nombre de rutina', { exact: true }).fill(name + ' v2');
     await page.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
-    await confirm(page);
     await expect(page).toHaveURL(/guardada=2$/);
     await page.getByRole('link', { name: /^Versión 1$/ }).click();
     await expect(page.getByRole('heading', { name: name, exact: true })).toBeVisible();
@@ -290,24 +288,21 @@ test.describe('PROFESOR · backend real', () => {
     await selectEntity(page, 'Ejercicio del día 1, fila 1', exercise.nombre);
     await routineField(page, 'Repeticiones día 1, fila 1').fill('8');
 
-    await page.getByRole('button', { name: 'Agregar ejercicio al día 1', exact: true }).click();
+    await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
     await selectEntity(page, 'Ejercicio del día 1, fila 2', exercise.nombre);
     await routineField(page, 'Repeticiones día 1, fila 2').fill('12');
     await page
-      .getByRole('group', { name: 'Bloque 2', exact: true })
-      .getByRole('button', { name: 'Subir bloque', exact: true })
-      .click();
+      .getByRole('group', { name: 'Ejercicio 2', exact: true })
+      .getByRole('button', { name: 'Reordenar ejercicio', exact: true })
+      .press('ArrowUp');
     await expect(routineField(page, 'Repeticiones día 1, fila 1')).toHaveValue('12');
-    await expect(
-      page.getByRole('heading', { name: 'Vista previa de la rutina', exact: true }),
-    ).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Subir bloque', exact: true })).toHaveCount(0);
     await expect(page.locator('input[formcontrolname="ejercicioId"]')).toHaveCount(0);
-    await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
     const [saved] = await Promise.all([
       page.waitForResponse(
         (r) => new URL(r.url()).pathname === '/api/rutinas' && r.request().method() === 'POST',
       ),
-      confirm(page),
+      page.getByRole('button', { name: 'Crear rutina', exact: true }).click(),
     ]);
     expect(saved.status()).toBe(201);
     await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=/);
@@ -332,12 +327,11 @@ test.describe('PROFESOR · backend real', () => {
     await expect(page.getByLabel('Nombre de rutina', { exact: true })).toHaveValue(
       name + ' (copia)',
     );
-    await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
     const [copied] = await Promise.all([
       page.waitForResponse(
         (r) => new URL(r.url()).pathname === '/api/rutinas' && r.request().method() === 'POST',
       ),
-      confirm(page),
+      page.getByRole('button', { name: 'Crear rutina', exact: true }).click(),
     ]);
     expect(copied.status()).toBe(201);
     await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=/);

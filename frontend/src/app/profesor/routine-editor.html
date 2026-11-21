@@ -1,48 +1,232 @@
-<section class="page-intro"><h1>{{ editing ? 'Editar rutina' : 'Crear rutina' }}</h1><p>Agregá días, bloques y ejercicios. Los pesos se configuran al asignar la rutina.</p></section>
-@if (loading()) { <p class="notice" role="status">Cargando rutina y catálogo…</p> }
-@if (error()) { <p class="error-message" role="alert">{{ error() }}</p> }
-@if (!ready() && !loading()) { <button class="secondary" (click)="load()">Reintentar carga</button> }
+<section class="page-intro">
+  <h1>{{ editing ? 'Editar rutina' : 'Crear rutina' }}</h1>
+  <p>Agregá días, bloques y ejercicios. Los pesos se configuran al asignar la rutina.</p>
+</section>
+@if (loading()) {
+  <p class="notice" role="status">Cargando rutina y catálogo…</p>
+}
+@if (error()) {
+  <p class="error-message" role="alert">{{ error() }}</p>
+}
+@if (!ready() && !loading()) {
+  <button class="secondary" (click)="load()">Reintentar carga</button>
+}
 <p class="sr-only" aria-live="polite">{{ movement() }}</p>
 @if (ready()) {
-<form [formGroup]="form" (ngSubmit)="confirm()" class="routine-editor-compact">
-<fieldset [disabled]="pending()" class="teacher-fieldset">
-<section class="admin-panel admin-form"><label>Nombre de rutina<input formControlName="nombre" maxlength="255" /></label><label>Descripción de rutina<textarea formControlName="descripcion" maxlength="255" rows="2"></textarea></label></section>
-<p class="admin-help">Arrastrá desde ⠿ para ordenar. Con teclado, usá las flechas en el control de arrastre; izquierda/derecha cambia un ejercicio de bloque.</p>
-<div formArrayName="dias">
-@for (day of days.controls; track day; let di = $index) {
-<section class="teacher-day" [id]="'routine-day-' + di" [formGroupName]="di" role="group" [attr.aria-label]="'Día ' + (di + 1)">
-<header class="admin-kicker"><h2>Día {{ di + 1 }}</h2><button type="button" class="compact-icon danger" [attr.aria-label]="'Eliminar día ' + (di + 1)" (click)="deleteDay(di)"><app-icon name="trash" /></button></header>
-<label>Nombre del día<input formControlName="nombre" maxlength="255" placeholder="Por ejemplo: Pecho y tríceps" /></label>
-<div formArrayName="ejercicios" cdkDropList [cdkDropListData]="blocks(di)" (cdkDropListDropped)="dropBlock(di, $event)" [cdkDropListConnectedTo]="[]">
-@for (block of blocks(di); track block.key; let bi = $index) {
-<section class="routine-block" cdkDrag [cdkDragDisabled]="pending()" role="group" [attr.aria-label]="'Bloque ' + (bi + 1)">
-<header class="routine-block-heading" [formGroupName]="block.first">
-<div class="admin-kicker"><h3><button type="button" cdkDragHandle class="drag-handle" [attr.aria-label]="'Reordenar bloque ' + (bi + 1)" (keydown)="keyboardMove($event, di, block.first, true)">⠿</button> Bloque {{ bi + 1 }}</h3><button type="button" class="compact-icon danger" [attr.aria-label]="'Eliminar bloque ' + (bi + 1)" (click)="deleteBlock(di, bi)"><app-icon name="trash" /></button></div>
-<div class="block-settings"><label>Nombre del bloque (opcional)<input formControlName="bloqueNombre" maxlength="100" (input)="updateBlock(di, block.first, 'bloqueNombre', $any($event.target).value)" /></label><label>Vueltas<input type="number" min="1" step="1" inputmode="numeric" formControlName="seriesSugeridas" (input)="updateBlock(di, block.first, 'seriesSugeridas', $any($event.target).value)" /></label><details><summary>Descanso entre vueltas</summary><label>Segundos (opcional)<input type="number" min="0" step="1" formControlName="descansoVueltaSegundos" (input)="updateBlock(di, block.first, 'descansoVueltaSegundos', $any($event.target).value)" /></label></details></div>
-</header>
-<div cdkDropList [id]="'exercises-' + di + '-' + bi" [cdkDropListConnectedTo]="exerciseLists(di)" (cdkDropListDropped)="dropExercise(di, bi, $event)" class="exercise-drop-zone">
-@for (exercise of block.rows; track exercise; let ei = $index) {
-@if (!isEmpty(exercise)) {
-<div class="compact-exercise" [formGroupName]="block.indexes[ei]!" cdkDrag [cdkDragData]="exercise" [cdkDragDisabled]="pending()">
-<button type="button" cdkDragHandle class="drag-handle" aria-label="Reordenar ejercicio" (keydown)="keyboardMove($event, di, block.indexes[ei]!, false)">⠿</button>
-<app-exercise-picker [catalogue]="exercises()" formControlName="ejercicioId" (created)="exerciseCreated($event)" />
-<label>Repeticiones<input type="number" min="1" step="1" inputmode="numeric" formControlName="repsSugeridas" /></label>
-<label>Descanso (opcional)<input type="number" min="0" step="1" inputmode="numeric" formControlName="descansoEjercicioSegundos" placeholder="Segundos" /></label>
-<button type="button" class="compact-icon danger" aria-label="Eliminar ejercicio" (click)="deleteExercise(di, block.indexes[ei]!)"><app-icon name="trash" /></button>
-</div>
+  <form [formGroup]="form" (ngSubmit)="confirm()" class="routine-editor-compact">
+    <fieldset [disabled]="pending()" class="teacher-fieldset">
+      <section class="admin-panel admin-form">
+        <label>Nombre de rutina<input formControlName="nombre" maxlength="255" /></label
+        ><label
+          >Descripción de rutina<textarea
+            formControlName="descripcion"
+            maxlength="255"
+            rows="2"
+          ></textarea>
+        </label>
+      </section>
+      <p class="admin-help">
+        Arrastrá desde ⠿ para ordenar. Con teclado, usá las flechas en el control de arrastre;
+        izquierda/derecha cambia un ejercicio de bloque.
+      </p>
+      <div formArrayName="dias">
+        @for (day of days.controls; track day; let di = $index) {
+          <section
+            class="teacher-day"
+            [id]="'routine-day-' + di"
+            [formGroupName]="di"
+            role="group"
+            [attr.aria-label]="'Día ' + (di + 1)"
+          >
+            <header class="admin-kicker">
+              <h2>Día {{ di + 1 }}</h2>
+              <button
+                type="button"
+                class="compact-icon danger"
+                [attr.aria-label]="'Eliminar día ' + (di + 1)"
+                (click)="deleteDay(di)"
+              >
+                <app-icon name="trash" />
+              </button>
+            </header>
+            <label
+              >Nombre del día<input
+                formControlName="nombre"
+                maxlength="255"
+                placeholder="Por ejemplo: Pecho y tríceps"
+            /></label>
+            <div
+              formArrayName="ejercicios"
+              cdkDropList
+              [cdkDropListData]="blocks(di)"
+              (cdkDropListDropped)="dropBlock(di, $event)"
+              [cdkDropListConnectedTo]="[]"
+            >
+              @for (block of blocks(di); track block.key; let bi = $index) {
+                <section
+                  class="routine-block"
+                  cdkDrag
+                  [cdkDragDisabled]="pending()"
+                  role="group"
+                  [attr.aria-label]="'Bloque ' + (bi + 1)"
+                >
+                  <header class="routine-block-heading" [formGroupName]="block.first">
+                    <div class="admin-kicker">
+                      <h3>
+                        <button
+                          type="button"
+                          cdkDragHandle aria-describedby="routine-move-help"
+                          class="drag-handle"
+                          [attr.aria-label]="'Reordenar bloque ' + (bi + 1)"
+                          (keydown)="keyboardMove($event, di, block.first, true)"
+                        >
+                          ⠿
+                        </button>
+                        Bloque {{ bi + 1 }}
+                      </h3>
+                      <button
+                        type="button"
+                        class="compact-icon danger"
+                        [attr.aria-label]="'Eliminar bloque ' + (bi + 1)"
+                        (click)="deleteBlock(di, bi)"
+                      >
+                        <app-icon name="trash" />
+                      </button>
+                    </div>
+                    <div class="block-settings">
+                      <label
+                        >Nombre del bloque (opcional)<input
+                          formControlName="bloqueNombre"
+                          maxlength="100"
+                          (input)="
+                            updateBlock(di, block.first, 'bloqueNombre', $any($event.target).value)
+                          " /></label
+                      ><label
+                        >Vueltas<input
+                          type="number"
+                          min="1"
+                          step="1"
+                          inputmode="numeric"
+                          formControlName="seriesSugeridas"
+                          (input)="
+                            updateBlock(
+                              di,
+                              block.first,
+                              'seriesSugeridas',
+                              $any($event.target).value
+                            )
+                          "
+                      /></label>
+                      <details>
+                        <summary>Descanso entre vueltas</summary>
+                        <label
+                          >Segundos (opcional)<input
+                            type="number"
+                            min="0"
+                            step="1"
+                            formControlName="descansoVueltaSegundos"
+                            (input)="
+                              updateBlock(
+                                di,
+                                block.first,
+                                'descansoVueltaSegundos',
+                                $any($event.target).value
+                              )
+                            "
+                        /></label>
+                      </details>
+                    </div>
+                  </header>
+                  <div
+                    cdkDropList
+                    [id]="'exercises-' + di + '-' + bi"
+                    [cdkDropListConnectedTo]="exerciseLists(di)"
+                    (cdkDropListDropped)="dropExercise(di, bi, $event)"
+                    class="exercise-drop-zone"
+                  >
+                    @for (exercise of block.rows; track exercise; let ei = $index) {
+                      @if (!isEmpty(exercise)) {
+                        <div
+                          class="compact-exercise"
+                          role="group"
+                          [attr.aria-label]="'Ejercicio ' + (block.indexes[ei]! + 1)"
+                          [formGroupName]="block.indexes[ei]!"
+                          cdkDrag
+                          [cdkDragData]="exercise"
+                          [cdkDragDisabled]="pending()"
+                        >
+                          <button
+                            type="button"
+                            cdkDragHandle aria-describedby="routine-move-help"
+                            class="drag-handle"
+                            aria-label="Reordenar ejercicio"
+                            (keydown)="keyboardMove($event, di, block.indexes[ei]!, false)"
+                          >
+                            ⠿
+                          </button>
+                          <app-exercise-picker
+                            [catalogue]="exercises()"
+                            formControlName="ejercicioId"
+                            (created)="exerciseCreated($event)"
+                          />
+                          <label
+                            >Repeticiones<input
+                              type="number"
+                              min="1"
+                              step="1"
+                              inputmode="numeric"
+                              formControlName="repsSugeridas"
+                          /></label>
+                          <label
+                            >Descanso (opcional)<input
+                              type="number"
+                              min="0"
+                              step="1"
+                              inputmode="numeric"
+                              formControlName="descansoEjercicioSegundos"
+                              placeholder="Segundos"
+                          /></label>
+                          <button
+                            type="button"
+                            class="compact-icon danger"
+                            aria-label="Eliminar ejercicio"
+                            (click)="deleteExercise(di, block.indexes[ei]!)"
+                          >
+                            <app-icon name="trash" />
+                          </button>
+                        </div>
+                      }
+                    }
+                  </div>
+                  <button
+                    type="button"
+                    class="secondary"
+                    (click)="addToBlock(di, block.rows[0]!.controls.bloqueOrden.value)"
+                  >
+                    + Agregar ejercicio
+                  </button>
+                </section>
+              }
+            </div>
+            <div class="admin-actions">
+              <button type="button" class="secondary" (click)="emptyBlock(di)">
+                + Agregar bloque</button
+              ><button type="button" class="primary" (click)="addDay(di)">+ Agregar día</button>
+            </div>
+          </section>
+        } @empty {
+          <button type="button" class="primary" (click)="addDay()">+ Agregar día</button>
+        }
+      </div>
+      <button class="primary" type="submit">
+        {{ pending() ? 'Guardando…' : editing ? 'Guardar nueva versión' : 'Crear rutina' }}
+      </button>
+    </fieldset>
+  </form>
 }
-}
-</div>
-<button type="button" class="secondary" (click)="addToBlock(di, block.rows[0]!.controls.bloqueOrden.value)">+ Agregar ejercicio</button>
-</section>
-}
-</div>
-<div class="admin-actions"><button type="button" class="secondary" (click)="emptyBlock(di)">+ Agregar bloque</button><button type="button" class="primary" (click)="addDay(di)">+ Agregar día</button></div>
-</section>
-} @empty { <button type="button" class="primary" (click)="addDay()">+ Agregar día</button> }
-</div>
-<button class="primary" type="submit">{{ pending() ? 'Guardando…' : editing ? 'Guardar nueva versión' : 'Crear rutina' }}</button>
-</fieldset>
-</form>
-}
-<app-teacher-confirm #confirmation title="¿Eliminar contenido?" message="Se quitará este contenido del borrador. La versión guardada y su historial se conservan." (confirmed)="acceptRemoval()" />
+<app-teacher-confirm
+  #confirmation
+  title="¿Eliminar contenido?"
+  message="Se quitará este contenido del borrador. La versión guardada y su historial se conservan."
+  (confirmed)="acceptRemoval()"
+/>

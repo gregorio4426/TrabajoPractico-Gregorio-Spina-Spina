@@ -283,7 +283,11 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
                 name: /posición 1$/,
               })
               .click();
-            await expect(page.getByLabel('Repeticiones realizadas', { exact: true })).toBeFocused();
+            await expect(
+              page
+                .locator('.student-block-form')
+                .getByLabel('Repeticiones realizadas', { exact: true }),
+            ).toBeFocused();
             expect(
               await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
               'Formulario móvil de series',
@@ -315,7 +319,6 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
       await tp.getByLabel('Nombre de rutina', { exact: true }).fill(name);
       await routineField(tp, 'Repeticiones día 1, fila 1').fill('12');
       await tp.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
-      await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
       await expect(tp).toHaveURL(/guardada=2$/);
       await selectEntity(tp, 'Alumno vinculado', studentAccount.email);
       await tp.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
@@ -372,15 +375,27 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
         'AlumnoActualizado',
       );
       await sp!.goto(`/alumno/sesiones/${open.id}`);
+      if (
+        (await sp!
+          .getByText('Registro avanzado y última ejecución', { exact: true })
+          .locator('..')
+          .getAttribute('open')) === null
+      )
+        await sp!.getByText('Registro avanzado y última ejecución', { exact: true }).click();
       await sp!
         .getByRole('button', {
           name: /posición 1$/,
         })
         .click();
-      await sp!.getByLabel('Repeticiones realizadas', { exact: true }).fill('10');
+      await sp!
+        .locator('.student-block-form')
+        .getByLabel('Repeticiones realizadas', { exact: true })
+        .fill('10');
       await sp!.getByLabel('Peso realizado (opcional)').fill('12.5');
-      await sp!.getByRole('button', { name: 'Guardar serie', exact: true }).click();
-      await sp!.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
+      await sp!
+        .locator('.student-block-form')
+        .getByRole('button', { name: 'Guardar serie', exact: true })
+        .click();
       await expect(sp!.getByText('Serie registrada correctamente.')).toBeVisible();
       await sp!.reload();
       await expect(sp!.locator('.student-series-card')).toHaveCount(1);

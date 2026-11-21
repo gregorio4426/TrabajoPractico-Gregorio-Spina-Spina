@@ -138,3 +138,11 @@ La asignación existente admite cuerpo opcional con `pesos`. Las plantillas rech
 ## Revisión de buscadores y bloques
 
 Se conservan las rutas y permisos existentes. `EjercicioRequest.descripcion` ahora es opcional, con límite de 255 caracteres; el backend guarda cadena vacía cuando se omite. El grupo sigue siendo obligatorio por validación y el nombre conserva su unicidad normalizada. Los bloques usan los metadatos versionados existentes y los pesos siguen asociados a la asignación individual. Ver [diagnóstico y aceptación](../../frontend/BLOQUES-Y-BUSCADORES.md).
+
+### Alumnos sin profesor y creación simplificada de rutinas
+
+- `GET /api/admin/alumnos` admite `sinProfesor=true|false`, independiente del estado de cuenta.
+- `GET /api/profesores/me/alumnos-disponibles`: PROFESOR; búsqueda `q`, `pagina` y `tamanio` (máximo 100), página de datos mínimos `{id,nombre,apellido,email}` de alumnos activos sin profesor.
+- `POST /api/profesores/me/alumnos-disponibles/{alumnoId}/vincular`: PROFESOR; 204, vincula únicamente al profesor del JWT y solo si el alumno continúa disponible bajo bloqueo transaccional. No otorga acceso a perfiles ajenos antes de vincularse.
+
+Ver [comportamiento, seguridad y actualización de Docker](rutinas-simples.md).

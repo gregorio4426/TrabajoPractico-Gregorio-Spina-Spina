@@ -119,8 +119,13 @@ export class RoutineEditor {
         for (const day of routine.dias ?? []) this.days.push(this.day(day));
         this.reorderDays();
         for (const day of this.days.controls) {
-          let next = Math.max(0, ...day.controls.ejercicios.controls.map(r => r.controls.bloqueOrden.value ?? 0));
-          for (const row of day.controls.ejercicios.controls) if (row.controls.bloqueOrden.value === null) row.patchValue({bloqueOrden: ++next, vueltas: row.controls.seriesSugeridas.value});
+          let next = Math.max(
+            0,
+            ...day.controls.ejercicios.controls.map((r) => r.controls.bloqueOrden.value ?? 0),
+          );
+          for (const row of day.controls.ejercicios.controls)
+            if (row.controls.bloqueOrden.value === null)
+              row.patchValue({ bloqueOrden: ++next, vueltas: row.controls.seriesSugeridas.value });
         }
       } else this.addDay();
       this.ready.set(true);
@@ -130,62 +135,142 @@ export class RoutineEditor {
       this.loading.set(false);
     }
   }
-  exerciseLists(day: number) { return this.blocks(day).map((_, i) => 'exercises-' + day + '-' + i); }
-  deleteDay(day: number) { this.requestRemoval(() => this.removeDay(day), !!this.days.at(day).controls.nombre.value || this.days.at(day).controls.ejercicios.controls.some(r => !!r.controls.ejercicioId.value)); }
-  deleteBlock(day: number, index: number) { const b = this.blocks(day)[index]!; this.requestRemoval(() => { for (const r of b.rows) { const rows = this.days.at(day).controls.ejercicios; rows.removeAt(rows.controls.indexOf(r)); } }, b.rows.some(r => !!r.controls.ejercicioId.value) || !!b.rows[0]!.controls.bloqueNombre.value); }
-  deleteExercise(day: number, index: number) { const row = this.days.at(day).controls.ejercicios.at(index); this.requestRemoval(() => {
-    if (this.blocks(day).find(b => b.rows.includes(row))!.rows.length === 1) { row.patchValue({ejercicioId:null, repsSugeridas:1, descansoEjercicioSegundos:null}); this.placeholders.add(row); }
-    else this.removeExercise(day, index);
-  }, !!row.controls.ejercicioId.value); }
+  exerciseLists(day: number) {
+    return this.blocks(day).map((_, i) => 'exercises-' + day + '-' + i);
+  }
+  deleteDay(day: number) {
+    this.requestRemoval(
+      () => this.removeDay(day),
+      !!this.days.at(day).controls.nombre.value ||
+        this.days.at(day).controls.ejercicios.controls.some((r) => !!r.controls.ejercicioId.value),
+    );
+  }
+  deleteBlock(day: number, index: number) {
+    const b = this.blocks(day)[index]!;
+    this.requestRemoval(
+      () => {
+        for (const r of b.rows) {
+          const rows = this.days.at(day).controls.ejercicios;
+          rows.removeAt(rows.controls.indexOf(r));
+        }
+      },
+      b.rows.some((r) => !!r.controls.ejercicioId.value) ||
+        !!b.rows[0]!.controls.bloqueNombre.value,
+    );
+  }
+  deleteExercise(day: number, index: number) {
+    const row = this.days.at(day).controls.ejercicios.at(index);
+    this.requestRemoval(() => {
+      if (this.blocks(day).find((b) => b.rows.includes(row))!.rows.length === 1) {
+        row.patchValue({ ejercicioId: null, repsSugeridas: 1, descansoEjercicioSegundos: null });
+        this.placeholders.add(row);
+      } else this.removeExercise(day, index);
+    }, !!row.controls.ejercicioId.value);
+  }
   readonly placeholders = new WeakSet<object>();
   readonly movement = signal('');
   private removal: (() => void) | null = null;
   readonly removing = signal(false);
-  isEmpty(row: ReturnType<RoutineEditor['exercise']>) { return this.placeholders.has(row) && !row.controls.ejercicioId.value; }
+  isEmpty(row: ReturnType<RoutineEditor['exercise']>) {
+    return this.placeholders.has(row) && !row.controls.ejercicioId.value;
+  }
   emptyBlock(day: number) {
     const rows = this.days.at(day).controls.ejercicios;
     const row = this.exercise();
-    row.patchValue({bloqueOrden: Math.max(0, ...rows.controls.map(r => r.controls.bloqueOrden.value ?? 0)) + 1, vueltas: 1});
-    rows.push(row); this.placeholders.add(row);
+    row.patchValue({
+      bloqueOrden: Math.max(0, ...rows.controls.map((r) => r.controls.bloqueOrden.value ?? 0)) + 1,
+      vueltas: 1,
+    });
+    rows.push(row);
+    this.placeholders.add(row);
     this.form.markAsDirty();
   }
-  reorderDays() { this.days.controls.forEach((d, i) => d.controls.numeroOrden.setValue(i + 1)); }
+  reorderDays() {
+    this.days.controls.forEach((d, i) => d.controls.numeroOrden.setValue(i + 1));
+  }
   requestRemoval(action: () => void, hasData: boolean) {
-    if (!hasData) { action(); return; }
-    this.removal = action; this.removing.set(true); this.confirmation().open();
+    if (!hasData) {
+      action();
+      return;
+    }
+    this.removal = action;
+    this.removing.set(true);
+    this.confirmation().open();
   }
-  acceptRemoval() { this.removal?.(); this.removal = null; this.removing.set(false); this.form.markAsDirty(); }
-  dropBlock(day: number, event: Pick<CdkDragDrop<unknown>, 'previousIndex' | 'currentIndex' | 'item'>) {
+  acceptRemoval() {
+    this.removal?.();
+    this.removal = null;
+    this.removing.set(false);
+    this.form.markAsDirty();
+  }
+  dropBlock(
+    day: number,
+    event: Pick<CdkDragDrop<unknown>, 'previousIndex' | 'currentIndex' | 'item'>,
+  ) {
     const groups = this.blocks(day);
-    const [moved] = groups.splice(event.previousIndex, 1); groups.splice(event.currentIndex, 0, moved!);
-    const rows = this.days.at(day).controls.ejercicios; rows.clear();
-    groups.forEach((b, i) => b.rows.forEach(r => { r.controls.bloqueOrden.setValue(i + 1); rows.push(r); }));
-    this.form.markAsDirty(); this.movement.set('Bloque reorganizado.');
+    const [moved] = groups.splice(event.previousIndex, 1);
+    groups.splice(event.currentIndex, 0, moved!);
+    const rows = this.days.at(day).controls.ejercicios;
+    rows.clear();
+    groups.forEach((b, i) =>
+      b.rows.forEach((r) => {
+        r.controls.bloqueOrden.setValue(i + 1);
+        rows.push(r);
+      }),
+    );
+    this.form.markAsDirty();
+    this.movement.set('Bloque reorganizado.');
   }
-  dropExercise(day: number, targetIndex: number, event: Pick<CdkDragDrop<unknown>, 'previousIndex' | 'currentIndex' | 'item'>) {
+  dropExercise(
+    day: number,
+    targetIndex: number,
+    event: Pick<CdkDragDrop<unknown>, 'previousIndex' | 'currentIndex' | 'item'>,
+  ) {
     const row = event.item.data as ReturnType<RoutineEditor['exercise']>;
     const rows = this.days.at(day).controls.ejercicios;
-    const groups = this.blocks(day); const target = groups[targetIndex]!; const anchor = target.rows[0]!;
-    const destination = target.rows.filter(r => r !== row && !this.isEmpty(r));
+    const groups = this.blocks(day);
+    const target = groups[targetIndex]!;
+    const anchor = target.rows[0]!;
+    const destination = target.rows.filter((r) => r !== row && !this.isEmpty(r));
     destination.splice(event.currentIndex, 0, row);
-    row.patchValue({ bloqueOrden: anchor.controls.bloqueOrden.value ?? targetIndex + 1, bloqueNombre: anchor.controls.bloqueNombre.value, seriesSugeridas: anchor.controls.seriesSugeridas.value, vueltas: anchor.controls.seriesSugeridas.value, descansoVueltaSegundos: anchor.controls.descansoVueltaSegundos.value });
-    const ordered = groups.flatMap((b, i) => i === targetIndex ? destination : b.rows.filter(r => r !== row));
-    rows.clear(); ordered.forEach(r => rows.push(r)); this.form.markAsDirty(); this.movement.set('Ejercicio reorganizado.');
+    row.patchValue({
+      bloqueOrden: anchor.controls.bloqueOrden.value ?? targetIndex + 1,
+      bloqueNombre: anchor.controls.bloqueNombre.value,
+      seriesSugeridas: anchor.controls.seriesSugeridas.value,
+      vueltas: anchor.controls.seriesSugeridas.value,
+      descansoVueltaSegundos: anchor.controls.descansoVueltaSegundos.value,
+    });
+    const ordered = groups.flatMap((b, i) =>
+      i === targetIndex ? destination : b.rows.filter((r) => r !== row),
+    );
+    rows.clear();
+    ordered.forEach((r) => rows.push(r));
+    this.form.markAsDirty();
+    this.movement.set('Ejercicio reorganizado.');
   }
   keyboardMove(event: KeyboardEvent, day: number, index: number, block: boolean) {
     if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) return;
     event.preventDefault();
     if (block) this.moveBlockAt(day, index, event.key === 'ArrowUp' ? -1 : 1);
-    else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') this.moveToBlock(day, index, event.key === 'ArrowLeft' ? -1 : 1);
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowRight')
+      this.moveToBlock(day, index, event.key === 'ArrowLeft' ? -1 : 1);
     else this.moveExercise(day, index, event.key === 'ArrowUp' ? -1 : 1);
-    this.form.markAsDirty(); this.movement.set('Orden actualizado.');
+    this.form.markAsDirty();
+    this.movement.set('Orden actualizado.');
   }
   addDay(after = this.days.length - 1) {
     const day = this.day(undefined, this.days.length + 1);
-    const row = this.exercise(); row.patchValue({bloqueOrden: 1, vueltas: 1});
-    this.placeholders.add(row); day.controls.ejercicios.push(row);
-    this.days.insert(after + 1, day); this.reorderDays();
-    setTimeout(() => document.getElementById('routine-day-' + (after + 1))?.scrollIntoView?.({behavior: 'smooth', block: 'start'}));
+    const row = this.exercise();
+    row.patchValue({ bloqueOrden: 1, vueltas: 1 });
+    this.placeholders.add(row);
+    day.controls.ejercicios.push(row);
+    this.days.insert(after + 1, day);
+    this.reorderDays();
+    setTimeout(() =>
+      document
+        .getElementById('routine-day-' + (after + 1))
+        ?.scrollIntoView?.({ behavior: 'smooth', block: 'start' }),
+    );
   }
   removeDay(index: number) {
     this.days.removeAt(index);
@@ -193,7 +278,8 @@ export class RoutineEditor {
   }
   addExercise(day: number) {
     const rows = this.days.at(day).controls.ejercicios;
-    if (rows.controls.some((e) => e.controls.bloqueOrden.value !== null)) this.addToBlock(day, rows.at(-1).controls.bloqueOrden.value);
+    if (rows.controls.some((e) => e.controls.bloqueOrden.value !== null))
+      this.addToBlock(day, rows.at(-1).controls.bloqueOrden.value);
     else rows.push(this.exercise());
   }
   blocks(day: number) {
@@ -293,7 +379,10 @@ export class RoutineEditor {
     const rows = this.days.at(day).controls.ejercicios;
     const existing = this.blockRows(day, block),
       last = existing.at(-1)!;
-    if (existing.length === 1 && this.isEmpty(last)) { this.placeholders.delete(last); return; }
+    if (existing.length === 1 && this.isEmpty(last)) {
+      this.placeholders.delete(last);
+      return;
+    }
     const row = this.exercise();
     row.patchValue({
       bloqueOrden: block,
@@ -396,7 +485,7 @@ export class RoutineEditor {
       this.days.controls.some((d) => d.controls.ejercicios.length === 0)
     ) {
       this.error.set(
-        'Revisá los campos: se requiere al menos un día y un ejercicio por día; órdenes de día únicos, ejercicios seleccionados, series/repeticiones enteras positivas y descansos opcionales enteros no negativos.',
+        'Completá los nombres, la descripción y al menos un ejercicio en cada bloque. Las vueltas y repeticiones deben ser enteros positivos; los descansos opcionales, enteros no negativos.',
       );
       return;
     }
@@ -414,7 +503,7 @@ export class RoutineEditor {
           ...(e.bloqueOrden === null
             ? {}
             : {
-                bloqueOrden: d.ejercicios.findIndex((row) => row.bloqueOrden === e.bloqueOrden) + 1,
+                bloqueOrden: [...new Set(d.ejercicios.map(row => row.bloqueOrden))].indexOf(e.bloqueOrden) + 1,
                 bloqueNombre: e.bloqueNombre?.trim() || null,
                 vueltas: Number(e.seriesSugeridas),
                 ordenEnBloque: d.ejercicios

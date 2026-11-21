@@ -117,10 +117,11 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       .getByLabel('Descripción de rutina', { exact: true })
       .fill('Dos ejercicios con pesos individuales');
     await routineField(page, 'Nombre del día 1').fill('Día de biseries');
-    await page.getByRole('button', { name: 'Quitar ejercicio 1 del día 1', exact: true }).click();
-    await page.getByRole('button', { name: 'Agregar biserie', exact: true }).click();
+    await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
+    await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
     await page.getByLabel('Nombre del bloque (opcional)', { exact: true }).fill('Bloque principal');
-    await page.getByLabel('Descanso entre vueltas (segundos)', { exact: true }).fill('60');
+    await page.getByText('Descanso entre vueltas', { exact: true }).click();
+    await page.getByLabel('Segundos (opcional)', { exact: true }).fill('60');
     for (let i = 1; i <= 2; i++)
       await selectEntity(page, `Ejercicio del día 1, fila ${i}`, exercise);
     await routineField(page, 'Vueltas día 1, fila 1').fill('2');
@@ -128,14 +129,8 @@ test.describe('Mejoras funcionales · persistencia real', () => {
     await routineField(page, 'Repeticiones día 1, fila 1').fill('8');
 
     await routineField(page, 'Repeticiones día 1, fila 2').fill('12');
-    await page
-      .getByLabel('Descanso después del ejercicio (segundos)', { exact: true })
-      .nth(0)
-      .fill('0');
-    await page
-      .getByLabel('Descanso después del ejercicio (segundos)', { exact: true })
-      .nth(1)
-      .fill('20');
+    await page.getByLabel('Descanso (opcional)', { exact: true }).nth(0).fill('0');
+    await page.getByLabel('Descanso (opcional)', { exact: true }).nth(1).fill('20');
     await page.setViewportSize({ width: 390, height: 844 });
     await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
     await page.screenshot({
@@ -206,11 +201,25 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       await confirm(studentPage);
       await expect(studentPage).toHaveURL(/\/alumno\/sesiones\/\d+/);
       const sessionId = Number(studentPage.url().split('/').at(-1));
+      if (
+        (await studentPage
+          .getByText('Registro avanzado y última ejecución', { exact: true })
+          .locator('..')
+          .getAttribute('open')) === null
+      )
+        await studentPage
+          .getByText('Registro avanzado y última ejecución', { exact: true })
+          .click();
       await studentPage.getByRole('button', { name: /Registrar .*posición 1$/ }).click();
-      await studentPage.getByLabel('Repeticiones realizadas', { exact: true }).fill('8');
+      await studentPage
+        .locator('.student-block-form')
+        .getByLabel('Repeticiones realizadas', { exact: true })
+        .fill('8');
       await studentPage.getByLabel('Peso realizado (opcional)', { exact: true }).fill('0');
-      await studentPage.getByRole('button', { name: 'Guardar serie', exact: true }).click();
-      await confirm(studentPage);
+      await studentPage
+        .locator('.student-block-form')
+        .getByRole('button', { name: 'Guardar serie', exact: true })
+        .click();
       await expect(studentPage.locator('.student-series-card')).toHaveCount(1);
       await studentPage.reload();
       await expect(studentPage.locator('.student-series-card')).toHaveCount(1);

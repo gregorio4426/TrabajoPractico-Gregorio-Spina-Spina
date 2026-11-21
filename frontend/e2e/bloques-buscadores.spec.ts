@@ -120,24 +120,25 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
     .getByLabel('Descripción de rutina', { exact: true })
     .fill('Tres vueltas al bloque completo');
   await page.getByLabel('Nombre del día', { exact: true }).fill('Día 1');
-  await page.getByRole('button', { name: 'Agregar circuito', exact: true }).click();
+  await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
+  await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
+  await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
   const day = page.getByRole('group', { name: 'Día 1', exact: true }),
     block = day.getByRole('group', { name: 'Bloque 1', exact: true });
   await block.getByLabel('Nombre del bloque (opcional)', { exact: true }).fill('Bloque A');
   await block.getByLabel('Vueltas', { exact: true }).fill('3');
-  await block.getByLabel('Descanso entre vueltas (segundos)', { exact: true }).fill('60');
+  await block.getByText('Descanso entre vueltas', { exact: true }).click();
+  await block.getByLabel('Segundos (opcional)', { exact: true }).fill('60');
   for (let i = 0; i < 3; i++) {
     const row = day.getByRole('group', { name: 'Ejercicio ' + (i + 1), exact: true });
     await createInline(page, row, exerciseNames[i]!, muscle, i === 0);
     await row.getByLabel('Repeticiones', { exact: true }).fill(String([12, 10, 15][i]));
-    await row
-      .getByLabel('Descanso después del ejercicio (segundos)', { exact: true })
-      .fill(String(i === 0 ? 0 : 20));
+    await row.getByLabel('Descanso (opcional)', { exact: true }).fill(String(i === 0 ? 0 : 20));
   }
   await expect(page.getByLabel('Nombre de rutina', { exact: true })).toHaveValue(name);
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveCount(0);
   await expect(block.getByLabel('Vueltas', { exact: true })).toHaveCount(1);
-  await expect(block.getByLabel('Series', { exact: true })).toHaveCount(0);
+  await expect(block.getByLabel('Vueltas', { exact: true })).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
   await page.screenshot({
@@ -146,7 +147,6 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
     animations: 'disabled',
   });
   await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
-  await confirm(page);
   await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=1/);
   const id = Number(new URL(page.url()).pathname.split('/').at(-1));
   const savedR = await request.get('/api/rutinas/' + id, { headers });
@@ -178,7 +178,7 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
         .getByRole('combobox', { name: 'Ejercicio', exact: true }),
     ).toHaveValue(exerciseNames[i]!);
   // Existing suggestions support keyboard selection; circuits can grow beyond three exercises.
-  await page.getByRole('button', { name: 'Agregar ejercicio al bloque', exact: true }).click();
+  await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
   const fourth = page.getByRole('group', { name: 'Ejercicio 4', exact: true });
   const search = fourth.getByRole('combobox', { name: 'Ejercicio', exact: true });
   await search.fill(exerciseNames[0]!.toUpperCase());
@@ -186,13 +186,18 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
   await search.press('Enter');
   await expect(search).toHaveValue(exerciseNames[0]!);
   await fourth.getByLabel('Repeticiones', { exact: true }).fill('8');
-  await page.getByRole('button', { name: 'Agregar bloque de series', exact: true }).click();
+  await page.getByRole('button', { name: '+ Agregar bloque', exact: true }).click();
+  await page
+    .getByRole('group', { name: 'Bloque 2', exact: true })
+    .getByRole('button', { name: '+ Agregar ejercicio', exact: true })
+    .click();
   const fifth = page.getByRole('group', { name: 'Ejercicio 5', exact: true });
   await fifth.getByRole('combobox', { name: 'Ejercicio', exact: true }).fill(exerciseNames[1]!);
   await fifth.getByRole('option', { name: new RegExp(exerciseNames[1]!) }).click();
-  await fourth.getByRole('button', { name: 'Mover al bloque siguiente', exact: true }).click();
+  await fourth
+    .getByRole('button', { name: 'Reordenar ejercicio', exact: true })
+    .press('ArrowRight');
   await page.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
-  await confirm(page);
   await expect(page).toHaveURL(/guardada=2/);
   const updated = await request.get('/api/rutinas/' + id, { headers }),
     v2 = await updated.json();

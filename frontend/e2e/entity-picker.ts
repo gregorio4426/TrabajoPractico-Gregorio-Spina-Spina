@@ -6,7 +6,13 @@ export async function selectEntity(page: Page, label: string, query: string) {
         .getByRole('group', { name: 'Día ' + exercise[1], exact: true })
         .getByRole('group', { name: 'Ejercicio ' + exercise[2], exact: true })
     : page;
-  if (exercise) label = 'Ejercicio';
+  if (exercise) {
+    const day = page.getByRole('group', { name: 'Día ' + exercise[1], exact: true });
+    while ((await day.locator('.compact-exercise').count()) < Number(exercise[2])) {
+      await day.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).last().click();
+    }
+    label = 'Ejercicio';
+  }
   if (exercise) {
     const input = scope.getByRole('combobox', { name: 'Ejercicio', exact: true });
     await input.fill(query);

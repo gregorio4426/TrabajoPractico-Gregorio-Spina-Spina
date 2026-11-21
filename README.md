@@ -27,6 +27,12 @@ Las ediciones de rutinas conservan las versiones utilizadas por asignaciones y s
 
 Los seis grupos musculares estándar se conservan por compatibilidad. Los personalizados pueden renombrarse manteniendo referencias y eliminarse únicamente cuando no están en uso. Los comentarios se guardan al cerrar la sesión; no existe edición posterior del comentario.
 
+### Editor de rutinas y entrenamiento simplificados
+
+Días con orden automático, bloques uniformes con vueltas y ejercicios reorganizables mediante arrastre o teclado. El alumno registra repeticiones y pesos reales por vuelta en una tabla compacta, sin confirmaciones cotidianas. ADMIN puede filtrar alumnos `Sin asignar` y PROFESOR puede encontrar y vincular alumnos disponibles con acceso limitado antes de vincularse.
+
+Ver la [guía de uso, permisos y actualización](simulacro_nombreAlumno/docs/rutinas-simples.md). Esta mejora no requiere una migración nueva: conserva versiones, asignaciones, pesos individuales e historiales.
+
 ## Ejecutar todo con Docker
 
 Es la opción para utilizar el sistema **sin abrir el IDE ni iniciar MySQL manualmente**. Requiere Docker Engine/Desktop iniciado y Compose v2; Java, Node y MySQL se ejecutan dentro de contenedores.

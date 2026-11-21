@@ -128,16 +128,28 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await page.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
   }
   async function record(page: Page, block: number, number: number, reps: number, weight: string) {
+    if (
+      (await page
+        .getByText('Registro avanzado y última ejecución', { exact: true })
+        .locator('..')
+        .getAttribute('open')) === null
+    )
+      await page.getByText('Registro avanzado y última ejecución', { exact: true }).click();
     await page
       .getByRole('button', {
         name: new RegExp('posición ' + (block === v2.dias[0]!.ejercicios[1]!.id ? 2 : 1) + '$'),
       })
       .click();
     await page.getByLabel('Serie realizada', { exact: true }).fill(String(number));
-    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill(String(reps));
+    await page
+      .locator('.student-block-form')
+      .getByLabel('Repeticiones realizadas', { exact: true })
+      .fill(String(reps));
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill(weight);
-    await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
-    await confirm(page);
+    await page
+      .locator('.student-block-form')
+      .getByRole('button', { name: 'Guardar serie', exact: true })
+      .click();
     await expect(page.getByText('Serie registrada correctamente.')).toBeVisible();
   }
   test.beforeAll(async ({ request }) => {
@@ -255,14 +267,28 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await expect(page.locator('.student-series-card')).toHaveCount(1);
     await page.reload();
     await expect(page.locator('.student-series-card')).toHaveCount(1);
+    if (
+      (await page
+        .getByText('Registro avanzado y última ejecución', { exact: true })
+        .locator('..')
+        .getAttribute('open')) === null
+    )
+      await page.getByText('Registro avanzado y última ejecución', { exact: true }).click();
     await page.getByRole('button', { name: /posición 2$/ }).click();
     await expect(page.getByLabel('Serie realizada', { exact: true })).toHaveValue('2');
-    await expect(page.getByLabel('Repeticiones realizadas', { exact: true })).toHaveValue('');
+    await expect(
+      page.locator('.student-block-form').getByLabel('Repeticiones realizadas', { exact: true }),
+    ).toHaveValue('');
     await expect(page.getByLabel('Peso realizado (opcional)', { exact: true })).toHaveValue('');
-    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill('8');
+    await page
+      .locator('.student-block-form')
+      .getByLabel('Repeticiones realizadas', { exact: true })
+      .fill('8');
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill('0');
-    await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
-    await confirm(page);
+    await page
+      .locator('.student-block-form')
+      .getByRole('button', { name: 'Guardar serie', exact: true })
+      .click();
     await expect(page.getByText('Serie registrada correctamente.')).toBeVisible();
     await page.reload();
     await expect(page.locator('.student-series-card')).toHaveCount(2);
@@ -287,10 +313,23 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await expect(
       page.getByRole('button', { name: 'Finalizar entrenamiento', exact: true }),
     ).toBeDisabled();
+    if (
+      (await page
+        .getByText('Registro avanzado y última ejecución', { exact: true })
+        .locator('..')
+        .getAttribute('open')) === null
+    )
+      await page.getByText('Registro avanzado y última ejecución', { exact: true }).click();
     await page.getByRole('button', { name: /posición 1$/ }).click();
-    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill('0');
+    await page
+      .locator('.student-block-form')
+      .getByLabel('Repeticiones realizadas', { exact: true })
+      .fill('0');
     await page.getByLabel('Peso realizado (opcional)', { exact: true }).fill('-1');
-    await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
+    await page
+      .locator('.student-block-form')
+      .getByRole('button', { name: 'Guardar serie', exact: true })
+      .click();
     await expect(page.getByRole('alert')).toContainText('enteros positivos');
     await expect(page.getByRole('dialog')).toHaveCount(0);
     await record(page, v2.dias[0]!.ejercicios[0]!.id, 1, 8, '20');
@@ -333,7 +372,6 @@ test.describe('ALUMNO · backend real y móvil', () => {
       .getByLabel('Motivo de la serie', { exact: true })
       .fill('Corrección de peso y repeticiones');
     await page.getByRole('button', { name: 'Confirmar corrección', exact: true }).click();
-    await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
     await page.getByRole('button', { name: `Anular serie 2`, exact: true }).click();
     await page.getByLabel('Motivo de la serie', { exact: true }).fill('Anotación a revisar');
@@ -375,11 +413,23 @@ test.describe('ALUMNO · backend real y móvil', () => {
     const row = await add(request, identity, s.id, v2.dias[0]!.ejercicios[0]!.id, 1, 20);
     await login(page);
     await page.goto(`/alumno/sesiones/${s.id}`);
+    if (
+      (await page
+        .getByText('Registro avanzado y última ejecución', { exact: true })
+        .locator('..')
+        .getAttribute('open')) === null
+    )
+      await page.getByText('Registro avanzado y última ejecución', { exact: true }).click();
     await page.getByRole('button', { name: /posición 1$/ }).click();
     await page.getByLabel('Serie realizada', { exact: true }).fill('1');
-    await page.getByLabel('Repeticiones realizadas', { exact: true }).fill('8');
-    await page.getByRole('button', { name: 'Guardar serie', exact: true }).click();
-    await confirm(page);
+    await page
+      .locator('.student-block-form')
+      .getByLabel('Repeticiones realizadas', { exact: true })
+      .fill('8');
+    await page
+      .locator('.student-block-form')
+      .getByRole('button', { name: 'Guardar serie', exact: true })
+      .click();
     await expect(page.getByRole('alert')).toContainText('Recargá');
     await page.getByRole('button', { name: 'Recargar sesión', exact: true }).click();
     await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
@@ -399,7 +449,6 @@ test.describe('ALUMNO · backend real y móvil', () => {
       .getByLabel('Motivo de la serie', { exact: true })
       .fill('Mi corrección desactualizada');
     await page.getByRole('button', { name: 'Confirmar corrección', exact: true }).click();
-    await confirm(page);
     await expect(page.getByRole('alert')).toContainText('Recargá');
     await page.getByRole('button', { name: 'Recargar sesión', exact: true }).click();
     await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
