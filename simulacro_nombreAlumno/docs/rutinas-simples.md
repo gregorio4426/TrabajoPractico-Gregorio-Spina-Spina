@@ -38,4 +38,18 @@ Abrir http://localhost:8088 y recargar el navegador. No volver a inicializar MyS
 
 ## Validación
 
-Compilación de producción aprobada; 131 pruebas Angular unitarias/HTTP y 218 pruebas backend, incluidas MySQL, sin fallos ni omisiones. El recorrido nuevo de Chromium contra MySQL pasó con los tres roles, arrastre real, tres días, creación/edición versionada, pesos por asignación y recuperación de resultados distintos después de recargar. Se continúa con la regresión completa del navegador. La suite añade cobertura de inserción/orden automático de días, bloques vacíos, arrastre entre bloques, resultados individuales, persistencia, peso cero/desconocido y búsquedas/vinculación seguras.
+Compilación de producción aprobada; 131 pruebas Angular unitarias/HTTP y 218 pruebas backend, incluidas MySQL, sin fallos ni omisiones. El recorrido nuevo de Chromium contra MySQL pasó con los tres roles, arrastre real, tres días, creación/edición versionada, pesos por asignación y recuperación de resultados distintos después de recargar. La ejecución completa de Chromium con Angular en modo producción aprobó **58 recorridos sin omisiones** (50 contra API real y ocho de interfaz aislada), incluida la regresión de ADMIN, PROFESOR y ALUMNO, comentarios, pesos por asignación, permisos, estadísticas y pantallas de escritorio/tablet/celular. La suite añade cobertura de inserción/orden automático de días, bloques vacíos, arrastre entre bloques, resultados individuales, persistencia, peso cero/desconocido y búsquedas/vinculación seguras.
+
+
+Comandos de referencia (con las variables privadas de pruebas ya configuradas):
+
+```sh
+# Desde simulacro_nombreAlumno/, con MYSQL_TEST_URL/USERNAME/PASSWORD de un servidor exclusivo de pruebas:
+bash mvnw test
+# Desde frontend/:
+npm run build
+npm test
+GYM_E2E_PRODUCTION=1 npm run e2e:real
+```
+
+`GYM_E2E_CREDENTIALS_FILE` debe apuntar al JSON privado de cuentas ADMIN y PROFESOR; `CHROMIUM_PATH` permite usar Chromium del sistema. Los recorridos crean registros y se ejecutaron en una base de pruebas. Las capturas y los archivos generados quedaron fuera de Git. No se modificó el esquema ni se requirió SQL adicional. La prueba móvil utiliza Chromium con tamaños de pantalla emulados; no reemplaza una validación en dispositivos físicos. Los borradores no enviados se conservan al guardar otras series dentro de la pantalla, pero solo los resultados confirmados por la API se recuperan después de recargar el navegador.

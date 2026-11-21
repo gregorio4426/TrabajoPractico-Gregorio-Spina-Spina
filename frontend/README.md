@@ -1,5 +1,7 @@
 # Impulso — frontend Angular 22, etapas 1 a 6
 
+[Editor simplificado y registro por vuelta](../simulacro_nombreAlumno/docs/rutinas-simples.md): bloques uniformes, arrastre y teclado, orden automático de días, alumnos sin asignar y tabla compacta de resultados individuales. Conserva versiones e historiales; no requiere SQL nuevo después de 007.
+
 [Revisión de bloques completos, autocompletado y creación inline](BLOQUES-Y-BUSCADORES.md): un único control de vueltas por bloque, movimientos entre bloques, selectores musculares buscables y ejercicios nuevos sin abandonar la rutina. Requiere el backend actualizado; no agrega SQL después de 007.
 
 Aplicación standalone con Signals, formularios reactivos, JWT y TypeScript/plantillas estrictos. Login único y espacios responsive ADMIN, PROFESOR y ALUMNO conectados exclusivamente al backend de este repositorio. No contiene datos simulados en producción.
