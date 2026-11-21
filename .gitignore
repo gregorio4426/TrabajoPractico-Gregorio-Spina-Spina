@@ -3,3 +3,5 @@
 .env.*
 !.env.example
 /docker/backups/
+# Private demo accounts and generated passwords
+/docker/demo-data/

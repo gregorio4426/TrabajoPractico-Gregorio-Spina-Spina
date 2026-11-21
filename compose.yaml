@@ -46,5 +46,23 @@ services:
         condition: service_healthy
     ports:
       - "${GYM_BIND_ADDRESS:-127.0.0.1}:${GYM_HTTP_PORT:-8088}:8080"
+  demo:
+    image: node:24-bookworm-slim
+    profiles: ["demo"]
+    user: node
+    init: true
+    working_dir: /seed
+    stdin_open: true
+    tty: true
+    command: ["node", "seed-demo.mjs"]
+    environment:
+      GYM_DEMO_API_URL: http://backend:8080/api
+      GYM_DEMO_FILE: /seed-data/accounts.json
+    volumes:
+      - ./docker/seed-demo.mjs:/seed/seed-demo.mjs:ro
+      - ./docker/demo-data:/seed-data
+    depends_on:
+      backend:
+        condition: service_healthy
 volumes:
   mysql-data:

@@ -14,6 +14,10 @@ Abrir **http://localhost:8088** e ingresar con el email y contraseña guardados 
 
 Después del primer login, cambiar `GYM_BOOTSTRAP_ADMIN_ENABLED=false`, vaciar las dos variables `GYM_BOOTSTRAP_ADMIN_EMAIL/PASSWORD` y ejecutar `docker compose up -d backend`. Conservar los secretos de MySQL y JWT mientras se use el mismo volumen. Las cuentas se guardan en MySQL, no en `.env`.
 
+## Datos de prueba opcionales
+
+El perfil `demo` permite cargar 20 ejercicios, cinco alumnos y un profesor vinculado mediante la API real. No se ejecuta con el arranque habitual. Ver la [guía de carga demo](DEMO.md), incluidos los comandos para Windows sin Python y el archivo privado de credenciales.
+
 ## Componentes
 
 - `frontend`: build multietapa Node 24 y Angular optimizado; Nginx ejecutado sin root en puerto 8080 interno. Sirve rutas profundas y envía `/api/` a Java sin cambiar estados HTTP.

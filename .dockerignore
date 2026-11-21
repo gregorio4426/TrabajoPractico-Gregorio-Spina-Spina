@@ -12,3 +12,6 @@
 **/*.key
 **/*.pem
 docker/backups
+
+# Private demo credentials
+docker/demo-data

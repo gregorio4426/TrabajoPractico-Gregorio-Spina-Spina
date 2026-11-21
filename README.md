@@ -70,6 +70,10 @@ docker compose logs --tail=100 backend
 
 El volumen de MySQL conserva la información al detener o recrear contenedores. **`docker compose down -v` elimina los datos del volumen.** No regenerar las claves de MySQL/JWT de una instalación existente sin un procedimiento de cambio.
 
+### Datos de prueba opcionales
+
+Se pueden cargar **20 ejercicios, 5 alumnos y 1 profesor vinculado** mediante la API real, sin reemplazar datos existentes. Con los servicios saludables, crear la carpeta `docker/demo-data` y ejecutar `docker compose --profile demo run --rm --no-deps demo`. Solicita una cuenta ADMIN y guarda los accesos demo generados en un archivo privado. Ver las [instrucciones para PowerShell y persistencia](docker/DEMO.md).
+
 ### Actualizar una instalación existente: migraciones 006 y 007
 
 Esta versión requiere `006_mejoras_funcionales.sql` y `007_pesos_por_asignacion.sql`, posteriores a 005. Las migraciones son aditivas y conservan rutinas, versiones, asignaciones y entrenamientos existentes. Si ya tenés 006, aplicar solo 007.
