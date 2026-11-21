@@ -35,44 +35,47 @@ export function plannedSeries(exercises: DiaEjercicioResponse[]) {
         </p>
         @for (number of group.numbers; track number; let round = $index) {
           @let row = entry(group.exercise, number);
-          <form
-            class="workout-series-row"
-            [class.saved-row]="!!row.saved"
-            [formGroup]="row.form"
-            (ngSubmit)="save(row)"
-          >
-            <span>Vuelta {{ round + 1 }}</span>
-            <label
-              >Repeticiones realizadas<input
-                type="number"
-                inputmode="numeric"
-                min="1"
-                step="1"
-                formControlName="reps"
-                [attr.aria-label]="
-                  group.exercise.ejercicioNombre + ' vuelta ' + (round + 1) + ' repeticiones'
-                "
-            /></label>
-            <label
-              >Peso realizado<input
-                type="number"
-                inputmode="decimal"
-                min="0"
-                step="any"
-                formControlName="weight"
-                placeholder="Opcional"
-                [attr.aria-label]="
-                  group.exercise.ejercicioNombre + ' vuelta ' + (round + 1) + ' peso'
-                "
-            /></label>
-            <button
-              class="primary"
-              [disabled]="
-                busy() || disabled() || !!row.saved?.anulada || (!!row.saved && !row.form.dirty)
-              "
+          <form [formGroup]="row.form" (ngSubmit)="save(row)">
+            <fieldset
+              class="workout-series-row teacher-fieldset"
+              [class.saved-row]="!!row.saved"
+              [disabled]="busy() || disabled() || !!row.saved?.anulada"
             >
-              {{ row.saved?.anulada ? 'Anulada' : row.saved ? 'Guardar cambio' : 'Guardar serie' }}
-            </button>
+              <span>Vuelta {{ round + 1 }}</span>
+              <label
+                >Repeticiones realizadas<input
+                  type="number"
+                  inputmode="numeric"
+                  min="1"
+                  step="1"
+                  formControlName="reps"
+                  [attr.aria-label]="
+                    group.exercise.ejercicioNombre + ' vuelta ' + (round + 1) + ' repeticiones'
+                  "
+              /></label>
+              <label
+                >Peso realizado<input
+                  type="number"
+                  inputmode="decimal"
+                  min="0"
+                  step="any"
+                  formControlName="weight"
+                  placeholder="Opcional"
+                  [attr.aria-label]="
+                    group.exercise.ejercicioNombre + ' vuelta ' + (round + 1) + ' peso'
+                  "
+              /></label>
+              <button
+                class="primary"
+                [disabled]="
+                  busy() || disabled() || !!row.saved?.anulada || (!!row.saved && !row.form.dirty)
+                "
+              >
+                {{
+                  row.saved?.anulada ? 'Anulada' : row.saved ? 'Guardar cambio' : 'Guardar serie'
+                }}
+              </button>
+            </fieldset>
           </form>
         }
       </article>
@@ -112,7 +115,10 @@ export class WorkoutGrid {
   entry(exercise: DiaEjercicioResponse, number: number) {
     const key = `${this.session().id}:${exercise.id}:${number}`;
     const saved = this.session().series?.find(
-      (s) => s.ejercicioId === exercise.ejercicioId && s.numeroSerie === number,
+      (s) =>
+        s.diaEjercicioId === exercise.id &&
+        s.ejercicioId === exercise.ejercicioId &&
+        s.numeroSerie === number,
     );
     let row = this.entries.get(key);
     if (!row) {

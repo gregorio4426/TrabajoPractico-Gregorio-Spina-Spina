@@ -91,13 +91,15 @@ export class StudentSession {
       void this.load();
     });
   }
-  async load() {
+  async load(preserveDrafts = false) {
     const seq = ++this.seq;
     ++this.lastSeq;
     this.loading.set(true);
     this.error.set('');
-    this.data.set(null);
-    this.day.set(null);
+    if (!preserveDrafts) {
+      this.data.set(null);
+      this.day.set(null);
+    }
     this.audit.set([]);
     this.last.set(null);
     this.lastMessage.set('');
@@ -140,8 +142,10 @@ export class StudentSession {
       this.data.set(session);
     } catch (e) {
       if (seq === this.seq) {
-        this.data.set(null);
-        this.day.set(null);
+        if (!preserveDrafts || (e instanceof HttpErrorResponse && [401, 403].includes(e.status))) {
+          this.data.set(null);
+          this.day.set(null);
+        }
         this.audit.set([]);
         this.error.set(alumnoError(e));
       }
@@ -258,7 +262,10 @@ export class StudentSession {
         return;
       }
     }
-    if (action === 'add' || action === 'correct') { void this.save(); return; }
+    if (action === 'add' || action === 'correct') {
+      void this.save();
+      return;
+    }
     this.confirmation().open();
   }
   confirmMessage() {
@@ -320,7 +327,7 @@ export class StudentSession {
         }
       }
       await firstValueFrom(request);
-      await this.load();
+      await this.load(true);
       if (!this.error())
         this.success.set(
           action === 'finish'

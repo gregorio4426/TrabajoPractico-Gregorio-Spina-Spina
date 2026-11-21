@@ -138,7 +138,7 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
   await expect(page.getByLabel('Nombre de rutina', { exact: true })).toHaveValue(name);
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveCount(0);
   await expect(block.getByLabel('Vueltas', { exact: true })).toHaveCount(1);
-  await expect(block.getByLabel('Vueltas', { exact: true })).toHaveCount(0);
+  await expect(block.getByLabel('Series', { exact: true })).toHaveCount(0);
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator('body')).toHaveJSProperty('scrollWidth', 390);
   await page.screenshot({

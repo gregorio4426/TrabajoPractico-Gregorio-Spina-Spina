@@ -92,7 +92,8 @@ export class Shell {
   constructor() {
     const onResize = (event: MediaQueryListEvent) => {
       this.mobile.set(event.matches);
-      this.menuOpen.set(false);
+      // A delayed entry into the mobile breakpoint must not close a menu just opened.
+      if (!event.matches) this.menuOpen.set(false);
     };
     this.media.addEventListener('change', onResize);
     inject(DestroyRef).onDestroy(() => this.media.removeEventListener('change', onResize));

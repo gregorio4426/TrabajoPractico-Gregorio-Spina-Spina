@@ -138,12 +138,11 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       fullPage: true,
       animations: 'disabled',
     });
-    await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
     const [saved] = await Promise.all([
       page.waitForResponse(
         (r) => r.url().endsWith('/api/rutinas') && r.request().method() === 'POST',
       ),
-      confirm(page),
+      page.getByRole('button', { name: 'Crear rutina', exact: true }).click(),
     ]);
     expect(saved.status()).toBe(201);
     await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=/);

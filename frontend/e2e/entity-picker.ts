@@ -8,8 +8,8 @@ export async function selectEntity(page: Page, label: string, query: string) {
     : page;
   if (exercise) {
     const day = page.getByRole('group', { name: 'Día ' + exercise[1], exact: true });
-    while ((await day.locator('.compact-exercise').count()) < Number(exercise[2])) {
-      await day.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).last().click();
+    if (exercise[2] === '1' && !(await scope.count())) {
+      await day.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).first().click();
     }
     label = 'Ejercicio';
   }

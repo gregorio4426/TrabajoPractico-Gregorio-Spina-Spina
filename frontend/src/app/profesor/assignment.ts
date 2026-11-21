@@ -5,12 +5,12 @@ import { ProfesorApi } from './profesor-api';
 import { AuthService } from '../core/auth.service';
 import * as D from '../admin/contracts';
 import { AssignmentWeights } from './assignment-weights';
-import { Confirm } from './confirm';
 import { profesorError } from './utils';
 @Component({
   selector: 'app-assignment-editor',
-  imports: [RouterLink, AssignmentWeights, Confirm],
-  template: ` <a class="admin-link" routerLink="/profesor/alumnos">← Volver a alumnos</a>
+  imports: [RouterLink, AssignmentWeights],
+  template: `
+    <a class="admin-link" routerLink="/profesor/alumnos">← Volver a alumnos</a>
     <h1>Pesos de la asignación</h1>
     @if (loading()) {
       <p class="notice" role="status">Cargando asignación…</p>
@@ -35,12 +35,7 @@ import { profesorError } from './utils';
         </p>
       }
     }
-    <app-teacher-confirm
-      #confirmation
-      title="¿Guardar los pesos de este alumno?"
-      message="Solo cambiará esta asignación. Las sesiones ya iniciadas conservan sus pesos de referencia y la plantilla permanece igual."
-      (confirmed)="save()"
-    />`,
+  `,
 })
 export class AssignmentEditor {
   private readonly api = inject(ProfesorApi);
@@ -52,7 +47,6 @@ export class AssignmentEditor {
   readonly error = signal('');
   readonly success = signal('');
   readonly weights = viewChild<AssignmentWeights>('weights');
-  readonly confirmation = viewChild.required<Confirm>('confirmation');
   constructor() {
     void this.load();
   }
@@ -75,7 +69,7 @@ export class AssignmentEditor {
       this.error.set('Los pesos deben ser finitos y no negativos, o quedar vacíos.');
       return;
     }
-    this.confirmation().open();
+    void this.save();
   }
   async save() {
     if (this.pending() || !this.weights()) return;

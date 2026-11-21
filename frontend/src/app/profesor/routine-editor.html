@@ -25,7 +25,7 @@
           ></textarea>
         </label>
       </section>
-      <p class="admin-help">
+      <p class="admin-help" id="routine-move-help">
         Arrastrá desde ⠿ para ordenar. Con teclado, usá las flechas en el control de arrastre;
         izquierda/derecha cambia un ejercicio de bloque.
       </p>
@@ -75,7 +75,8 @@
                       <h3>
                         <button
                           type="button"
-                          cdkDragHandle aria-describedby="routine-move-help"
+                          cdkDragHandle
+                          aria-describedby="routine-move-help"
                           class="drag-handle"
                           [attr.aria-label]="'Reordenar bloque ' + (bi + 1)"
                           (keydown)="keyboardMove($event, di, block.first, true)"
@@ -157,7 +158,8 @@
                         >
                           <button
                             type="button"
-                            cdkDragHandle aria-describedby="routine-move-help"
+                            cdkDragHandle
+                            aria-describedby="routine-move-help"
                             class="drag-handle"
                             aria-label="Reordenar ejercicio"
                             (keydown)="keyboardMove($event, di, block.indexes[ei]!, false)"

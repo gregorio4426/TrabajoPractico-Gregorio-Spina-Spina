@@ -141,7 +141,8 @@ export class RoutineEditor {
   deleteDay(day: number) {
     this.requestRemoval(
       () => this.removeDay(day),
-      !!this.days.at(day).controls.nombre.value ||
+      this.days.at(day).dirty ||
+        !!this.days.at(day).controls.nombre.value ||
         this.days.at(day).controls.ejercicios.controls.some((r) => !!r.controls.ejercicioId.value),
     );
   }
@@ -154,7 +155,7 @@ export class RoutineEditor {
           rows.removeAt(rows.controls.indexOf(r));
         }
       },
-      b.rows.some((r) => !!r.controls.ejercicioId.value) ||
+      b.rows.some((r) => r.dirty || !!r.controls.ejercicioId.value) ||
         !!b.rows[0]!.controls.bloqueNombre.value,
     );
   }
@@ -226,13 +227,27 @@ export class RoutineEditor {
     targetIndex: number,
     event: Pick<CdkDragDrop<unknown>, 'previousIndex' | 'currentIndex' | 'item'>,
   ) {
-    const row = event.item.data as ReturnType<RoutineEditor['exercise']>;
+    this.transferExercise(
+      day,
+      targetIndex,
+      event.item.data as ReturnType<RoutineEditor['exercise']>,
+      event.currentIndex,
+    );
+  }
+  transferExercise(
+    day: number,
+    targetIndex: number,
+    row: ReturnType<RoutineEditor['exercise']>,
+    position: number,
+  ) {
     const rows = this.days.at(day).controls.ejercicios;
     const groups = this.blocks(day);
     const target = groups[targetIndex]!;
     const anchor = target.rows[0]!;
+    const source = groups.find((b) => b.rows.includes(row))!;
+    const previous = source.rows[0]!.getRawValue();
     const destination = target.rows.filter((r) => r !== row && !this.isEmpty(r));
-    destination.splice(event.currentIndex, 0, row);
+    destination.splice(position, 0, row);
     row.patchValue({
       bloqueOrden: anchor.controls.bloqueOrden.value ?? targetIndex + 1,
       bloqueNombre: anchor.controls.bloqueNombre.value,
@@ -240,9 +255,23 @@ export class RoutineEditor {
       vueltas: anchor.controls.seriesSugeridas.value,
       descansoVueltaSegundos: anchor.controls.descansoVueltaSegundos.value,
     });
-    const ordered = groups.flatMap((b, i) =>
-      i === targetIndex ? destination : b.rows.filter((r) => r !== row),
-    );
+    const ordered = groups.flatMap((b, i) => {
+      if (i === targetIndex) return destination;
+      const remaining = b.rows.filter((r) => r !== row);
+      if (!remaining.length && b === source) {
+        const empty = this.exercise();
+        empty.patchValue({
+          bloqueOrden: previous.bloqueOrden,
+          bloqueNombre: previous.bloqueNombre,
+          vueltas: previous.seriesSugeridas,
+          seriesSugeridas: previous.seriesSugeridas,
+          descansoVueltaSegundos: previous.descansoVueltaSegundos,
+        });
+        this.placeholders.add(empty);
+        return [empty];
+      }
+      return remaining;
+    });
     rows.clear();
     ordered.forEach((r) => rows.push(r));
     this.form.markAsDirty();
@@ -312,22 +341,12 @@ export class RoutineEditor {
       current = groups.findIndex((b) => b.rows.includes(row));
     const target = groups[current + offset];
     if (!target) return;
-    // Normalize legacy single exercises before grouping so their order remains explicit.
-    let next = Math.max(0, ...list.controls.map((r) => r.controls.bloqueOrden.value ?? 0));
-    for (const r of list.controls)
-      if (r.controls.bloqueOrden.value === null)
-        r.patchValue({ bloqueOrden: ++next, vueltas: r.controls.seriesSugeridas.value });
-    const anchor = target.rows.at(-1)!,
-      source = target.rows[0]!;
-    list.removeAt(index);
-    row.patchValue({
-      bloqueOrden: source.controls.bloqueOrden.value,
-      bloqueNombre: source.controls.bloqueNombre.value,
-      vueltas: source.controls.seriesSugeridas.value,
-      seriesSugeridas: source.controls.seriesSugeridas.value,
-      descansoVueltaSegundos: source.controls.descansoVueltaSegundos.value,
-    });
-    list.insert(list.controls.indexOf(anchor) + 1, row);
+    this.transferExercise(
+      day,
+      current + offset,
+      row,
+      target.rows.filter((r) => !this.isEmpty(r)).length,
+    );
   }
   convertAndAdd(day: number, index: number) {
     const rows = this.days.at(day).controls.ejercicios;
@@ -503,7 +522,9 @@ export class RoutineEditor {
           ...(e.bloqueOrden === null
             ? {}
             : {
-                bloqueOrden: [...new Set(d.ejercicios.map(row => row.bloqueOrden))].indexOf(e.bloqueOrden) + 1,
+                bloqueOrden:
+                  [...new Set(d.ejercicios.map((row) => row.bloqueOrden))].indexOf(e.bloqueOrden) +
+                  1,
                 bloqueNombre: e.bloqueNombre?.trim() || null,
                 vueltas: Number(e.seriesSugeridas),
                 ordenEnBloque: d.ejercicios

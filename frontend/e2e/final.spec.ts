@@ -189,6 +189,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
   for (const role of ['ADMIN', 'PROFESOR', 'ALUMNO'] as const)
     test(`${role}: pantallas en 1440, 820 y 360 px sin errores inesperados`, async ({ page }) => {
       test.setTimeout(180000);
+      page.setDefaultTimeout(10000);
       const problems = watch(page);
       const who = role === 'ADMIN' ? admin : role === 'PROFESOR' ? teacher : student;
       const paths =
@@ -278,6 +279,11 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
             );
           expect(unlabelled, `${path}: etiquetas`).toEqual([]);
           if (path === `/alumno/sesiones/${open.id}`) {
+            const advanced = page.getByText('Registro avanzado y última ejecución', {
+              exact: true,
+            });
+            if ((await advanced.locator('..').getAttribute('open')) === null)
+              await advanced.click();
             await page
               .getByRole('button', {
                 name: /posición 1$/,

@@ -6,10 +6,10 @@
 - Todos los bloques usan el mismo editor: nombre opcional, vueltas y descanso opcional entre vueltas. Se agregan vacíos; cada ejercicio tiene repeticiones y descanso opcional. No se solicitan tipos ni pesos de plantilla.
 - El asa `⠿` permite arrastrar bloques dentro del día y ejercicios dentro de un bloque o entre bloques del mismo día. También admite teclado: arriba/abajo cambia el orden; izquierda/derecha cambia de bloque un ejercicio. El destino determina las vueltas y el descanso entre vueltas; se conservan repeticiones y descanso individual.
 - Papelera elimina ejercicios, bloques o días. Se pide confirmación cuando hay contenido cargado. Agregar y guardar no abren confirmaciones. Un bloque vacío debe completarse o eliminarse antes de guardar. El guardado conserva el contrato de versionado; guardar una definición idéntica no crea versiones innecesarias.
-- Los pesos sugeridos continúan siendo individuales por asignación y se capturan en cada sesión. No se agregan pesos a las plantillas.
+- La edición de pesos individuales también guarda directamente, con mensaje inline. Los pesos sugeridos continúan siendo individuales por asignación y se capturan en cada sesión. No se agregan pesos a las plantillas.
 - ADMIN ve `Sin asignar` / `Asignado` independientemente de si la cuenta está activa. El filtro `Sin profesor` opera en el servidor y conserva la paginación. La creación administrativa vuelve al listado existente.
 - En `Mis alumnos`, el profesor abre `Buscar alumnos disponibles`, busca nombre/email y vincula a su propio perfil un alumno activo sin profesor. La lista y el estado se actualizan después de confirmar la escritura en el servidor.
-- La sesión del ALUMNO muestra todas las vueltas de cada ejercicio con repeticiones reales y peso real independientes. Cada fila guarda sin modal. Los campos nuevos no se rellenan con resultados sugeridos; vacío y cero conservan significados diferentes. Las filas guardadas pueden corregirse con auditoría y revisión optimista. Las series anuladas se restauran desde la sección de historial, sin sobrescribirlas.
+- La sesión del ALUMNO muestra todas las vueltas de cada ejercicio con repeticiones reales y peso real independientes. Cada fila guarda sin modal. La actualización posterior conserva los valores todavía no enviados de las demás filas; los campos se bloquean mientras una escritura está pendiente. Los campos nuevos no se rellenan con resultados sugeridos; vacío y cero conservan significados diferentes. Las filas guardadas pueden corregirse con auditoría y revisión optimista. Las series anuladas se restauran desde la sección de historial, sin sobrescribirlas.
 - El registro avanzado anterior queda disponible en una sección plegable para números de serie adicionales y consulta de la última ejecución. La finalización mantiene confirmación y las validaciones del backend.
 
 ## Seguridad y contratos
@@ -22,7 +22,7 @@ No se modifica el esquema ni se requiere una migración nueva. Se conservan los 
 
 `GET /api/admin/alumnos` incorpora `sinProfesor=true|false`. No confundirlo con `sinCuenta`, `activo` o `vigente`.
 
-El entrenamiento reutiliza los endpoints existentes de series. Cuando un ejercicio aparece varias veces en el día, la numeración enviada es global para ese ejercicio dentro de la sesión; visualmente cada prescripción muestra sus propias vueltas. No se reasignan resultados históricos ni se infieren registros ausentes. Una respuesta 409 o una interrupción no provoca reintentos automáticos de escritura.
+El entrenamiento reutiliza los endpoints existentes de series. Cuando un ejercicio aparece varias veces en el día, la numeración enviada es global para ese ejercicio dentro de la sesión; visualmente cada prescripción muestra sus propias vueltas. Solo se muestran en una fila los registros de su prescripción exacta (`diaEjercicioId`), ejercicio y número. Las series adicionales o históricas fuera de las vueltas planificadas permanecen en el historial y el registro avanzado; no se reasignan a otra aparición del mismo ejercicio ni se infieren registros ausentes. Una respuesta 409 o una interrupción no provoca reintentos automáticos de escritura.
 
 ## Actualizar Docker en PowerShell
 
@@ -38,4 +38,4 @@ Abrir http://localhost:8088 y recargar el navegador. No volver a inicializar MyS
 
 ## Validación
 
-Compilación de producción aprobada; 128 pruebas Angular unitarias/HTTP y 218 pruebas backend, incluidas MySQL, sin fallos ni omisiones. El recorrido nuevo de Chromium contra MySQL pasó con los tres roles, arrastre real, tres días, creación/edición versionada, pesos por asignación y recuperación de resultados distintos después de recargar. Se continúa con la regresión completa del navegador. La suite añade cobertura de inserción/orden automático de días, bloques vacíos, arrastre entre bloques, resultados individuales, persistencia, peso cero/desconocido y búsquedas/vinculación seguras.
+Compilación de producción aprobada; 131 pruebas Angular unitarias/HTTP y 218 pruebas backend, incluidas MySQL, sin fallos ni omisiones. El recorrido nuevo de Chromium contra MySQL pasó con los tres roles, arrastre real, tres días, creación/edición versionada, pesos por asignación y recuperación de resultados distintos después de recargar. Se continúa con la regresión completa del navegador. La suite añade cobertura de inserción/orden automático de días, bloques vacíos, arrastre entre bloques, resultados individuales, persistencia, peso cero/desconocido y búsquedas/vinculación seguras.

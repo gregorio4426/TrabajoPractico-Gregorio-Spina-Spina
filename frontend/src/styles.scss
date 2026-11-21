@@ -100,3 +100,4 @@ select:focus-visible, textarea:focus-visible, summary:focus-visible,
 .routine-editor-compact label,.workout-series-row label{display:flex;flex-direction:column;gap:5px;min-width:0;font-size:.82rem;font-weight:600}
 .routine-editor-compact input,.routine-editor-compact textarea,.workout-series-row input{display:block;width:100%;min-width:0;max-width:100%;border:1px solid #626c47;border-radius:7px;background:var(--field);color:var(--ink)}
 .compact-exercise .search-select-clear{font-size:.75rem;padding:6px 10px;min-height:32px}.compact-exercise>.drag-handle{align-self:center}.block-settings{margin-top:8px}.routine-editor-compact summary{font-size:.8rem;cursor:pointer}
+.routine-editor-compact .search-select-clear{display:none}

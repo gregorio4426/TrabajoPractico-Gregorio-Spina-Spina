@@ -1,3 +1,5 @@
+import { By } from '@angular/platform-browser';
+import { WorkoutGrid } from './workout-grid';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
@@ -182,5 +184,22 @@ describe('ALUMNO session recovery and revisions', () => {
     await flushSession({ ...seed, id: 8 });
     await fixture.whenStable();
     expect(component.data()?.id).toBe(8);
+  });
+  it('refreshes saved records without destroying other unsent grid drafts', async () => {
+    const fixture = await setup(),
+      c = fixture.componentInstance;
+    const grid = fixture.debugElement.query(By.directive(WorkoutGrid))
+      .componentInstance as WorkoutGrid;
+    const draft = grid.entry(c.day()!.ejercicios![0]!, 2);
+    draft.form.patchValue({ reps: 7, weight: 65 });
+    draft.form.markAsDirty();
+    const reload = c.load(true);
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.directive(WorkoutGrid)).componentInstance).toBe(grid);
+    await flushSession({ ...seed, series: [row] });
+    await reload;
+    fixture.detectChanges();
+    expect(fixture.debugElement.query(By.directive(WorkoutGrid)).componentInstance).toBe(grid);
+    expect(draft.form.getRawValue()).toEqual({ reps: 7, weight: 65 });
   });
 });

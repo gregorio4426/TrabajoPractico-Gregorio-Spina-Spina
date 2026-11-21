@@ -242,4 +242,25 @@ describe('PROFESOR routine forms', () => {
     expect(moved.controls.descansoEjercicioSegundos.value).toBe(20);
     expect(moved.controls.seriesSugeridas.value).toBe(4);
   });
+  it('keeps the empty source block and its metadata when its last exercise is moved', async () => {
+    const e = await setup();
+    e.removeExercise(0, 0);
+    e.addBlock(0, 1);
+    e.addBlock(0, 1);
+    const row = e.days.at(0).controls.ejercicios.at(0);
+    row.patchValue({
+      bloqueNombre: 'Conservar',
+      seriesSugeridas: 3,
+      vueltas: 3,
+      ejercicioId: 3,
+      repsSugeridas: 12,
+    });
+    e.transferExercise(0, 1, row, 0);
+    expect(e.blocks(0)).toHaveLength(2);
+    const empty = e.blocks(0)[0]!.rows[0]!;
+    expect(e.isEmpty(empty)).toBe(true);
+    expect(empty.controls.bloqueNombre.value).toBe('Conservar');
+    expect(empty.controls.seriesSugeridas.value).toBe(3);
+    expect(e.blocks(0)[1]!.rows[0]!.controls.repsSugeridas.value).toBe(12);
+  });
 });

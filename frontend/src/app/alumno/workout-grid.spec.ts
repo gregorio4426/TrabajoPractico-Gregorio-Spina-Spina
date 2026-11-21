@@ -71,7 +71,15 @@ describe('individual results for every exercise and round', () => {
     f.componentRef.setInput('session', {
       id: 7,
       series: [
-        { id: 9, ejercicioId: 3, numeroSerie: 1, repsHechas: 10, pesoUsado: 60, revision: 4 },
+        {
+          id: 9,
+          ejercicioId: 3,
+          diaEjercicioId: 20,
+          numeroSerie: 1,
+          repsHechas: 10,
+          pesoUsado: 60,
+          revision: 4,
+        },
       ],
     });
     f.detectChanges();
@@ -87,5 +95,25 @@ describe('individual results for every exercise and round', () => {
     await save;
     expect(c.error()).toContain('No se reintentó');
     http.expectNone('/api/sesiones/7/series/9');
+  });
+  it('does not display another prescription as a completed round when the exercise repeats', () => {
+    const f = setup();
+    f.componentRef.setInput('session', {
+      id: 7,
+      series: [
+        {
+          id: 9,
+          ejercicioId: 3,
+          diaEjercicioId: 999,
+          numeroSerie: 1,
+          repsHechas: 10,
+          pesoUsado: 60,
+          revision: 0,
+        },
+      ],
+    });
+    f.detectChanges();
+    const c = f.componentInstance;
+    expect(c.entry(c.exercises()[0]!, 1).saved).toBeUndefined();
   });
 });
