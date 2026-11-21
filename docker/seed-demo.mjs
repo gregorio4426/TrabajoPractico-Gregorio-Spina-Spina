@@ -150,14 +150,38 @@ async function passwordPrompt(message) {
     input.on('keypress', key);
   });
 }
+export async function readCredentials(input) {
+  let content = '';
+  for await (const chunk of input) {
+    content += chunk.toString('utf8');
+    if (Buffer.byteLength(content, 'utf8') > 16384) throw new Error('La entrada de credenciales es demasiado grande.');
+  }
+  let credentials;
+  try { credentials = JSON.parse(content.replace(/^\uFEFF/, '')); }
+  catch { throw new Error('No se pudieron leer las credenciales por entrada estándar.'); }
+  if (typeof credentials?.email !== 'string' || !credentials.email.trim() ||
+      typeof credentials.password !== 'string' || !credentials.password) {
+    throw new Error('Se necesitan email y contraseña ADMIN.');
+  }
+  return credentials;
+}
 async function main() {
   const apiUrl = process.env.GYM_DEMO_API_URL || 'http://localhost:8088/api';
   console.log('Carga opcional de datos ficticios. No elimina ni reemplaza registros existentes.');
   console.log(`API: ${apiUrl}`);
-  const rl = createInterface({ input: process.stdin, output: process.stdout });
-  const adminEmail = await new Promise(resolveEmail => rl.question('Email de tu ADMIN: ', resolveEmail));
-  rl.close();
-  const adminPassword = await passwordPrompt('Contraseña ADMIN (no se muestra): ');
+  let adminEmail, adminPassword;
+  if (process.argv.includes('--credentials-stdin')) {
+    process.stdin.setEncoding('utf8');
+    const credentials = await readCredentials(process.stdin);
+    adminEmail = credentials.email;
+    adminPassword = credentials.password;
+  } else {
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    adminEmail = await new Promise(resolveEmail => rl.question('Email de tu ADMIN: ', resolveEmail));
+    rl.close();
+    adminPassword = await passwordPrompt('Contraseña ADMIN (no se muestra): ');
+  }
+  console.log('Verificando acceso ADMIN y cargando datos mediante la API…');
   await seedDemo({ apiUrl, stateFile: process.env.GYM_DEMO_FILE || './docker/demo-data/accounts.json', adminEmail, adminPassword });
 }
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {

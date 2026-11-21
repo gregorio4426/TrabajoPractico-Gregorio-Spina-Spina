@@ -24,6 +24,16 @@ notepad docker/demo-data/accounts.json
 
 Abrir **http://localhost:8088**, cerrar cualquier sesión anterior e ingresar con alguna de esas cuentas. El profesor puede crear y asignar rutinas a los cinco alumnos; cada alumno puede registrar sus entrenamientos. No se generan rutinas, entrenamientos ni estadísticas ficticias: los indicadores reflejan únicamente la actividad registrada.
 
+## Si la terminal queda detenida al pedir la contraseña (Windows)
+
+Cancelar con Ctrl+C y ejecutar este comando desde PowerShell en la raíz del repositorio. Solicita las credenciales con el diálogo de Windows/PowerShell y las envía por entrada estándar, sin depender de la terminal interactiva de Docker:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File docker/seed-demo.ps1
+```
+
+La política `Bypass` se aplica únicamente a este proceso para poder ejecutar el script local; no cambia la configuración persistente de PowerShell. La contraseña no se escribe en el historial, no se pasa como argumento ni se guarda en variables de entorno. El modo `-T` desactiva la terminal Docker; la entrada JSON se consume hasta el final antes de iniciar las peticiones. Al avanzar, muestra `Verificando acceso ADMIN y cargando datos mediante la API…`. No compartir ni imprimir el contenido de las credenciales.
+
 ## Persistencia y repetición
 
 Los emails son únicos por conjunto de prueba y las contraseñas son aleatorias. El archivo `docker/demo-data/accounts.json` es privado y está excluido de Git y del contexto de construcción de imágenes. No contiene la contraseña ADMIN ni tokens JWT. Dentro del contenedor, ese mismo archivo se encuentra en `/seed-data/accounts.json`.

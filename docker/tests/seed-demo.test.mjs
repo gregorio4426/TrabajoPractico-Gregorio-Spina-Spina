@@ -3,7 +3,19 @@ import assert from 'node:assert/strict';
 import { mkdtemp, readFile, stat, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { seedDemo } from '../seed-demo.mjs';
+import { seedDemo, readCredentials } from '../seed-demo.mjs';
+import { Readable } from 'node:stream';
+
+test('reads piped credentials without a TTY, preserving unicode and special characters', async () => {
+ const credentials = {email:'admin@example.test', password:'Prueba-ñ-🔒-$"\\'};
+ const json = '\uFEFF' + JSON.stringify(credentials) + '\r\n';
+ assert.deepEqual(await readCredentials(Readable.from([json.slice(0, 12), json.slice(12)])), credentials);
+});
+test('rejects invalid, incomplete and excessive stdin without revealing its contents', async () => {
+ for (const text of ['private-secret', '{}', 'null', '{"email":"admin@test","password":""}', 'x'.repeat(16385)]) {
+   await assert.rejects(readCredentials(Readable.from([text])), error => !error.message.includes('private-secret') && /credenciales|email|contraseña/.test(error.message));
+ }
+});
 function fixture() {
   const accounts = new Map(), exercises = [{id: 41,nombre:'PRESS DE BANCA',grupoMuscular:'PECHO',descripcion:'Conservar descripción existente'}], links = new Set();
   const calls = []; let next = 100;
