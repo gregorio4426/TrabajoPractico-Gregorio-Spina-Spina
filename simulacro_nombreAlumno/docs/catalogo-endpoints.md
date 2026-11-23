@@ -4,6 +4,15 @@ Generado desde OpenAPI 3.0.1: **114 operaciones HTTP en 94 rutas**. Incluye las 
 
 El rol listado no sustituye las verificaciones de propiedad, vínculos vigentes, autoría y estado. Ver [informe de etapa 7](etapa-7-dashboards.md) y [contrato completo con DTOs y parámetros](openapi.json). El servidor del contrato exportado se normaliza a `/`; al generar un cliente externo configurar la URL de la API, por ejemplo `http://localhost:8080`.
 
+## Ejercicios por repeticiones o tiempo y sugerencias personales
+
+La actualización IMPULSO requiere la migración MySQL **008** en instalaciones existentes. No agrega rutas: amplía los DTOs actuales. Ver [compatibilidad e instrucciones de actualización](redisenio-impulso.md).
+
+- La plantilla declara `tipoMedicion` (`REPETICIONES` o `SEGUNDOS`) y la referencia opcional correspondiente: `repsSugeridas` o `segundosSugeridos`. No recibe pesos de alumnos. El nombre vacío de un día se completa como `Día N` según su orden.
+- La asignación y su edición de sugerencias conservan `diaEjercicioId` y `pesoSugerido`, con `repsSugeridas` o `segundosSugeridos` opcionales por ejercicio. Una referencia personal vacía utiliza la general. La respuesta incluye `repsPersonalizadas` y `segundosPersonalizados`; cada alumno mantiene sus propios valores.
+- Al comenzar una sesión se capturan sus sugerencias. Registrar o corregir una serie requiere exactamente uno de `repsHechas` o `segundosHechos`, positivo y compatible con la unidad de su prescripción. La respuesta conserva ambos campos diferenciados.
+- La actividad y frecuencia contemplan series por tiempo, pero los segundos no se convierten en repeticiones ni volumen. Los resultados anteriores mantienen su unidad original. Se conservan permisos, revisiones, versiones y auditorías.
+
 | Método | Ruta | Roles HTTP | Éxito | Operación |
 | --- | --- | --- | --- | --- |
 | GET | `/api/admin/alumnos` | ADMIN | 200 | alumnos |

@@ -1,12 +1,12 @@
 import { dateAR } from '../shared/measurement';
 import { Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { firstValueFrom } from 'rxjs';
 import { AlumnoApi } from './alumno-api';
 import { SesionResponse } from '../admin/contracts';
-import { alumnoError, isClosed, text } from './utils';
+import { alumnoError, isClosed, text, validCalendarDate } from './utils';
 @Component({
   selector: 'app-student-sessions',
   imports: [RouterLink, ReactiveFormsModule],
@@ -118,6 +118,16 @@ export class Sessions {
       this.filters.set(this.form.getRawValue());
       this.page.set(0);
     });
+    inject(ActivatedRoute)
+      .queryParamMap.pipe(takeUntilDestroyed())
+      .subscribe((params) => {
+        const desde = params.get('desde') ?? '';
+        const hasta = params.get('hasta') ?? '';
+        this.form.patchValue({
+          desde: validCalendarDate(desde) ? desde : '',
+          hasta: validCalendarDate(hasta) ? hasta : '',
+        });
+      });
     void this.load();
   }
   async load() {

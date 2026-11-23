@@ -224,6 +224,15 @@ test('IMPULSO: días automáticos, segundos y sugerencias personales, progreso y
   await expect(sp.locator('app-progress-chart')).toHaveCount(2);
   expect(await sp.locator('body').evaluate((el) => el.scrollWidth <= innerWidth)).toBe(true);
   await sp.screenshot({ path: '/tmp/impulso-progreso-mobile.png', fullPage: true });
+  const trainedDay = sp.locator('.week-days .trained');
+  const selectedDate = new URL((await trainedDay.getAttribute('href'))!, sp.url()).searchParams.get(
+    'desde',
+  )!;
+  await trainedDay.click();
+  await expect(sp.getByRole('heading', { name: 'Mis entrenamientos.' })).toBeVisible();
+  await expect(sp.getByLabel('Desde', { exact: true })).toHaveValue(selectedDate);
+  await expect(sp.getByLabel('Hasta', { exact: true })).toHaveValue(selectedDate);
+  await expect(sp.locator('.student-session-row')).toHaveCount(1);
   await page.goto('/profesor');
   await expect(page.locator('.daily-student').filter({ hasText: 'Juan Impulso' })).toContainText(
     'Con rutina',
