@@ -279,29 +279,16 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
             );
           expect(unlabelled, `${path}: etiquetas`).toEqual([]);
           if (path === `/alumno/sesiones/${open.id}`) {
-            const advanced = page.getByText('Registro avanzado y última ejecución', {
-              exact: true,
-            });
-            if ((await advanced.locator('..').getAttribute('open')) === null)
-              await advanced.click();
-            await page
-              .getByRole('button', {
-                name: /posición 1$/,
-              })
-              .click();
-            await expect(
-              page
-                .locator('.student-block-form')
-                .getByLabel('Repeticiones realizadas', { exact: true }),
-            ).toBeFocused();
+            const inputRow = page.locator('app-workout-grid .workout-series-row').first();
+            await inputRow.getByRole('spinbutton', { name: /repeticiones$/ }).focus();
+            await expect(inputRow.getByRole('spinbutton', { name: /repeticiones$/ })).toBeFocused();
             expect(
               await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth),
-              'Formulario móvil de series',
             ).toBe(true);
-            await expect(page.getByLabel('Peso realizado (opcional)')).toBeEmpty();
+            await expect(inputRow.getByRole('spinbutton', { name: /peso$/ })).toBeEmpty();
             if (width === 360)
               await page
-                .locator('.student-block-form')
+                .locator('app-workout-grid')
                 .screenshot({ path: '/tmp/gym-final-mobile-entry.png' });
           }
         }
@@ -381,30 +368,13 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
         'AlumnoActualizado',
       );
       await sp!.goto(`/alumno/sesiones/${open.id}`);
-      if (
-        (await sp!
-          .getByText('Registro avanzado y última ejecución', { exact: true })
-          .locator('..')
-          .getAttribute('open')) === null
-      )
-        await sp!.getByText('Registro avanzado y última ejecución', { exact: true }).click();
-      await sp!
-        .getByRole('button', {
-          name: /posición 1$/,
-        })
-        .click();
-      await sp!
-        .locator('.student-block-form')
-        .getByLabel('Repeticiones realizadas', { exact: true })
-        .fill('10');
-      await sp!.getByLabel('Peso realizado (opcional)').fill('12.5');
-      await sp!
-        .locator('.student-block-form')
-        .getByRole('button', { name: 'Guardar serie', exact: true })
-        .click();
-      await expect(sp!.getByText('Serie registrada correctamente.')).toBeVisible();
+      const inputRow = sp!.locator('app-workout-grid .workout-series-row').first();
+      await inputRow.getByRole('spinbutton', { name: /repeticiones$/ }).fill('10');
+      await inputRow.getByRole('spinbutton', { name: /peso$/ }).fill('12.5');
+      await inputRow.getByRole('button', { name: 'Guardar serie', exact: true }).click();
+      await expect(sp!.getByRole('button', { name: 'Recargar sesión', exact: true })).toBeEnabled();
       await sp!.reload();
-      await expect(sp!.locator('.student-series-card')).toHaveCount(1);
+      await expect(sp!.locator('app-workout-grid .saved-row')).toHaveCount(1);
       await sp!.getByRole('button', { name: 'Finalizar entrenamiento', exact: true }).click();
       await sp!.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
       await expect(sp!.locator('.student-session-status')).toContainText('Finalizada');

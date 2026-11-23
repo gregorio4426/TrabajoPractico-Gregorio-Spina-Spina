@@ -196,11 +196,19 @@ test('IMPULSO: días automáticos, segundos y sugerencias personales, progreso y
   await first.getByRole('button', { name: 'Guardar serie', exact: true }).click();
   await expect(sp.getByRole('button', { name: 'Recargar sesión', exact: true })).toBeEnabled();
   await expect(second.getByRole('spinbutton', { name: /repeticiones$/ })).toHaveValue('8');
+  await expect(sp.locator('.student-series-card')).toHaveCount(0);
+  await expect(sp.locator('.student-block-form')).toHaveCount(0);
+  await first.getByRole('spinbutton', { name: /repeticiones$/ }).fill('9');
+  await first.getByRole('spinbutton', { name: /peso$/ }).fill('62');
+  await first.getByRole('button', { name: 'Guardar cambio', exact: true }).click();
+  await expect(sp.getByRole('button', { name: 'Recargar sesión', exact: true })).toBeEnabled();
   const timed = rows.nth(2);
   await timed.getByRole('spinbutton', { name: /segundos$/ }).fill('44');
   await timed.getByRole('button', { name: 'Guardar serie', exact: true }).click();
   await expect(sp.getByRole('button', { name: 'Recargar sesión', exact: true })).toBeEnabled();
   await sp.reload();
+  await expect(first.getByRole('spinbutton', { name: /repeticiones$/ })).toHaveValue('9');
+  await expect(first.getByRole('spinbutton', { name: /peso$/ })).toHaveValue('62');
   await expect(rows.nth(2).getByRole('spinbutton', { name: /segundos$/ })).toHaveValue('44');
   const saved = await (
     await request.get('/api/sesiones/' + session, {
@@ -214,6 +222,12 @@ test('IMPULSO: días automáticos, segundos y sugerencias personales, progreso y
   await sp.getByRole('button', { name: 'Finalizar entrenamiento', exact: true }).click();
   await confirm(sp);
   await expect(sp.locator('.student-session-status')).toContainText('Finalizada');
+  await expect(sp.locator('.student-series-card')).toHaveCount(2);
+  for (const card of await sp.locator('.student-series-card').all()) {
+    expect((await card.boundingBox())!.height).toBeLessThan(90);
+  }
+  expect(await sp.locator('body').evaluate((el) => el.scrollWidth <= innerWidth)).toBe(true);
+  await sp.screenshot({ path: '/tmp/impulso-sesion-compacta.png', fullPage: true });
   await sp.goto('/alumno/progreso');
   await expect(sp.getByRole('heading', { name: 'Días que entrenaste', exact: true })).toBeVisible();
   await expect(sp.locator('.week-days .trained')).toHaveCount(1);

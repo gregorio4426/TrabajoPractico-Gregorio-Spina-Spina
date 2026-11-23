@@ -200,28 +200,13 @@ test.describe('Mejoras funcionales · persistencia real', () => {
       await confirm(studentPage);
       await expect(studentPage).toHaveURL(/\/alumno\/sesiones\/\d+/);
       const sessionId = Number(studentPage.url().split('/').at(-1));
-      if (
-        (await studentPage
-          .getByText('Registro avanzado y última ejecución', { exact: true })
-          .locator('..')
-          .getAttribute('open')) === null
-      )
-        await studentPage
-          .getByText('Registro avanzado y última ejecución', { exact: true })
-          .click();
-      await studentPage.getByRole('button', { name: /Registrar .*posición 1$/ }).click();
-      await studentPage
-        .locator('.student-block-form')
-        .getByLabel('Repeticiones realizadas', { exact: true })
-        .fill('8');
-      await studentPage.getByLabel('Peso realizado (opcional)', { exact: true }).fill('0');
-      await studentPage
-        .locator('.student-block-form')
-        .getByRole('button', { name: 'Guardar serie', exact: true })
-        .click();
-      await expect(studentPage.locator('.student-series-card')).toHaveCount(1);
+      const inputRow = studentPage.locator('app-workout-grid .workout-series-row').first();
+      await inputRow.getByRole('spinbutton', { name: /repeticiones$/ }).fill('8');
+      await inputRow.getByRole('spinbutton', { name: /peso$/ }).fill('0');
+      await inputRow.getByRole('button', { name: 'Guardar serie', exact: true }).click();
+      await expect(studentPage.locator('app-workout-grid .saved-row')).toHaveCount(1);
       await studentPage.reload();
-      await expect(studentPage.locator('.student-series-card')).toHaveCount(1);
+      await expect(studentPage.locator('app-workout-grid .saved-row')).toHaveCount(1);
       await studentPage
         .getByLabel('Comentario para tus profesores (opcional)', { exact: true })
         .fill('Me costó la segunda vuelta, sin dolor.');

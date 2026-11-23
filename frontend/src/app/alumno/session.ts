@@ -1,6 +1,5 @@
 import { isTimed, unitLabel, performed } from '../shared/measurement';
 import { WorkoutGrid } from './workout-grid';
-import { DayPlan } from '../shared/day-plan';
 import {
   Component,
   ElementRef,
@@ -34,7 +33,8 @@ import {
 type Action = 'add' | 'finish' | 'correct' | 'annul' | 'restore' | 'date';
 @Component({
   selector: 'app-student-session',
-  imports: [WorkoutGrid, DayPlan, RouterLink, ReactiveFormsModule, Confirm, RecordView],
+  host: { class: 'session-compact' },
+  imports: [WorkoutGrid, RouterLink, ReactiveFormsModule, Confirm, RecordView],
   templateUrl: './session.html',
 })
 export class StudentSession {

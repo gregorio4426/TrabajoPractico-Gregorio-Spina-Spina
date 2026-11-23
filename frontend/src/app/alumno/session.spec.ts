@@ -94,6 +94,28 @@ describe('ALUMNO session recovery and revisions', () => {
     expect(fixture.componentInstance.day()?.nombre).toBe('Día original');
     http.expectNone('/api/rutinas/me/activa');
   });
+  it('shows saved results only in the editable grid while training, without duplicate forms or cards', async () => {
+    const fixture = await setup({ ...seed, series: [row] });
+    expect(fixture.nativeElement.querySelectorAll('app-workout-grid').length).toBe(1);
+    expect(fixture.nativeElement.querySelectorAll('.student-series-card').length).toBe(0);
+    expect(fixture.nativeElement.querySelectorAll('.student-block-form').length).toBe(0);
+    expect(fixture.nativeElement.textContent).not.toContain('Registro avanzado');
+    const grid = fixture.debugElement.query(By.directive(WorkoutGrid))
+      .componentInstance as WorkoutGrid;
+    expect(grid.entry(grid.exercises()[0]!, 1).form.getRawValue()).toEqual({ reps: 8, weight: 20 });
+  });
+  it('keeps historical results compact with correction controls collapsed until requested', async () => {
+    const fixture = await setup({ ...seed, finalizada: true, series: [row] });
+    expect(fixture.nativeElement.querySelector('app-workout-grid')).toBeNull();
+    expect(fixture.nativeElement.querySelectorAll('.student-series-card').length).toBe(1);
+    expect(fixture.nativeElement.querySelector('.series-actions').open).toBe(false);
+    expect(fixture.nativeElement.querySelector('.series-inline-edit')).toBeNull();
+    fixture.componentInstance.editSeries(row, 'correct');
+    fixture.detectChanges();
+    expect(
+      fixture.nativeElement.querySelector('.student-series-card .series-inline-edit'),
+    ).not.toBeNull();
+  });
   it('does not request prescriptions or audits for a foreign session', async () => {
     const fixture = await setup({ ...seed, alumnoId: 99 });
     expect(fixture.componentInstance.data()).toBeNull();

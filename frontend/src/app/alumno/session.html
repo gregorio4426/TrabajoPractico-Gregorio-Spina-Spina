@@ -15,7 +15,7 @@
   <p class="notice" role="status">{{ success() }}</p>
 }
 @if (data(); as s) {
-  <section class="admin-panel">
+  <section class="admin-panel training-summary">
     <h2>{{ s.rutinaNombre }} · {{ s.diaRutinaNombre }}</h2>
     <div class="student-session-status">
       <span class="student-badge">{{ closed() ? 'Finalizada' : 'Abierta' }}</span
@@ -28,24 +28,23 @@
         Fecha original: {{ s.fecha }}. Fecha efectiva corregida: {{ s.fechaEfectiva }}.
       </p>
     }
-    <p class="student-instruction">
-      Guardá cada vuelta al terminarla. Podés retomar este entrenamiento después.
-    </p>
+    @if (!closed()) {
+      <p class="student-instruction">
+        Guardá tus resultados aquí. Podés editarlos y volver a guardar.
+      </p>
+    }
     <button class="secondary" (click)="editDate()" [disabled]="pending()">Corregir fecha</button>
   </section>
   @if (!closed()) {
     @if (day(); as d) {
       <section class="admin-panel">
-        <h2>Registrá tus series</h2>
-        <app-workout-grid [exercises]="d.ejercicios ?? []" [session]="s" [disabled]="pending() || loading()" (updated)="load(true)" />
-        <details><summary>Registro avanzado y última ejecución</summary>
-        <app-day-plan
+        <h2 class="training-entry-title">Registrá tus series</h2>
+        <app-workout-grid
           [exercises]="d.ejercicios ?? []"
-          [showWeights]="true"
-          [selectable]="true"
-          [disabled]="pending()"
-          (chosen)="choose($event)"
-        /></details>
+          [session]="s"
+          [disabled]="pending() || loading()"
+          (updated)="load(true)"
+        />
       </section>
     } @else {
       <p class="notice">
@@ -53,63 +52,6 @@
         actual. Podés consultar los resultados y recargar la sesión.
       </p>
     }
-  }
-  @if (block(); as b) {
-    <section #recordingEntry class="student-block-form">
-      <h2>Registrar {{ b.ejercicioNombre }}</h2>
-      <p class="student-instruction">
-        Elegí el número de serie que querés registrar.
-        Podés revisar el número propuesto; repeticiones y peso realizados se ingresan
-        explícitamente.
-      </p>
-      <form [formGroup]="addForm" (ngSubmit)="ask('add')">
-        <fieldset class="admin-form student-series-form teacher-fieldset" [disabled]="pending()">
-          <label
-            >Serie realizada<input
-              type="number"
-              min="1"
-              step="1"
-              inputmode="numeric"
-              formControlName="numeroSerie" /></label
-          ><label
-            >{{ isTimed(b) ? 'Segundos realizados' : 'Repeticiones realizadas' }}<input
-              type="number"
-              min="1"
-              step="1"
-              inputmode="numeric"
-              #actualReps
-              formControlName="repsHechas" /></label
-          ><label
-            >Peso realizado (opcional)<input
-              type="number"
-              min="0"
-              step="any"
-              inputmode="decimal"
-              formControlName="pesoUsado" /></label
-          ><button class="primary wide">{{ pending() ? 'Guardando…' : 'Guardar serie' }}</button>
-        </fieldset>
-      </form>
-      <p class="admin-help">Vacío = peso no registrado. Cero = peso conocido igual a cero.</p>
-      @if (last(); as previous) {
-        <details>
-          <summary>Consultar última ejecución finalizada</summary>
-          <p class="admin-help">
-            {{ previous.fechaEfectiva ?? previous.fecha }} · Solo registros válidos vigentes.
-          </p>
-          @for (serie of previous.series ?? []; track serie.id) {
-            @if (validSeries(serie)) {
-              <p class="admin-help">
-                Serie {{ serie.numeroSerie }}: {{ performed(serie) }} {{ unitLabel(serie) }} · peso
-                {{ text(serie.pesoUsado) }}
-              </p>
-            }
-          }
-        </details>
-      }
-      @if (lastMessage()) {
-        <p class="admin-help">{{ lastMessage() }}</p>
-      }
-    </section>
   }
   @if (edit() === 'date') {
     <section class="admin-panel">
@@ -131,116 +73,139 @@
       </form>
     </section>
   }
-  @if (edit() === 'series' && selectedSeries(); as selected) {
-    <section class="admin-panel">
-      <h2>
-        {{ action() === 'annul' ? 'Anular' : action() === 'restore' ? 'Restaurar' : 'Corregir' }}
-        serie {{ selectedSeries()?.numeroSerie }}
-      </h2>
-      <form [formGroup]="correction" (ngSubmit)="ask(action())">
-        <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
-          @if (action() !== 'annul') {
-            <label
-              >Número corregido<input
-                type="number"
-                min="1"
-                step="1"
-                formControlName="numeroSerie" /></label
-            ><label
-              >{{ isTimed(selected) ? 'Segundos corregidos' : 'Repeticiones corregidas' }}<input
-                type="number"
-                min="1"
-                step="1"
-                formControlName="repsHechas" /></label
-            ><label
-              >Peso corregido (opcional)<input
-                type="number"
-                min="0"
-                step="any"
-                formControlName="pesoUsado"
-            /></label>
-          }
-          <label class="wide"
-            >Motivo de la serie<textarea formControlName="motivo" maxlength="500"></textarea>
-          </label>
-          <div class="wide admin-actions">
-            <button class="primary">
-              Confirmar
-              {{
-                action() === 'annul'
-                  ? 'anulación'
-                  : action() === 'restore'
-                    ? 'restauración'
-                    : 'corrección'
-              }}</button
-            ><button class="secondary" type="button" (click)="edit.set(null)">
-              Cancelar corrección
-            </button>
-          </div>
-        </fieldset>
-      </form>
-    </section>
-  }
-  <section class="admin-panel">
-    <h2>Series registradas</h2>
-    @for (serie of s.series ?? []; track serie.id) {
-      <article class="student-series-card" [class.is-annulled]="serie.anulada">
-        <div class="admin-kicker">
-          <strong>{{ serie.ejercicioNombre }} · serie {{ serie.numeroSerie }}</strong
-          ><span class="student-badge">{{
-            serie.anulada
-              ? 'Anulada'
-              : serie.legadoExento
-                ? 'Incidencia legada pendiente'
-                : serie.completada
-                  ? 'Registrada'
-                  : 'Incompleta'
-          }}</span>
-        </div>
-        <div class="student-series-values">
-          <div>
-            <strong>{{ text(performed(serie)) }}</strong
-            ><small>{{ unitLabel(serie) }}</small>
-          </div>
-          <div>
-            <strong>{{ text(serie.pesoUsado) }}</strong
-            ><small>peso registrado</small>
-          </div>
-          <div>
-            <strong>Serie {{ serie.numeroSerie }}</strong
-            ><small>registro</small>
-          </div>
-        </div>
-        @if (serie.incidenciaLegado) {
-          <p class="admin-help">Incidencia original: {{ text(serie.incidenciaLegado) }}</p>
-        }
-        <div class="admin-actions">
-          @if (!serie.anulada) {
-            <button class="secondary" (click)="editSeries(serie, 'correct')" [disabled]="pending()">
-              Corregir serie {{ serie.numeroSerie }}</button
-            ><button
-              class="secondary"
-              (click)="editSeries(serie, 'annul')"
-              [disabled]="pending() || (closed() && validSeries(serie) && validCount() <= 1)"
-            >
-              Anular serie {{ serie.numeroSerie }}
-            </button>
-          } @else {
-            <button class="secondary" (click)="editSeries(serie, 'restore')" [disabled]="pending()">
-              Restaurar serie {{ serie.numeroSerie }}
-            </button>
-          }
-        </div>
-      </article>
-    } @empty {
-      <p class="admin-empty">Todavía no registraste series en esta sesión.</p>
-    }
-  </section>
   @if (closed()) {
     <section class="admin-panel">
-      <h2>Comentario del entrenamiento</h2>
-      <p class="session-comment">{{ data()?.comentario || 'No agregaste comentarios.' }}</p>
+      <h2>Resultados</h2>
+      <div class="series-columns" aria-hidden="true">
+        <span>Ejercicio</span><span>Serie</span><span>Reps / s</span><span>Peso</span><span></span>
+      </div>
+      @for (serie of s.series ?? []; track serie.id) {
+        <article class="student-series-card" [class.is-annulled]="serie.anulada">
+          <strong class="series-exercise">{{ serie.ejercicioNombre }}</strong>
+          <span class="series-number">{{ serie.numeroSerie }}</span>
+          <span class="series-result"
+            >{{ text(performed(serie)) }} <small>{{ isTimed(serie) ? 's' : 'rep' }}</small></span
+          >
+          <span class="series-weight"
+            >{{ text(serie.pesoUsado) }}
+            <small>{{ serie.pesoUsado == null ? '' : 'kg' }}</small></span
+          >
+          @if (serie.anulada || serie.legadoExento || !serie.completada) {
+            <span class="series-note">{{
+              serie.anulada
+                ? 'Anulada'
+                : serie.legadoExento
+                  ? 'Revisar registro histórico'
+                  : 'Incompleta'
+            }}</span>
+          }
+          @if (serie.incidenciaLegado) {
+            <p class="admin-help">Incidencia original: {{ text(serie.incidenciaLegado) }}</p>
+          }
+          <details class="series-actions">
+            <summary
+              aria-label="Opciones de {{ serie.ejercicioNombre }}, serie {{ serie.numeroSerie }}"
+            >
+              Editar
+            </summary>
+            <div class="admin-actions">
+              @if (!serie.anulada) {
+                <button
+                  class="secondary"
+                  (click)="editSeries(serie, 'correct')"
+                  [disabled]="pending()"
+                >
+                  Corregir serie {{ serie.numeroSerie }}</button
+                ><button
+                  class="secondary"
+                  (click)="editSeries(serie, 'annul')"
+                  [disabled]="pending() || (closed() && validSeries(serie) && validCount() <= 1)"
+                >
+                  Anular serie {{ serie.numeroSerie }}
+                </button>
+              } @else {
+                <button
+                  class="secondary"
+                  (click)="editSeries(serie, 'restore')"
+                  [disabled]="pending()"
+                >
+                  Restaurar serie {{ serie.numeroSerie }}
+                </button>
+              }
+            </div>
+          </details>
+          @if (
+            edit() === 'series' && selectedSeries()?.id === serie.id && selectedSeries();
+            as selected
+          ) {
+            <section class="series-inline-edit">
+              <h2>
+                {{
+                  action() === 'annul'
+                    ? 'Anular'
+                    : action() === 'restore'
+                      ? 'Restaurar'
+                      : 'Corregir'
+                }}
+                serie {{ selectedSeries()?.numeroSerie }}
+              </h2>
+              <form [formGroup]="correction" (ngSubmit)="ask(action())">
+                <fieldset class="admin-form teacher-fieldset" [disabled]="pending()">
+                  @if (action() !== 'annul') {
+                    <label
+                      >Número corregido<input
+                        type="number"
+                        min="1"
+                        step="1"
+                        formControlName="numeroSerie" /></label
+                    ><label
+                      >{{ isTimed(selected) ? 'Segundos corregidos' : 'Repeticiones corregidas'
+                      }}<input type="number" min="1" step="1" formControlName="repsHechas" /></label
+                    ><label
+                      >Peso corregido (opcional)<input
+                        type="number"
+                        min="0"
+                        step="any"
+                        formControlName="pesoUsado"
+                    /></label>
+                  }
+                  <label class="wide"
+                    >Motivo de la serie<textarea
+                      formControlName="motivo"
+                      maxlength="500"
+                    ></textarea>
+                  </label>
+                  <div class="wide admin-actions">
+                    <button class="primary">
+                      Confirmar
+                      {{
+                        action() === 'annul'
+                          ? 'anulación'
+                          : action() === 'restore'
+                            ? 'restauración'
+                            : 'corrección'
+                      }}</button
+                    ><button class="secondary" type="button" (click)="edit.set(null)">
+                      Cancelar corrección
+                    </button>
+                  </div>
+                </fieldset>
+              </form>
+            </section>
+          }
+        </article>
+      } @empty {
+        <p class="admin-empty">Todavía no registraste series en esta sesión.</p>
+      }
     </section>
+  }
+  @if (closed()) {
+    @if (s.comentario) {
+      <details class="training-comment">
+        <summary>Comentario del entrenamiento</summary>
+        <p class="session-comment">{{ s.comentario }}</p>
+      </details>
+    }
   }
   @if (!closed()) {
     <section class="admin-panel">
@@ -248,7 +213,7 @@
         >Comentario para tus profesores (opcional)<textarea
           [formControl]="comment"
           maxlength="2000"
-          rows="3"
+          rows="2"
           placeholder="Cómo te sentiste, molestias o dudas"
         ></textarea>
       </label>
@@ -266,15 +231,17 @@
       </p>
     </div>
   }
-  <section class="admin-panel">
-    <button class="secondary" (click)="showAudit.set(!showAudit())">
-      {{ showAudit() ? 'Ocultar' : 'Ver' }} auditoría
-    </button>
-    @if (showAudit()) {
-      <h2>Auditoría de este entrenamiento</h2>
-      <app-record-view [value]="{ eventos: audit() }" />
-    }
-  </section>
+  @if (closed()) {
+    <section class="admin-panel">
+      <button class="secondary" (click)="showAudit.set(!showAudit())">
+        {{ showAudit() ? 'Ocultar' : 'Ver' }} auditoría
+      </button>
+      @if (showAudit()) {
+        <h2>Auditoría de este entrenamiento</h2>
+        <app-record-view [value]="{ eventos: audit() }" />
+      }
+    </section>
+  }
 }
 <app-teacher-confirm
   #confirmation

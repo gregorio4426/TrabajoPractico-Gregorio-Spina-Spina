@@ -44,7 +44,7 @@ export function plannedSeries(exercises: DiaEjercicioResponse[]) {
             <fieldset
               class="workout-series-row teacher-fieldset"
               [class.saved-row]="!!row.saved"
-              [disabled]="busy() || disabled() || !!row.saved?.anulada"
+              [disabled]="busy() || disabled()"
             >
               <span>Vuelta {{ round + 1 }}</span>
               <label
@@ -78,11 +78,15 @@ export function plannedSeries(exercises: DiaEjercicioResponse[]) {
               <button
                 class="primary"
                 [disabled]="
-                  busy() || disabled() || !!row.saved?.anulada || (!!row.saved && !row.form.dirty)
+                  busy() || disabled() || (!!row.saved && !row.saved.anulada && !row.form.dirty)
                 "
               >
                 {{
-                  row.saved?.anulada ? 'Anulada' : row.saved ? 'Guardar cambio' : 'Guardar serie'
+                  row.saved?.anulada
+                    ? 'Restaurar serie'
+                    : row.saved
+                      ? 'Guardar cambio'
+                      : 'Guardar serie'
                 }}
               </button>
             </fieldset>
@@ -92,7 +96,7 @@ export function plannedSeries(exercises: DiaEjercicioResponse[]) {
     }
     <p class="admin-help">
       Los resultados se guardan por serie. Vacío = peso desconocido; cero = peso conocido igual a
-      cero. Las series anuladas se restauran desde el historial inferior.
+      cero. Podés editar los valores guardados aquí y volver a guardar.
     </p>
   </section>`,
 })
@@ -145,10 +149,12 @@ export class WorkoutGrid {
     return row;
   }
   async save(row: ReturnType<WorkoutGrid['createEntry']>) {
-    if (this.busy() || this.disabled() || this.session().finalizada || row.saved?.anulada) return;
+    if (this.busy() || this.disabled() || this.session().finalizada) return;
     row.form.markAllAsTouched();
     if (row.form.invalid) {
-      this.error.set('Ingresá repeticiones enteras positivas y un peso opcional no negativo.');
+      this.error.set(
+        'Ingresá repeticiones o segundos enteros positivos y un peso opcional no negativo.',
+      );
       return;
     }
     const v = row.form.getRawValue();
@@ -158,7 +164,9 @@ export class WorkoutGrid {
     try {
       const result = await firstValueFrom(
         row.saved
-          ? this.api.correctSeries(this.session().id!, row.saved.id!, {
+          ? (row.saved.anulada
+              ? this.api.restore.bind(this.api)
+              : this.api.correctSeries.bind(this.api))(this.session().id!, row.saved.id!, {
               numeroSerie: row.number,
               ...(isTimed(row.exercise)
                 ? { segundosHechos: Number(v.reps) }
