@@ -322,7 +322,9 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
       await expect(sp.locator('main')).not.toContainText('Versión 2');
       await sp.goto(`/alumno/sesiones/${open.id}`);
       await expect(sp.locator('.student-session-status')).toContainText('Abierta');
-      await expect(sp.locator('.student-prescription')).toContainText('10 repeticiones');
+      await expect(sp.locator('app-workout-grid .student-instruction')).toContainText(
+        '10 repeticiones',
+      );
       await enter(ap, admin, `/admin/alumnos/${student.perfilId}/historial`);
       await expect(ap.locator('main')).toContainText(name);
       const active = await api(request, 'get', '/api/rutinas/me/activa', student);

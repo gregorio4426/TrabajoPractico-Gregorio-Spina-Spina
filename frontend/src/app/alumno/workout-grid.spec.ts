@@ -141,4 +141,42 @@ describe('individual results for every exercise and round', () => {
     });
     await saved;
   });
+  it('restores an existing annulled result in the same row using its original identity and revision', async () => {
+    const f = setup(),
+      c = f.componentInstance,
+      http = TestBed.inject(HttpTestingController);
+    f.componentRef.setInput('session', {
+      id: 7,
+      finalizada: false,
+      series: [
+        {
+          id: 9,
+          diaEjercicioId: 20,
+          ejercicioId: 3,
+          numeroSerie: 1,
+          repsHechas: 8,
+          pesoUsado: 20,
+          anulada: true,
+          revision: 3,
+        },
+      ],
+    });
+    f.detectChanges();
+    const row = c.entry(c.exercises()[0]!, 1);
+    row.form.patchValue({ reps: 10, weight: 25 });
+    const saving = c.save(row);
+    const req = http.expectOne('/api/sesiones/7/series/9/restaurar');
+    expect(req.request.method).toBe('PUT');
+    expect(req.request.body).toMatchObject({
+      numeroSerie: 1,
+      revision: 3,
+      repsHechas: 10,
+      pesoUsado: 25,
+    });
+    req.flush({ id: 9, revision: 4, repsHechas: 10, pesoUsado: 25, anulada: false });
+    await saving;
+    expect(row.saved?.id).toBe(9);
+    expect(row.saved?.anulada).toBe(false);
+    http.expectNone('/api/sesiones/7/series');
+  });
 });

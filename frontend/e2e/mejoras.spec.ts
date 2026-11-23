@@ -227,6 +227,7 @@ test.describe('Mejoras funcionales · persistencia real', () => {
         'Me costó la segunda vuelta, sin dolor.',
       );
       await studentPage.reload();
+      await studentPage.locator('.training-comment summary').click();
       await expect(
         studentPage.getByText('Me costó la segunda vuelta, sin dolor.', { exact: true }),
       ).toBeVisible();

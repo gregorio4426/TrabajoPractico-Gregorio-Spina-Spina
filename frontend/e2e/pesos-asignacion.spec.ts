@@ -158,9 +158,13 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
     await studentPage.goto('/alumno/rutina');
     await expect(studentPage.locator('.student-prescription').first()).toContainText('80');
     await studentPage.goto('/alumno/sesiones/' + session.id);
-    await expect(studentPage.locator('.student-prescription').first()).toContainText('60');
+    await expect(
+      studentPage.locator('app-workout-grid .student-instruction').first(),
+    ).toContainText('60');
     await studentPage.reload();
-    await expect(studentPage.locator('.student-prescription').first()).toContainText('60');
+    await expect(
+      studentPage.locator('app-workout-grid .student-instruction').first(),
+    ).toContainText('60');
   } finally {
     await mobile.close();
   }

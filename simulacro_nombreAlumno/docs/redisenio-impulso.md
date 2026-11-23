@@ -12,6 +12,14 @@
 - El inicio de PROFESOR muestra accesos con Angular Router y una vista de hasta ocho alumnos filtrados por nombre. Consulta la rutina y el último entrenamiento real; no infiere actividad cuando no hay registros. Los gráficos permanecen en Progreso.
 - Se elimina el contorno de foco del contenedor principal, conservando el foco de los controles. Header más legible, formularios compactos, fechas visibles `dd/mm/aaaa` y vocabulario cotidiano. Los selectores nativos de fecha respetan la configuración regional del navegador.
 
+### Consulta y registro compactos de entrenamientos
+
+En una sesión abierta, los resultados se cargan y editan en la misma grilla de ejercicios. Guardar un cambio conserva el identificador de la serie y utiliza su revisión; no crea una segunda serie. Recargar recupera los valores del servidor y guardar una fila conserva los borradores de otras. Se retiran el listado duplicado de datos guardados y el formulario avanzado adicional. Las series anuladas existentes pueden restaurarse desde su propia fila.
+
+Los entrenamientos finalizados muestran filas compactas con ejercicio, número de serie, repeticiones o segundos y peso. El día y la fecha se muestran una sola vez en el encabezado. Las opciones de corregir, anular o restaurar permanecen desplegables por fila; el formulario de corrección aparece dentro de esa fila. El comentario y la auditoría se consultan a demanda. Los controles y columnas se adaptan al celular sin desplazamiento horizontal.
+
+Esta mejora de presentación no modifica el backend ni requiere otra migración adicional a 008.
+
 ## Contratos y compatibilidad
 
 La migración **008** agrega columnas y cuatro tablas de sugerencias individuales, sin eliminar registros. Las prescripciones y resultados anteriores siguen siendo `REPETICIONES`; no se inventan segundos históricos. La migración permite su repetición, verifica que exista 007 y actualiza la restricción de resultados manteniendo la excepción explícita de legado.

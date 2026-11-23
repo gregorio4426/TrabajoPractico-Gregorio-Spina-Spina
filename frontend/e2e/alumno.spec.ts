@@ -127,6 +127,13 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await expect(page.getByRole('dialog')).toBeVisible();
     await page.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
   }
+  async function openSeriesOptions(page: Page, index: number) {
+    const options = page
+      .locator('.student-series-card')
+      .nth(index)
+      .locator('details.series-actions');
+    if ((await options.getAttribute('open')) === null) await options.locator('summary').click();
+  }
   async function record(page: Page, block: number, number: number, reps: number, weight: string) {
     const position = block === v2.dias[0]!.ejercicios[1]!.id ? 1 : 0;
     const row = page.locator('app-workout-grid .workout-series-row').nth(position);
@@ -320,7 +327,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
     ).toBe(200);
     await login(page);
     await page.goto(`/alumno/sesiones/${s.id}`);
-    await page.locator('.student-series-card').first().locator('summary').click();
+    await openSeriesOptions(page, 0);
     await page.getByRole('button', { name: `Corregir serie 1`, exact: true }).click();
     await page.getByLabel('Repeticiones corregidas', { exact: true }).fill('12');
     await page.getByLabel('Peso corregido (opcional)', { exact: true }).fill('22');
@@ -329,14 +336,14 @@ test.describe('ALUMNO · backend real y móvil', () => {
       .fill('Corrección de peso y repeticiones');
     await page.getByRole('button', { name: 'Confirmar corrección', exact: true }).click();
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
-    await page.locator('.student-series-card').nth(1).locator('summary').click();
+    await openSeriesOptions(page, 1);
     await page.getByRole('button', { name: `Anular serie 2`, exact: true }).click();
     await page.getByLabel('Motivo de la serie', { exact: true }).fill('Anotación a revisar');
     await page.getByRole('button', { name: 'Confirmar anulación', exact: true }).click();
     await confirm(page);
     await expect(page.getByText('Cambio guardado y auditado correctamente.')).toBeVisible();
     await expect(page.getByRole('button', { name: `Anular serie 1`, exact: true })).toBeDisabled();
-    await page.locator('.student-series-card').nth(1).locator('summary').click();
+    await openSeriesOptions(page, 1);
     await page.getByRole('button', { name: `Restaurar serie 2`, exact: true }).click();
     await page.getByLabel('Motivo de la serie', { exact: true }).fill('Registro verificado');
     await page.getByRole('button', { name: 'Confirmar restauración', exact: true }).click();
