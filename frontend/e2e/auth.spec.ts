@@ -39,6 +39,7 @@ test.beforeEach(async ({ page }) => {
           : { periodo: {}, datos: {}, frecuencia: {} },
     }),
   );
+  await page.route('**/api/profesores/me/alumnos', (route) => route.fulfill({ json: [] }));
   // Isolated shell tests; real ADMIN requests are covered by admin.spec.ts.
   await page.route('**/api/admin/dashboard*', (route) =>
     route.fulfill({ json: { estadoActual: {}, entrenamientos: {}, frecuencia: {}, periodo: {} } }),

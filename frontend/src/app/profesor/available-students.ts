@@ -43,7 +43,7 @@ export interface AvailableStudent {
             <span class="student-badge">Sin asignar</span>
           </p>
           <button class="primary" (click)="link(student)" [disabled]="busy()">
-            Vincular a mis alumnos
+            Sumar a mis alumnos
           </button>
         </article>
       } @empty {

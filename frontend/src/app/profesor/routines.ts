@@ -1,7 +1,7 @@
 import { EntityPicker, entityOption } from '../shared/entity-picker';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProfesorApi } from './profesor-api';
@@ -18,9 +18,7 @@ import { profesorError } from './utils';
       </div>
       <a class="primary" routerLink="/profesor/rutinas/nueva">Crear rutina</a>
     </div>
-    <p class="admin-help">
-      Tus rutinas, listas para consultar, editar y asignar.
-    </p>
+    <p class="admin-help">Tus rutinas, listas para consultar, editar y asignar.</p>
     <form class="admin-filters" [formGroup]="filters" (ngSubmit)="load()">
       <label>Buscar rutina<input type="search" formControlName="q" /></label
       ><label
@@ -63,8 +61,17 @@ import { profesorError } from './utils';
               {{ r.descripcion }} · Autor: {{ r.profesor }}
               {{ r.profesorId === auth.session()?.perfilId ? '(vos)' : '' }}
             </p>
-            <a class="admin-link" [routerLink]="['/profesor/rutinas', r.id]">Ver {{ r.nombre }}</a>
-            @if (r.profesorId === auth.session()?.perfilId) { <a class="secondary" [routerLink]="['/profesor/rutinas', r.id, 'editar']">Editar rutina</a> }
+            <a
+              class="admin-link"
+              [routerLink]="['/profesor/rutinas', r.id]"
+              [queryParams]="{ alumno: targetStudent }"
+              >Ver {{ r.nombre }}</a
+            >
+            @if (r.profesorId === auth.session()?.perfilId) {
+              <a class="secondary" [routerLink]="['/profesor/rutinas', r.id, 'editar']"
+                >Editar rutina</a
+              >
+            }
           </div>
         } @empty {
           <p class="admin-empty">No hay rutinas con estos filtros.</p>
@@ -89,6 +96,8 @@ import { profesorError } from './utils';
 export class Routines {
   private readonly api = inject(ProfesorApi);
   private readonly router = inject(Router);
+  readonly targetStudent =
+    Number(inject(ActivatedRoute).snapshot.queryParamMap.get('alumno')) || null;
   readonly auth = inject(AuthService);
   readonly data = signal<RutinaResponse[]>([]);
   readonly error = signal('');

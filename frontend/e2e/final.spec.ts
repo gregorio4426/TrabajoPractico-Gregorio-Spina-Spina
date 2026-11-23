@@ -324,17 +324,17 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
       await enter(tp, teacher, `/profesor/rutinas/${routine.id}/editar`);
       await tp.getByLabel('Nombre de rutina', { exact: true }).fill(name);
       await routineField(tp, 'Repeticiones día 1, fila 1').fill('12');
-      await tp.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
+      await tp.getByRole('button', { name: 'Guardar rutina', exact: true }).click();
       await expect(tp).toHaveURL(/guardada=2$/);
-      await selectEntity(tp, 'Alumno vinculado', studentAccount.email);
-      await tp.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
+      await selectEntity(tp, 'Alumno', studentAccount.email);
+      await tp.getByRole('button', { name: 'Asignar rutina', exact: true }).click();
       await tp.getByRole('button', { name: 'Confirmar cambio', exact: true }).click();
-      await expect(tp.getByText(/Rutina asignada: versión 2/)).toBeVisible();
+      await expect(tp.getByText(/Rutina asignada correctamente/)).toBeVisible();
       await enter(sp, student, '/alumno/rutina');
       await expect(sp.getByRole('heading', { name, exact: true })).toBeVisible();
-      await expect(sp.locator('main')).toContainText('Versión 2');
+      await expect(sp.locator('main')).not.toContainText('Versión 2');
       await sp.goto(`/alumno/sesiones/${open.id}`);
-      await expect(sp.locator('.student-session-status')).toContainText('Versión 1');
+      await expect(sp.locator('.student-session-status')).toContainText('Abierta');
       await expect(sp.locator('.student-prescription')).toContainText('10 repeticiones');
       await enter(ap, admin, `/admin/alumnos/${student.perfilId}/historial`);
       await expect(ap.locator('main')).toContainText(name);
@@ -511,9 +511,7 @@ test.describe('FINAL · integración, responsive y accesibilidad básica reales'
     });
     await enter(page, student, '/alumno/profesores');
     await page.getByLabel('Buscar profesor por nombre, email o especialidad').fill(account.email);
-    await page
-      .getByRole('button', { name: 'Vincular a TutorInactivo Prueba', exact: true })
-      .click();
+    await page.getByRole('button', { name: 'Elegir a TutorInactivo Prueba', exact: true }).click();
     const [response] = await Promise.all([
       page.waitForResponse(
         (r) =>

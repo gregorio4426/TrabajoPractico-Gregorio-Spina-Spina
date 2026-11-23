@@ -21,6 +21,6 @@ public interface AsignacionMapper {
 
     default java.util.List<utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse> pesos(AsignacionRutina a) {
         if(a.getRutina()==null || a.getRutina().getDias()==null)return java.util.List.of();
-        return a.getRutina().getDias().stream().flatMap(d->d.getEjercicios().stream()).map(e->new utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse(e.getId(),e.getNombreHistorico(),a.getPesosSugeridos().get(e.getId()))).toList();
+        return a.getRutina().getDias().stream().flatMap(d->d.getEjercicios().stream()).map(e->new utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse(e.getId(),e.getNombreHistorico(),a.getPesosSugeridos().get(e.getId()),a.getRepsPersonalizados().get(e.getId()),a.getSegundosPersonalizados().get(e.getId()))).toList();
     }
 }

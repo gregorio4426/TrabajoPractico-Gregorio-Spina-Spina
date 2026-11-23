@@ -25,7 +25,7 @@
           <strong>{{ p.nombre }} {{ p.apellido }}</strong>
           <p>{{ p.especialidad }}</p>
           <button class="secondary" (click)="ask('unlink', p)" [disabled]="pending()">
-            Desvincular a {{ p.nombre }} {{ p.apellido }}
+            Dejar de entrenar con {{ p.nombre }} {{ p.apellido }}
           </button>
         </article>
       } @empty {
@@ -62,7 +62,7 @@
   <section class="admin-panel">
     <h2>Directorio de profesores</h2>
     <p class="admin-help">
-      El directorio no informa el estado de la cuenta ni su rol actual. Al vincular, el servidor
+      El directorio no informa el estado de la cuenta ni su rol actual. Al elegirlo, el sistema
       comprueba que el profesor esté activo y vigente. La búsqueda y paginación son locales.
     </p>
     <label class="admin-filters"
@@ -79,7 +79,7 @@
             <span class="student-badge">Ya vinculado</span>
           } @else {
             <button class="primary" (click)="ask('link', p)" [disabled]="pending()">
-              Vincular a {{ p.nombre }} {{ p.apellido }}
+              Elegir a {{ p.nombre }} {{ p.apellido }}
             </button>
           }
         </article>
@@ -109,8 +109,8 @@
     action() === 'replace'
       ? '¿Reemplazar este vínculo?'
       : action() === 'link'
-        ? '¿Vincular este profesor?'
-        : '¿Desvincular este profesor?'
+        ? '¿Elegir este profesor?'
+        : '¿Dejar de entrenar con este profesor?'
   "
   [message]="message()"
   (confirmed)="save()"

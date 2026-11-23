@@ -27,11 +27,11 @@ Las ediciones de rutinas conservan las versiones utilizadas por asignaciones y s
 
 Los seis grupos musculares estándar se conservan por compatibilidad. Los personalizados pueden renombrarse manteniendo referencias y eliminarse únicamente cuando no están en uso. Los comentarios se guardan al cerrar la sesión; no existe edición posterior del comentario.
 
-### Editor de rutinas y entrenamiento simplificados
+### Rutinas y experiencia de entrenamiento
 
-Días con orden automático, bloques uniformes con vueltas y ejercicios reorganizables mediante arrastre o teclado. El alumno registra repeticiones y pesos reales por vuelta en una tabla compacta, sin confirmaciones cotidianas. ADMIN puede filtrar alumnos `Sin asignar` y PROFESOR puede encontrar y vincular alumnos disponibles con acceso limitado antes de vincularse.
+Días con nombre automático, ejercicios por repeticiones o segundos y sugerencias individuales por alumno. Registro compacto por vuelta, progreso semanal sencillo e inicio del profesor con alumnos y accesos rápidos. Se conservan versiones e historiales internos.
 
-Ver la [guía de uso, permisos y actualización](simulacro_nombreAlumno/docs/rutinas-simples.md). Esta mejora no requiere una migración nueva: conserva versiones, asignaciones, pesos individuales e historiales.
+**Las instalaciones existentes deben aplicar la migración 008 antes de iniciar esta versión.** Ver la [guía de cambios, respaldo y actualización segura con PowerShell](simulacro_nombreAlumno/docs/redisenio-impulso.md). No regenerar `.env` ni eliminar el volumen.
 
 ## Ejecutar todo con Docker
 

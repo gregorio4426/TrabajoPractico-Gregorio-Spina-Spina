@@ -39,4 +39,31 @@ describe('per-assignment suggested weights', () => {
     c.reset();
     expect(c.payload().pesos.map((p) => p.pesoSugerido)).toEqual([null, null]);
   });
+  it('recovers personal repetition and time targets and leaves template defaults untouched', () => {
+    const f = TestBed.createComponent(AssignmentWeights);
+    const source = {
+      asignacionRevision: 3,
+      dias: [
+        {
+          nombre: 'Día 1',
+          ejercicios: [
+            { id: 5, repsSugeridas: 12, repsPersonalizadas: 10, pesoSugerido: 60 },
+            { id: 6, tipoMedicion: 'SEGUNDOS', segundosSugeridos: 45, segundosPersonalizados: 60 },
+          ],
+        },
+      ],
+    };
+    f.componentRef.setInput('routine', source);
+    f.componentRef.setInput('existing', true);
+    f.detectChanges();
+    expect(f.componentInstance.payload().pesos[0]).toMatchObject({
+      repsSugeridas: 10,
+      pesoSugerido: 60,
+    });
+    expect(f.componentInstance.payload().pesos[1]).toMatchObject({ segundosSugeridos: 60 });
+    f.componentInstance.rows.at(0).controls.repsSugeridas.setValue(9);
+    expect(source.dias[0]!.ejercicios[0]!.repsSugeridas).toBe(12);
+    f.componentInstance.rows.at(1).controls.segundosSugeridos.setValue(0);
+    expect(f.componentInstance.form.invalid).toBe(true);
+  });
 });

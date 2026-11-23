@@ -9,17 +9,13 @@ import { StudentProgress } from './progress';
 import { alumnoError, isClosed, text } from './utils';
 @Component({
   selector: 'app-student-dashboard',
-  imports: [RouterLink, ReactiveFormsModule, StudentProgress],
+  imports: [RouterLink, StudentProgress],
   template: `<section class="page-intro">
       <span class="eyebrow muted">MI ENTRENAMIENTO</span>
       <h1>Tu próximo paso empieza acá<span class="accent">.</span></h1>
       <p>Entrená a tu ritmo y llevá el registro real de cada avance.</p>
     </section>
-    <form class="admin-filters" [formGroup]="form" (ngSubmit)="load()">
-      <label>Desde<input type="date" formControlName="desde" /></label
-      ><label>Hasta<input type="date" formControlName="hasta" /></label
-      ><button class="primary" [disabled]="loading()">Actualizar mi dashboard</button>
-    </form>
+
     @if (loading()) {
       <p class="notice" role="status">Consultando tus datos…</p>
     }
@@ -47,10 +43,7 @@ import { alumnoError, isClosed, text } from './utils';
       @if (open().length) {
         <section class="admin-panel">
           <h2>Retomá tu entrenamiento</h2>
-          <p class="admin-help">
-            Sesiones abiertas de todo tu historial. Los registros confirmados se recuperan del
-            servidor al recargar.
-          </p>
+          <p class="admin-help">Continuá desde donde quedaste.</p>
           <div class="teacher-history-list">
             @for (s of open(); track s.id) {
               <div>

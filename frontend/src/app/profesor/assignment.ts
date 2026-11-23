@@ -11,7 +11,7 @@ import { profesorError } from './utils';
   imports: [RouterLink, AssignmentWeights],
   template: `
     <a class="admin-link" routerLink="/profesor/alumnos">← Volver a alumnos</a>
-    <h1>Pesos de la asignación</h1>
+    <h1>Sugerencias del alumno</h1>
     @if (loading()) {
       <p class="notice" role="status">Cargando asignación…</p>
     }
@@ -27,7 +27,7 @@ import { profesorError } from './utils';
       @if (r.activa && r.profesorId === auth.session()?.perfilId) {
         <fieldset [disabled]="pending()" class="teacher-fieldset">
           <app-assignment-weights #weights [routine]="r" [existing]="true" />
-          <button class="primary" (click)="ask()">Guardar pesos individuales</button>
+          <button class="primary" (click)="ask()">Guardar sugerencias</button>
         </fieldset>
       } @else {
         <p class="notice">
@@ -81,7 +81,7 @@ export class AssignmentEditor {
         this.api.updateAssignmentWeights(this.id, this.weights()!.payload()),
       );
       this.data.set(result);
-      this.success.set('Pesos individuales guardados.');
+      this.success.set('Sugerencias guardadas.');
     } catch (e) {
       this.error.set(profesorError(e));
     } finally {

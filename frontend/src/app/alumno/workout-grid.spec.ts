@@ -116,4 +116,29 @@ describe('individual results for every exercise and round', () => {
     const c = f.componentInstance;
     expect(c.entry(c.exercises()[0]!, 1).saved).toBeUndefined();
   });
+  it('writes actual seconds without inventing repetitions', async () => {
+    const f = setup(),
+      c = f.componentInstance,
+      http = TestBed.inject(HttpTestingController);
+    f.componentRef.setInput('exercises', [
+      { id: 20, ejercicioId: 3, tipoMedicion: 'SEGUNDOS', segundosSugeridos: 45, vueltas: 2 },
+    ]);
+    f.detectChanges();
+    const row = c.entry(c.exercises()[0]!, 1);
+    row.form.patchValue({ reps: 44, weight: null });
+    const saved = c.save(row);
+    const request = http.expectOne('/api/sesiones/7/series');
+    expect(request.request.body).toMatchObject({ segundosHechos: 44 });
+    expect(request.request.body).not.toHaveProperty('repsHechas');
+    request.flush({
+      id: 9,
+      tipoMedicion: 'SEGUNDOS',
+      segundosHechos: 44,
+      diaEjercicioId: 20,
+      ejercicioId: 3,
+      numeroSerie: 1,
+      revision: 0,
+    });
+    await saved;
+  });
 });

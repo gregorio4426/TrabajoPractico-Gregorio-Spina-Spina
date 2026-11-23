@@ -23,6 +23,7 @@ public final class CumplimientoEntrenamiento {
             }
             boolean tiempo=plan.getTipoMedicion()==TipoMedicion.SEGUNDOS;
             Integer objetivo=tiempo?sesion.getSegundosPersonalizados().getOrDefault(plan.getId(),plan.getSegundosSugeridos()):sesion.getRepsPersonalizados().getOrDefault(plan.getId(),plan.getRepsSugeridas());
+            if(objetivo!=null && objetivo<=0) return new Resultado(null,0,vigentes.size());
             esperadas += plan.getSeriesSugeridas();
             long hechas = vigentes.stream().filter(s -> s.getDiaEjercicio() != null && Objects.equals(s.getDiaEjercicio().getId(), plan.getId()))
                     .filter(s -> s.getTipoMedicion()==plan.getTipoMedicion()).filter(s -> objetivo==null || (tiempo?s.getSegundosHechos():s.getRepsHechas()) >= objetivo).count();

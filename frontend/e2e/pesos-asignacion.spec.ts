@@ -94,7 +94,7 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
   await page.goto('/profesor/rutinas/nueva');
   await page.getByLabel('Nombre de rutina', { exact: true }).fill('Hipertrofia ' + unique());
   await page.getByLabel('Descripción de rutina', { exact: true }).fill('Plantilla compartida');
-  await page.getByLabel('Nombre del día', { exact: true }).fill('Día 1');
+  await page.getByLabel('Nombre del día (opcional)', { exact: true }).fill('Día 1');
   await selectEntity(page, 'Ejercicio del día 1, fila 1', exercise);
   await expect(page.getByLabel('Vueltas', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Repeticiones', { exact: true })).toBeVisible();
@@ -113,12 +113,12 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
     expect(r.status()).toBe(200);
     return r.json();
   }
-  await selectEntity(page, 'Alumno vinculado', juan.email);
+  await selectEntity(page, 'Alumno', juan.email);
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveValue('');
   await page.getByLabel('Peso sugerido', { exact: true }).fill('60');
-  await page.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
+  await page.getByRole('button', { name: 'Asignar rutina', exact: true }).click();
   await confirm(page);
-  await expect(page.getByText(/Rutina asignada: versión/)).toBeVisible();
+  await expect(page.getByText(/Rutina asignada correctamente/)).toBeVisible();
   const first = await active(juan);
   expect(first.dias[0].ejercicios[0].pesoSugerido).toBe(60);
   const opened = await request.post('/api/sesiones', {
@@ -131,17 +131,17 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
   await expect(page.getByRole('heading', { name: /Juan Pesos/ })).toBeVisible();
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveValue('60');
   await page.getByLabel('Peso sugerido', { exact: true }).fill('80');
-  await page.getByRole('button', { name: 'Guardar pesos individuales', exact: true }).click();
-  await expect(page.getByText('Pesos individuales guardados.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Guardar sugerencias', exact: true }).click();
+  await expect(page.getByText('Sugerencias guardadas.', { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveValue('80');
   await page.goto('/profesor/rutinas/' + routineId);
-  await selectEntity(page, 'Alumno vinculado', pedro.email);
+  await selectEntity(page, 'Alumno', pedro.email);
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveValue('');
   await page.getByLabel('Peso sugerido', { exact: true }).fill('40');
-  await page.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
+  await page.getByRole('button', { name: 'Asignar rutina', exact: true }).click();
   await confirm(page);
-  await expect(page.getByText(/Rutina asignada: versión/)).toBeVisible();
+  await expect(page.getByText(/Rutina asignada correctamente/)).toBeVisible();
   expect((await active(pedro)).dias[0].ejercicios[0].pesoSugerido).toBe(40);
   expect((await active(juan)).dias[0].ejercicios[0].pesoSugerido).toBe(80);
   const template = await request.get('/api/rutinas/' + routineId, { headers });
@@ -166,13 +166,13 @@ test('Pesos por asignación: dos alumnos comparten plantilla con pesos independi
   }
   await page.goto('/profesor/asignaciones/' + first.asignacionId);
   await page.getByLabel('Peso sugerido', { exact: true }).fill('0');
-  await page.getByRole('button', { name: 'Guardar pesos individuales', exact: true }).click();
-  await expect(page.getByText('Pesos individuales guardados.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Guardar sugerencias', exact: true }).click();
+  await expect(page.getByText('Sugerencias guardadas.', { exact: true })).toBeVisible();
   await page.reload();
   await expect(page.getByLabel('Peso sugerido', { exact: true })).toHaveValue('0');
   await page.getByLabel('Peso sugerido', { exact: true }).fill('');
-  await page.getByRole('button', { name: 'Guardar pesos individuales', exact: true }).click();
-  await expect(page.getByText('Pesos individuales guardados.', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Guardar sugerencias', exact: true }).click();
+  await expect(page.getByText('Sugerencias guardadas.', { exact: true })).toBeVisible();
   expect((await active(juan)).dias[0].ejercicios[0].pesoSugerido).toBeNull();
   expect((await active(pedro)).dias[0].ejercicios[0].pesoSugerido).toBe(40);
   expect(

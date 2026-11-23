@@ -181,7 +181,9 @@ test.describe('PROFESOR · backend real', () => {
   });
   test('dashboard and real progress graphs preserve exact recorded values', async ({ page }) => {
     await login(page);
-    await expect(page.getByRole('link', { name: /Alumnos vinculados/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: /Mis alumnos/ }).first()).toBeVisible();
+    await expect(page.locator('app-progress-chart')).toHaveCount(0);
+    await page.goto('/profesor/progreso');
     await page.getByRole('button', { name: exercise.nombre, exact: true }).click();
     await expect(
       page.getByRole('heading', { name: 'Peso máximo registrado por sesión' }),
@@ -193,13 +195,10 @@ test.describe('PROFESOR · backend real', () => {
     await expect(page.getByRole('cell', { name: /^20(?:\.0+)?$/ })).toBeVisible();
     await page.getByLabel('Desde', { exact: true }).fill('2025-01-01');
     await page.getByLabel('Hasta', { exact: true }).fill('2025-01-02');
-    await page.getByRole('button', { name: 'Actualizar dashboard', exact: true }).click();
+    await page.getByRole('button', { name: 'Ver progreso', exact: true }).click();
     await expect(
       page.getByText('No hay ejercicios con resultados válidos en este período.', { exact: true }),
     ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: /Entrenamientos con datos válidos/ }).locator('strong'),
-    ).toHaveText('0');
   });
   test('linked student search, follow-up, full histories and read-only training', async ({
     page,
@@ -220,9 +219,11 @@ test.describe('PROFESOR · backend real', () => {
     await expect(page.getByText('Seguimiento actualizado correctamente.')).toBeVisible();
     await page.getByRole('button', { name: 'Rutinas e historial', exact: true }).click();
     await expect(
-      page.getByRole('link', { name: 'Consultar versión asignada', exact: true }),
+      page.getByRole('link', { name: 'Ver rutina asignada', exact: true }),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: /Ver versión [0-9]/ })).toHaveCount(2);
+    await expect(page.getByRole('link', { name: 'Ver rutina anterior', exact: true })).toHaveCount(
+      2,
+    );
     await page.getByRole('button', { name: 'Entrenamientos', exact: true }).click();
     await page.getByRole('link', { name: /Ver .* · / }).click();
     await expect(page.getByRole('heading', { name: 'Resultados registrados' })).toBeVisible();
@@ -249,15 +250,16 @@ test.describe('PROFESOR · backend real', () => {
     await page.getByRole('button', { name: 'Crear rutina', exact: true }).click();
     await expect(page).toHaveURL(/\/profesor\/rutinas\/\d+\?guardada=1$/);
     const id = Number(new URL(page.url()).pathname.split('/').pop());
-    await expect(page.getByText('Rutina guardada correctamente. Versión 1.')).toBeVisible();
-    await selectEntity(page, 'Alumno vinculado', student.email);
-    await page.getByRole('button', { name: 'Asignar última versión', exact: true }).click();
+    await expect(page.getByText('Rutina guardada correctamente.')).toBeVisible();
+    await selectEntity(page, 'Alumno', student.email);
+    await page.getByRole('button', { name: 'Asignar rutina', exact: true }).click();
     await confirm(page);
-    await expect(page.getByText(/Rutina asignada: versión 1/)).toBeVisible();
-    await page.getByRole('link', { name: 'Editar última versión', exact: true }).click();
+    await expect(page.getByText(/Rutina asignada correctamente/)).toBeVisible();
+    await page.getByRole('link', { name: 'Editar rutina', exact: true }).click();
     await page.getByLabel('Nombre de rutina', { exact: true }).fill(name + ' v2');
-    await page.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
+    await page.getByRole('button', { name: 'Guardar rutina', exact: true }).click();
     await expect(page).toHaveURL(/guardada=2$/);
+    await page.getByText('Historial de cambios', { exact: true }).click();
     await page.getByRole('link', { name: /^Versión 1$/ }).click();
     await expect(page.getByRole('heading', { name: name, exact: true })).toBeVisible();
     await page.goto(`/profesor/rutinas/${id}`);
@@ -266,9 +268,7 @@ test.describe('PROFESOR · backend real', () => {
     await expect(
       page.getByText('Rutina archivada. Las versiones y los entrenamientos se conservan.'),
     ).toBeVisible();
-    await expect(
-      page.getByRole('link', { name: 'Editar última versión', exact: true }),
-    ).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Editar rutina', exact: true })).toHaveCount(0);
     await page.goto('/profesor/rutinas');
     await page.goto(`/profesor/rutinas/${id}`);
     await expect(page.locator('p.admin-help').filter({ hasText: 'Archivada' })).toBeVisible();
@@ -437,7 +437,7 @@ test.describe('PROFESOR · backend real', () => {
         )
       ).status(),
     ).toBe(200);
-    await page.getByRole('button', { name: 'Consultar progreso', exact: true }).click();
+    await page.getByRole('button', { name: 'Ver progreso', exact: true }).click();
     await expect(page.getByRole('alert')).toContainText('Ya no tenés');
     await expect(page.getByRole('heading', { name: 'VinculoRevocado Prueba' })).toHaveCount(0);
   });

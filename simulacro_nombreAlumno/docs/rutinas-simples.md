@@ -1,5 +1,7 @@
 # Rutinas simples, alumnos disponibles y resultados por vuelta
 
+Esta guía describe la entrega anterior. La versión actual incorpora medición por tiempo y requiere [migración 008 y pasos de actualización](redisenio-impulso.md).
+
 ## Uso
 
 - El profesor crea días con nombre; su orden se calcula por posición. Cada día ofrece `+ Agregar día` justo debajo y el nuevo se inserta a continuación.

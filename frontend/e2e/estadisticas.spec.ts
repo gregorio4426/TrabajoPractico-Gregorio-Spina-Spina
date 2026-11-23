@@ -236,10 +236,12 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
         who,
       );
       await page.goto(root);
-      const form = page.locator('main form').first();
-      await form.getByLabel('Desde', { exact: true }).fill(yesterday);
-      await form.getByLabel('Hasta', { exact: true }).fill(today);
-      await form.getByRole('button').click();
+      if (role === 'ADMIN') {
+        const form = page.locator('main form').first();
+        await form.getByLabel('Desde', { exact: true }).fill(yesterday);
+        await form.getByLabel('Hasta', { exact: true }).fill(today);
+        await form.getByRole('button').click();
+      }
       const d = await (
         await request.get(`${api}/dashboard?desde=${yesterday}&hasta=${today}`, {
           headers: headers(who),
@@ -271,20 +273,17 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
             url.searchParams.get('desde') === yesterday &&
             url.searchParams.get('hasta') === today,
         );
+      } else if (role === 'PROFESOR') {
+        await expect(page.locator('app-progress-chart')).toHaveCount(0);
+        await expect(page.getByRole('heading', { name: 'Mis alumnos', exact: true })).toBeVisible();
+        await expect(
+          page.getByRole('link', { name: 'Ver todos mis alumnos →', exact: true }),
+        ).toHaveAttribute('href', '/profesor/alumnos');
       } else {
         await expect(
-          page
-            .locator('.admin-metrics a')
-            .filter({
-              has: page.locator('span').filter({ hasText: /^Entrenamientos con datos válidos$/ }),
-            })
-            .locator('strong'),
-        ).toHaveText(String(summary.datos.entrenamientosConDatosValidos));
-        await expect(
-          page
-            .locator('app-teacher-progress')
-            .getByText(`${yesterday} → ${today}`, { exact: false }),
+          page.getByRole('heading', { name: 'Días que entrenaste', exact: true }),
         ).toBeVisible();
+        await expect(page.locator('main')).not.toContainText('Frecuencia observada');
       }
     });
   const scopes = ['ADMIN', 'ADMIN alumno', 'PROFESOR', 'PROFESOR alumno', 'ALUMNO'] as const;
@@ -329,10 +328,52 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
       await page.goto(url);
       if (scope === 'PROFESOR alumno')
         await page.getByRole('button', { name: 'Progreso del alumno', exact: true }).click();
+      if (scope === 'ALUMNO') {
+        await page.getByLabel('Desde', { exact: true }).fill(yesterday);
+        await page.getByLabel('Hasta', { exact: true }).fill(today);
+        await page.getByRole('button', { name: 'Ver evolución', exact: true }).click();
+        const select = page.locator('.exercise-choice select');
+        while (!(await select.locator(`option[value="${exercise.id}"]`).count())) {
+          const next = page
+            .getByRole('navigation', { name: 'Ejercicios de tu progreso' })
+            .getByRole('button', { name: 'Siguientes', exact: true });
+          await expect(next).toBeEnabled();
+          await Promise.all([
+            page.waitForResponse((r) => new URL(r.url()).pathname === stats + '/ejercicios'),
+            next.click(),
+          ]);
+        }
+        await select.selectOption(String(exercise.id));
+        const response = await request.get(
+          `${stats}/ejercicios/${exercise.id}/evolucion?desde=${yesterday}&hasta=${today}&pagina=0&tamanio=30`,
+          { headers: headers(who) },
+        );
+        expect(response.status()).toBe(200);
+        const evolution = (await response.json()).contenido as Point[];
+        const chart = page
+          .locator('app-progress-chart')
+          .filter({ has: page.getByRole('heading', { name: 'Peso utilizado', exact: true }) });
+        await chart.getByText('Ver registros', { exact: true }).click();
+        await expect(chart.locator('tbody tr')).toHaveCount(evolution.length);
+        for (let i = 0; i < evolution.length; i++) {
+          await expect(chart.locator('tbody tr').nth(i).locator('td').nth(1)).toHaveText(
+            evolution[i]!.datos.pesoMaximo == null
+              ? 'Sin dato'
+              : String(evolution[i]!.datos.pesoMaximo),
+          );
+        }
+        await expect(page.locator('main')).not.toContainText('Fechas UTC');
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(
+          true,
+        );
+        await chart.getByRole('link').first().click();
+        await expect(page).toHaveURL(new RegExp(`/alumno/sesiones/${evolution[0]!.sesionId}$`));
+        return;
+      }
       const progress = page.locator('app-teacher-progress');
       await progress.getByLabel('Desde', { exact: true }).fill(yesterday);
       await progress.getByLabel('Hasta', { exact: true }).fill(today);
-      await progress.getByRole('button', { name: 'Consultar progreso', exact: true }).click();
+      await progress.getByRole('button', { name: 'Ver progreso', exact: true }).click();
       await expect(progress.getByRole('status')).toHaveCount(0);
       const summary = await (
         await request.get(`${stats}?desde=${yesterday}&hasta=${today}`, { headers: headers(who) })
@@ -420,7 +461,7 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
         await page.getByRole('button', { name: 'Progreso del alumno', exact: true }).click();
       await progress.getByLabel('Desde', { exact: true }).fill(today);
       await progress.getByLabel('Hasta', { exact: true }).fill(today);
-      await progress.getByRole('button', { name: 'Consultar progreso', exact: true }).click();
+      await progress.getByRole('button', { name: 'Ver progreso', exact: true }).click();
       await expect(progress.getByText(`${today} → ${today}`, { exact: false })).toBeVisible();
       await choose();
       const singleChart = progress.locator('.teacher-chart').filter({
@@ -432,13 +473,13 @@ test.describe('ESTADÍSTICAS · coherencia real entre roles', () => {
       await expect(singleChart).not.toContainText('Fecha original:');
       await progress.getByLabel('Desde', { exact: true }).fill('2000-01-01');
       await progress.getByLabel('Hasta', { exact: true }).fill('2000-01-02');
-      await progress.getByRole('button', { name: 'Consultar progreso', exact: true }).click();
+      await progress.getByRole('button', { name: 'Ver progreso', exact: true }).click();
       await expect(
         progress.getByText('No hay ejercicios con resultados válidos en este período.'),
       ).toBeVisible();
       await expect(progress.getByRole('link', { name: /Ver entrenamiento:/ })).toHaveCount(0);
       await progress.getByLabel('Hasta', { exact: true }).fill('2002-01-01');
-      await progress.getByRole('button', { name: 'Consultar progreso', exact: true }).click();
+      await progress.getByRole('button', { name: 'Ver progreso', exact: true }).click();
       await expect(progress.getByRole('alert')).toContainText('366');
     });
 });

@@ -461,22 +461,19 @@ test.describe('ALUMNO · backend real y móvil', () => {
     });
     await login(page);
     await page.goto('/alumno/rutinas');
-    await expect(page.getByRole('button', { name: /Ver .* · versión/ })).toHaveCount(2);
-    await page
-      .getByRole('button', { name: /Ver .* · versión/ })
-      .last()
-      .click();
-    await expect(page.getByRole('heading', { name: /versión histórica 1/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Ver / })).toHaveCount(2);
+    await page.getByRole('button', { name: /^Ver / }).last().click();
+    await expect(page.locator('app-student-prescription')).toBeVisible();
     await page.goto('/alumno/progreso');
-    await page.getByRole('button', { name: exercise.nombre, exact: true }).click();
+    await page.locator('.exercise-choice select').selectOption(String(exercise.id));
+    await expect(page.getByRole('heading', { name: 'Peso utilizado' })).toBeVisible();
     await expect(
-      page.getByRole('heading', { name: 'Peso máximo registrado por sesión' }),
-    ).toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: 'Volumen registrado por sesión' }),
+      page.getByRole('heading', { name: 'Días que entrenaste', exact: true }),
     ).toBeVisible();
     await page
-      .getByText('Ver valores exactos de peso máximo registrado por sesión', { exact: true })
+      .locator('app-progress-chart')
+      .filter({ has: page.getByRole('heading', { name: 'Peso utilizado', exact: true }) })
+      .getByText('Ver registros', { exact: true })
       .click();
     await expect(page.getByRole('cell', { name: /^25(?:\.0+)?$/ }).first()).toBeVisible();
     expect(forbidden).toEqual([]);
@@ -601,7 +598,7 @@ test.describe('ALUMNO · backend real y móvil', () => {
         exact: true,
       })
       .fill(teacherB.email);
-    await page.getByRole('button', { name: 'Vincular a TutorBeta Prueba', exact: true }).click();
+    await page.getByRole('button', { name: 'Elegir a TutorBeta Prueba', exact: true }).click();
     await confirm(page);
     await expect(
       page.getByText('Vinculación actualizada. Tus rutinas y entrenamientos se conservan.'),
@@ -611,20 +608,20 @@ test.describe('ALUMNO · backend real y móvil', () => {
     await page.getByRole('button', { name: 'Reemplazar vínculo', exact: true }).click();
     await confirm(page);
     await expect(
-      page.getByRole('button', { name: 'Desvincular a TutorGamma Prueba', exact: true }),
+      page.getByRole('button', { name: 'Dejar de entrenar con TutorGamma Prueba', exact: true }),
     ).toBeVisible();
     await page
-      .getByRole('button', { name: 'Desvincular a TutorGamma Prueba', exact: true })
+      .getByRole('button', { name: 'Dejar de entrenar con TutorGamma Prueba', exact: true })
       .click();
     await confirm(page);
     await expect(
       page.getByText('Vinculación actualizada. Tus rutinas y entrenamientos se conservan.'),
     ).toBeVisible();
     await expect(
-      page.getByRole('button', { name: 'Desvincular a TutorGamma Prueba', exact: true }),
+      page.getByRole('button', { name: 'Dejar de entrenar con TutorGamma Prueba', exact: true }),
     ).toHaveCount(0);
     await expect(
-      page.getByRole('button', { name: 'Desvincular a TutorAlfa Prueba', exact: true }),
+      page.getByRole('button', { name: 'Dejar de entrenar con TutorAlfa Prueba', exact: true }),
     ).toBeVisible();
     const after = (await (await request.get('/api/rutinas/me/activa', { headers })).json()) as {
       asignacionId: number;

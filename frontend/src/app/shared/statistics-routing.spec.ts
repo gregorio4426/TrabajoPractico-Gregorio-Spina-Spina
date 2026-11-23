@@ -35,11 +35,17 @@ describe('Statistics pages with real router input binding', () => {
       const h = TestBed.inject(HttpTestingController),
         base =
           role === 'profesor' ? '/api/profesores/me/estadisticas' : '/api/alumnos/me/estadisticas';
-      h.expectOne(base).flush({ periodo: { desde: '2026-11-01', hasta: '2026-11-07' } });
-      h.expectOne((r) => r.url === base + '/actividad').flush({ contenido: [], pagina: 0 });
+      if (role === 'profesor') {
+        h.expectOne(base).flush({ periodo: { desde: '2026-11-01', hasta: '2026-11-07' } });
+        h.expectOne((r) => r.url === base + '/actividad').flush({ contenido: [], pagina: 0 });
+      } else {
+        h.expectOne('/api/sesiones/me/historial').flush([]);
+        await Promise.resolve();
+      }
       h.expectOne((r) => r.url === base + '/ejercicios').flush({
         contenido: [{ ejercicioId: 7, nombreActual: 'Ejercicio' }],
         pagina: 0,
+        totalPaginas: 1,
       });
       await harness.fixture.whenStable();
       harness.detectChanges();
@@ -48,10 +54,18 @@ describe('Statistics pages with real router input binding', () => {
         harness.detectChanges();
         expect(harness.routeNativeElement?.textContent).toContain('Ejercicio');
       });
-      const pick = [...harness.routeNativeElement!.querySelectorAll('button')].find(
-        (b) => b.textContent?.trim() === 'Ejercicio',
-      )!;
-      pick.click();
+      if (role === 'profesor') {
+        const pick = [...harness.routeNativeElement!.querySelectorAll('button')].find(
+          (b) => b.textContent?.trim() === 'Ejercicio',
+        )!;
+        pick.click();
+      } else {
+        const select = harness.routeNativeElement!.querySelector(
+          '.exercise-choice select',
+        ) as HTMLSelectElement;
+        select.value = '7';
+        select.dispatchEvent(new Event('change'));
+      }
       harness.detectChanges();
       h.expectOne((r) => r.url === base + '/ejercicios/7/evolucion').flush({
         contenido: [{ sesionId: 17, datos: { pesoMaximo: '0' } }],
@@ -61,9 +75,11 @@ describe('Statistics pages with real router input binding', () => {
       harness.detectChanges();
       await vi.waitFor(() => {
         harness.detectChanges();
-        expect(harness.routeNativeElement?.querySelector('a')?.getAttribute('href')).toBe(
-          `/${role}/sesiones/17`,
-        );
+        expect(
+          harness.routeNativeElement
+            ?.querySelector(`a[href="/${role}/sesiones/17"]`)
+            ?.getAttribute('href'),
+        ).toBe(`/${role}/sesiones/17`);
       });
     });
 });

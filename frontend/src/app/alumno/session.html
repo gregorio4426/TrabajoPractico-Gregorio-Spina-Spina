@@ -6,7 +6,7 @@
   </button>
 </div>
 @if (loading()) {
-  <p class="notice" role="status">Recuperando entrenamiento y versión exacta…</p>
+  <p class="notice" role="status">Cargando tu entrenamiento…</p>
 }
 @if (error()) {
   <p class="error-message" role="alert">{{ error() }}</p>
@@ -29,9 +29,7 @@
       </p>
     }
     <p class="student-instruction">
-      Tus registros confirmados viven en el servidor. Al recargar se recuperan las series guardadas;
-      los campos que todavía no enviaste no se consideran registros. Los pesos no incluyen una
-      unidad asumida.
+      Guardá cada vuelta al terminarla. Podés retomar este entrenamiento después.
     </p>
     <button class="secondary" (click)="editDate()" [disabled]="pending()">Corregir fecha</button>
   </section>
@@ -101,7 +99,7 @@
           @for (serie of previous.series ?? []; track serie.id) {
             @if (validSeries(serie)) {
               <p class="admin-help">
-                Serie {{ serie.numeroSerie }}: {{ performed(serie) }} repeticiones · peso
+                Serie {{ serie.numeroSerie }}: {{ performed(serie) }} {{ unitLabel(serie) }} · peso
                 {{ text(serie.pesoUsado) }}
               </p>
             }
@@ -202,7 +200,7 @@
         <div class="student-series-values">
           <div>
             <strong>{{ text(performed(serie)) }}</strong
-            ><small>repeticiones</small>
+            ><small>{{ unitLabel(serie) }}</small>
           </div>
           <div>
             <strong>{{ text(serie.pesoUsado) }}</strong

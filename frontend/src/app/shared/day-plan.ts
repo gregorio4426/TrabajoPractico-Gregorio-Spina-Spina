@@ -31,9 +31,7 @@ export function prescriptionBlocks(exercises: D.DiaEjercicioResponse[]) {
   selector: 'app-day-plan',
   template: ` @for (block of blocks(); track block.key; let bi = $index) {
       <section class="routine-block" [attr.aria-label]="block.name || 'Bloque ' + (bi + 1)">
-        <h4>
-          {{ block.name || 'Bloque ' + (bi + 1) }} · {{ block.rounds ?? '' }} vueltas
-        </h4>
+        <h4>{{ block.name || 'Bloque ' + (bi + 1) }} · {{ block.rounds ?? '' }} vueltas</h4>
         @if (block.entries.length > 1) {
           <p class="admin-help">
             Una vuelta incluye todos los ejercicios de este bloque, en este orden.
@@ -45,12 +43,15 @@ export function prescriptionBlocks(exercises: D.DiaEjercicioResponse[]) {
         @for (entry of block.entries; track entry.index) {
           <div class="student-prescription">
             <strong>{{ entry.exercise.ejercicioNombre }}</strong>
-            <p>
-              {{ suggested(entry.exercise) }} {{ suggested(entry.exercise) == null ? '' : unitLabel(entry.exercise) }}
-              @if (block.entries.length > 1) {
-                por vuelta
-              }
-            </p>
+            @if (suggested(entry.exercise) != null) {
+              <p>
+                {{ suggested(entry.exercise) }}
+                {{ suggested(entry.exercise) == null ? '' : unitLabel(entry.exercise) }}
+                @if (block.entries.length > 1) {
+                  por vuelta
+                }
+              </p>
+            }
             @if (showWeights() && entry.exercise.pesoSugerido != null) {
               <p>Peso sugerido: {{ text(entry.exercise.pesoSugerido) }}</p>
             }
@@ -77,7 +78,8 @@ export function prescriptionBlocks(exercises: D.DiaEjercicioResponse[]) {
     }`,
 })
 export class DayPlan {
-  readonly suggested=suggested; readonly unitLabel=unitLabel;
+  readonly suggested = suggested;
+  readonly unitLabel = unitLabel;
   readonly exercises = input<D.DiaEjercicioResponse[]>([]);
   readonly showWeights = input(false);
   readonly selectable = input(false);

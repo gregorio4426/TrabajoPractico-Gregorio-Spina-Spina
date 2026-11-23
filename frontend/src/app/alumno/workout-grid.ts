@@ -28,9 +28,15 @@ export function plannedSeries(exercises: DiaEjercicioResponse[]) {
     @for (group of groups(); track group.exercise.id) {
       <article class="admin-panel">
         <h3>{{ group.exercise.ejercicioNombre }}</h3>
-        <p class="student-instruction">{{ group.exercise.bloqueNombre || 'Bloque ' + (group.exercise.bloqueOrden ?? 1) }} · {{ group.numbers.length }} vueltas
-        @if (suggested(group.exercise) != null) { · {{ suggested(group.exercise) }} {{ unitLabel(group.exercise) }} }
-        @if (group.exercise.pesoSugerido != null) { · Peso sugerido: {{ group.exercise.pesoSugerido }} }
+        <p class="student-instruction">
+          {{ group.exercise.bloqueNombre || 'Bloque ' + (group.exercise.bloqueOrden ?? 1) }} ·
+          {{ group.numbers.length }} vueltas
+          @if (suggested(group.exercise) != null) {
+            · {{ suggested(group.exercise) }} {{ unitLabel(group.exercise) }}
+          }
+          @if (group.exercise.pesoSugerido != null) {
+            · Peso sugerido: {{ group.exercise.pesoSugerido }}
+          }
         </p>
         @for (number of group.numbers; track number; let round = $index) {
           @let row = entry(group.exercise, number);
@@ -42,14 +48,19 @@ export function plannedSeries(exercises: DiaEjercicioResponse[]) {
             >
               <span>Vuelta {{ round + 1 }}</span>
               <label
-                >{{ isTimed(group.exercise) ? 'Segundos realizados' : 'Repeticiones realizadas' }}<input
+                >{{ isTimed(group.exercise) ? 'Segundos realizados' : 'Repeticiones realizadas'
+                }}<input
                   type="number"
                   inputmode="numeric"
                   min="1"
                   step="1"
                   formControlName="reps"
                   [attr.aria-label]="
-                    group.exercise.ejercicioNombre + ' vuelta ' + (round + 1) + ' ' + unitLabel(group.exercise)
+                    group.exercise.ejercicioNombre +
+                    ' vuelta ' +
+                    (round + 1) +
+                    ' ' +
+                    unitLabel(group.exercise)
                   "
               /></label>
               <label
@@ -86,7 +97,9 @@ export function plannedSeries(exercises: DiaEjercicioResponse[]) {
   </section>`,
 })
 export class WorkoutGrid {
-  readonly isTimed = isTimed; readonly unitLabel = unitLabel; readonly suggested = suggested;
+  readonly isTimed = isTimed;
+  readonly unitLabel = unitLabel;
+  readonly suggested = suggested;
   private readonly api = inject(AlumnoApi);
   private readonly fb = inject(FormBuilder);
   readonly exercises = input.required<DiaEjercicioResponse[]>();
@@ -128,6 +141,7 @@ export class WorkoutGrid {
       row.form.patchValue({ reps: performed(saved) ?? null, weight: saved?.pesoUsado ?? null });
       row.saved = saved;
     }
+    row.exercise = exercise;
     return row;
   }
   async save(row: ReturnType<WorkoutGrid['createEntry']>) {
@@ -146,7 +160,9 @@ export class WorkoutGrid {
         row.saved
           ? this.api.correctSeries(this.session().id!, row.saved.id!, {
               numeroSerie: row.number,
-              ...(isTimed(row.exercise) ? {segundosHechos:Number(v.reps)} : {repsHechas:Number(v.reps)}),
+              ...(isTimed(row.exercise)
+                ? { segundosHechos: Number(v.reps) }
+                : { repsHechas: Number(v.reps) }),
               pesoUsado: v.weight == null ? null : Number(v.weight),
               revision: row.saved.revision!,
               motivo: 'Corrección de resultados desde la tabla de entrenamiento.',
@@ -154,7 +170,9 @@ export class WorkoutGrid {
           : this.api.addSeries(this.session().id!, {
               diaEjercicioId: row.exercise.id!,
               numeroSerie: row.number,
-              ...(isTimed(row.exercise) ? {segundosHechos:Number(v.reps)} : {repsHechas:Number(v.reps)}),
+              ...(isTimed(row.exercise)
+                ? { segundosHechos: Number(v.reps) }
+                : { repsHechas: Number(v.reps) }),
               pesoUsado: v.weight == null ? null : Number(v.weight),
             }),
       );

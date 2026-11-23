@@ -72,7 +72,7 @@ test('ADMIN sin asignar → vinculación segura → tres días y bloques por arr
   await page
     .locator('app-available-students article')
     .filter({ hasText: student.email })
-    .getByRole('button', { name: 'Vincular a mis alumnos', exact: true })
+    .getByRole('button', { name: 'Sumar a mis alumnos', exact: true })
     .click();
   await expect(
     page.getByRole('link', { name: 'Ver Disponible Prueba', exact: true }),
@@ -91,7 +91,7 @@ test('ADMIN sin asignar → vinculación segura → tres días y bloques por arr
     .fill('Tres días, bloques reutilizables');
   for (let di = 1; di <= 3; di++) {
     const day = page.getByRole('group', { name: 'Día ' + di, exact: true });
-    await day.getByLabel('Nombre del día', { exact: true }).fill('Entrenamiento ' + di);
+    await day.getByLabel('Nombre del día (opcional)', { exact: true }).fill('Entrenamiento ' + di);
     await day.getByLabel('Vueltas', { exact: true }).fill('3');
     for (let ei = 0; ei < (di === 1 ? 2 : 1); ei++) {
       await day.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
@@ -160,11 +160,11 @@ test('ADMIN sin asignar → vinculación segura → tres días y bloques por arr
   expect(routine.dias.map((d: any) => d.numeroOrden)).toEqual([1, 2, 3]);
   expect(routine.dias[0].ejercicios.map((e: any) => e.repsSugeridas)).toEqual([12, 8, 1]);
   await page.goto('/profesor/rutinas/' + id + '/editar');
-  await expect(page.getByLabel('Nombre del día', { exact: true })).toHaveCount(3);
+  await expect(page.getByLabel('Nombre del día (opcional)', { exact: true })).toHaveCount(3);
   await page
     .getByLabel('Descripción de rutina', { exact: true })
     .fill('Tres días, bloques reutilizables. Versión revisada.');
-  await page.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
+  await page.getByRole('button', { name: 'Guardar rutina', exact: true }).click();
   await expect(page).toHaveURL(/guardada=2/);
   const current = await (await request.get('/api/rutinas/' + id, { headers: th })).json();
   expect((await request.get('/api/rutinas/' + id + '/versiones/1', { headers: th })).status()).toBe(

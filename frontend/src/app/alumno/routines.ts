@@ -1,3 +1,4 @@
+import { dateAR } from '../shared/measurement';
 import { DayPlan } from '../shared/day-plan';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -15,6 +16,7 @@ import { alumnoError, isClosed, localDate, pastOrToday, text, utcDate } from './
   templateUrl: './routines.html',
 })
 export class StudentRoutines {
+  readonly dateAR = dateAR;
   private readonly api = inject(AlumnoApi);
   private readonly router = inject(Router);
   readonly historyMode = inject(ActivatedRoute).snapshot.data['history'] === true;

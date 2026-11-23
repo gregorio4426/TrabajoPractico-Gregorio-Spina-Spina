@@ -1,5 +1,7 @@
 # Impulso — frontend Angular 22, etapas 1 a 6
 
+**Actualización UX/UI:** ejercicios por repeticiones o tiempo, personalización por alumno y pantallas simplificadas. Requiere [migración 008 y actualización del backend](../simulacro_nombreAlumno/docs/redisenio-impulso.md).
+
 [Editor simplificado y registro por vuelta](../simulacro_nombreAlumno/docs/rutinas-simples.md): bloques uniformes, arrastre y teclado, orden automático de días, alumnos sin asignar y tabla compacta de resultados individuales. Conserva versiones e historiales; no requiere SQL nuevo después de 007.
 
 [Revisión de bloques completos, autocompletado y creación inline](BLOQUES-Y-BUSCADORES.md): un único control de vueltas por bloque, movimientos entre bloques, selectores musculares buscables y ejercicios nuevos sin abandonar la rutina. Requiere el backend actualizado; no agrega SQL después de 007.
@@ -22,7 +24,7 @@ Identidad visual: negro y gris carbón con amarillo fluorescente (`#e6ff00`) par
 
 ## 1. Preparar el backend local
 
-Desde la raíz del repositorio, crear una base MySQL **vacía y exclusiva de desarrollo**, por ejemplo `APPgimnasioBD`, y un usuario con acceso a ella. Aplicar en orden los siete scripts existentes:
+Desde la raíz del repositorio, crear una base MySQL **vacía y exclusiva de desarrollo**, por ejemplo `APPgimnasioBD`, y un usuario con acceso a ella. Aplicar en orden los ocho scripts existentes:
 
 ```sh
 cd simulacro_nombreAlumno
@@ -33,6 +35,7 @@ mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/004_seguri
 mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/005_administracion.sql
 mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/006_mejoras_funcionales.sql
 mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/007_pesos_por_asignacion.sql
+mysql -u USUARIO_LOCAL -p APPgimnasioBD < src/main/resources/db/mysql/008_medicion_y_personalizacion.sql
 cp .env.example .env
 ```
 

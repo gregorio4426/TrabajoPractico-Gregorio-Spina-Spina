@@ -50,7 +50,9 @@ export function routineField(page: Page, label: string) {
   if (day)
     return page
       .getByRole('group', { name: 'Día ' + day[2], exact: true })
-      .getByLabel(day[1] + ' del día', { exact: true });
+      .getByLabel(day[1] === 'Nombre' ? 'Nombre del día (opcional)' : 'Orden del día', {
+        exact: true,
+      });
   throw new Error('Campo de rutina no reconocido');
 }
 

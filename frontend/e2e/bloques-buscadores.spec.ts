@@ -119,7 +119,7 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
   await page
     .getByLabel('Descripción de rutina', { exact: true })
     .fill('Tres vueltas al bloque completo');
-  await page.getByLabel('Nombre del día', { exact: true }).fill('Día 1');
+  await page.getByLabel('Nombre del día (opcional)', { exact: true }).fill('Día 1');
   await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
   await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
   await page.getByRole('button', { name: '+ Agregar ejercicio', exact: true }).click();
@@ -197,7 +197,7 @@ test('Circuito de tres ejercicios y tres vueltas: crear dentro del editor, guard
   await fourth
     .getByRole('button', { name: 'Reordenar ejercicio', exact: true })
     .press('ArrowRight');
-  await page.getByRole('button', { name: 'Guardar nueva versión', exact: true }).click();
+  await page.getByRole('button', { name: 'Guardar rutina', exact: true }).click();
   await expect(page).toHaveURL(/guardada=2/);
   const updated = await request.get('/api/rutinas/' + id, { headers }),
     v2 = await updated.json();

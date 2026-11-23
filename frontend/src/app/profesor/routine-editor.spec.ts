@@ -263,4 +263,35 @@ describe('PROFESOR routine forms', () => {
     expect(empty.controls.seriesSugeridas.value).toBe(3);
     expect(e.blocks(0)[1]!.rows[0]!.controls.repsSugeridas.value).toBe(12);
   });
+  it('generates day names by position while retaining custom names and mixed measurement units', async () => {
+    const e = await setup();
+    e.addDay();
+    e.addDay();
+    e.days.at(1).controls.nombre.setValue('Piernas');
+    const row = e.days.at(0).controls.ejercicios.at(0);
+    row.patchValue({ tipoMedicion: 'SEGUNDOS', segundosSugeridos: 45 });
+    e.changeMeasure(row);
+    const payload = e.payload();
+    expect(payload.dias.map((d) => d.nombre)).toEqual(['Día 1', 'Piernas', 'Día 3']);
+    expect(payload.dias[0]!.ejercicios[0]).toMatchObject({
+      tipoMedicion: 'SEGUNDOS',
+      segundosSugeridos: 45,
+      repsSugeridas: null,
+    });
+    expect(payload.dias[0]!.ejercicios[0]).not.toHaveProperty('pesoSugerido');
+  });
+  it('keeps an intentionally absent general target absent when editing', async () => {
+    const e = await setup();
+    const row = e.exercise({
+      id: 9,
+      ejercicioId: 3,
+      tipoMedicion: 'REPETICIONES',
+      seriesSugeridas: 2,
+      repsSugeridas: null,
+    });
+    e.days.at(0).controls.ejercicios.clear();
+    e.days.at(0).controls.ejercicios.push(row);
+    expect(e.payload().dias[0]!.ejercicios[0]!.repsSugeridas).toBeNull();
+    expect(row.controls.repsSugeridas.valid).toBe(true);
+  });
 });

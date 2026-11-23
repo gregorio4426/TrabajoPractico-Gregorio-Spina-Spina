@@ -95,7 +95,7 @@
         >
           <app-icon name="menu" /></button
         ><span class="breadcrumb"
-          >{{ config().label }} <span>/</span> <strong>{{ currentPage() }}</strong></span
+          ><span class="breadcrumb-role">{{ config().label }}</span> <span class="breadcrumb-divider">/</span> <strong>{{ currentPage() }}</strong></span
         >
       </div>
       <button class="text-button" (click)="openLogout()">

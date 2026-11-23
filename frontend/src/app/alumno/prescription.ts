@@ -7,8 +7,7 @@ import { text } from './utils';
   imports: [DayPlan],
   template: `@if (routine(); as r) {
     <div class="student-session-status">
-      <span class="student-badge">Versión {{ r.numeroVersion }}</span
-      ><span class="admin-help"
+      <span class="admin-help"
         >Autor: {{ r.profesor }} ·
         {{ r.archivada ? 'Archivada, conservada en tu historial' : 'Rutina registrada' }}</span
       >
@@ -19,7 +18,7 @@ import { text } from './utils';
         <app-day-plan [exercises]="day.ejercicios ?? []" [showWeights]="true" />
       </section>
     } @empty {
-      <p class="admin-empty">Esta versión no tiene días disponibles.</p>
+      <p class="admin-empty">Esta rutina no tiene días disponibles.</p>
     }
   }`,
 })

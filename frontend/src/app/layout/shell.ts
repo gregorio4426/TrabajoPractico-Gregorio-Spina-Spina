@@ -30,13 +30,13 @@ export class Shell {
     { path: 'alumnos', label: 'Alumnos' },
     { path: 'profesores', label: 'Profesores' },
     { path: 'rutinas', label: 'Rutinas' },
-    { path: 'asignaciones', label: 'Asignaciones' },
+    { path: 'asignaciones', label: 'Rutinas asignadas' },
     { path: 'sesiones', label: 'Sesiones' },
     { path: 'auditoria', label: 'Auditoría' },
   ];
   readonly teacherNavigation = [
     { path: 'alumnos', label: 'Mis alumnos' },
-    { path: 'rutinas', label: 'Rutinas' },
+    { path: 'rutinas', label: 'Mis rutinas' },
     { path: 'ejercicios', label: 'Ejercicios' },
     { path: 'progreso', label: 'Progreso' },
     { path: 'perfil', label: 'Mi perfil' },

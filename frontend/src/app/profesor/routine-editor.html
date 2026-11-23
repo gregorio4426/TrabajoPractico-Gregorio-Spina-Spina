@@ -171,9 +171,38 @@
                             formControlName="ejercicioId"
                             (created)="exerciseCreated($event)"
                           />
-                          <div class="exercise-measure"><label>Medir por<select formControlName="tipoMedicion" (change)="changeMeasure(exercise)"><option value="REPETICIONES">Repeticiones</option><option value="SEGUNDOS">Segundos</option></select></label>
-                          @if (exercise.controls.tipoMedicion.value === 'SEGUNDOS') { <label>Segundos<input type="number" min="1" step="1" inputmode="numeric" formControlName="segundosSugeridos" placeholder="Opcional" /></label> }
-                          @else { <label>Repeticiones<input type="number" min="1" step="1" inputmode="numeric" formControlName="repsSugeridas" placeholder="Opcional" /></label> }</div>
+                          <div class="exercise-measure">
+                            <label
+                              >Medir por<select
+                                formControlName="tipoMedicion"
+                                (change)="changeMeasure(exercise)"
+                              >
+                                <option value="REPETICIONES">Repeticiones</option>
+                                <option value="SEGUNDOS">Segundos</option>
+                              </select></label
+                            >
+                            @if (exercise.controls.tipoMedicion.value === 'SEGUNDOS') {
+                              <label
+                                >Segundos<input
+                                  type="number"
+                                  min="1"
+                                  step="1"
+                                  inputmode="numeric"
+                                  formControlName="segundosSugeridos"
+                                  placeholder="Opcional"
+                              /></label>
+                            } @else {
+                              <label
+                                >Repeticiones<input
+                                  type="number"
+                                  min="1"
+                                  step="1"
+                                  inputmode="numeric"
+                                  formControlName="repsSugeridas"
+                                  placeholder="Opcional"
+                              /></label>
+                            }
+                          </div>
                           <label
                             >Descanso (opcional)<input
                               type="number"

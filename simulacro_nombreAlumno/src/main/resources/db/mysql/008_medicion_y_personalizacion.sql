@@ -3,6 +3,9 @@ DELIMITER $$
 DROP PROCEDURE IF EXISTS gimnasio_s8_columnas$$
 CREATE PROCEDURE gimnasio_s8_columnas()
 BEGIN
+ IF NOT EXISTS(SELECT 1 FROM gimnasio_schema_migrations WHERE version_num=7) THEN
+  SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Aplicar la migracion 007 antes de 008';
+ END IF;
  IF NOT EXISTS(SELECT 1 FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='dias_ejercicio' AND column_name='tipo_medicion') THEN
   ALTER TABLE dias_ejercicio ADD COLUMN tipo_medicion VARCHAR(20) NOT NULL DEFAULT 'REPETICIONES';
  END IF;

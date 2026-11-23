@@ -89,6 +89,9 @@ export class Routine {
         this.data.set(data);
         this.versions.set(versions);
         this.students.set(students);
+        const target = Number(this.route.snapshot.queryParamMap.get('alumno'));
+        if (!this.form.controls.alumnoId.value && students.some((s) => s.id === target))
+          this.form.controls.alumnoId.setValue(String(target));
       }
     } catch (e) {
       if (seq === this.seq) this.error.set(profesorError(e));
@@ -133,9 +136,7 @@ export class Routine {
         );
         this.assignedId.set(result.id ?? null);
         this.weights()?.reset();
-        this.success.set(
-          `Rutina asignada correctamente al alumno.`,
-        );
+        this.success.set(`Rutina asignada correctamente al alumno.`);
       }
     } catch (e) {
       this.error.set(profesorError(e));

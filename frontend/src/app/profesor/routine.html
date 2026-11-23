@@ -66,7 +66,7 @@
       <app-day-plan [exercises]="day.ejercicios ?? []" />
     }
     <details>
-      <summary>Información de la rutina y su versión</summary>
+      <summary>Información adicional</summary>
       <app-record-view [value]="r" [hiddenFields]="['pesoSugerido', 'dias']" />
     </details>
   </section>
@@ -91,11 +91,11 @@
 }
 <app-teacher-confirm
   #confirmation
-  [title]="action() === 'archive' ? '¿Archivar esta rutina?' : '¿Asignar la última versión?'"
+  [title]="action() === 'archive' ? '¿Archivar esta rutina?' : '¿Asignar esta rutina?'"
   [message]="
     action() === 'archive'
       ? 'Se archivará ' + data()?.nombre + '. Se conservan las versiones y entrenamientos.'
-      : 'Se asignará la última versión de ' +
+      : 'Se asignará ' +
         data()?.nombre +
         ' al alumno seleccionado. Se conserva su historial.'
   "

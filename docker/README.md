@@ -27,7 +27,7 @@ El perfil `demo` permite cargar 20 ejercicios, cinco alumnos y un profesor vincu
 
 ## Base de datos y persistencia
 
-En un volumen nuevo, la imagen derivada de MySQL ejecuta los scripts 001–007 del repositorio en orden. Se copian sin cambios a la imagen con permisos de lectura; no depende de permisos ni rutas de montaje del host. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
+En un volumen nuevo, la imagen derivada de MySQL ejecuta los scripts 001–008 del repositorio en orden. Se copian sin cambios a la imagen con permisos de lectura; no depende de permisos ni rutas de montaje del host. No monta ni modifica la base que usabas fuera de este Compose. No conectar un volumen viejo de otro esquema: seguir primero las guías de migración del backend.
 
 `docker compose stop`, `start`, `restart` y `down` conservan datos. **`docker compose down -v` elimina el volumen y sus datos**: usarlo únicamente para descartar una base de pruebas. Cambiar contraseñas de `.env` no cambia las de un MySQL ya inicializado. No regenerar `.env` para un volumen existente.
 
@@ -132,3 +132,13 @@ docker compose up -d --build --wait --wait-timeout 300
 ```
 
 Se conserva el volumen y la configuración `.env`. Si todavía hay migraciones pendientes, aplicar primero los procedimientos documentados arriba con backup y escritores detenidos. Ver [cambios y pruebas](../frontend/BLOQUES-Y-BUSCADORES.md).
+
+## Actualizar desde 007: medición por tiempo y personalizaciones
+
+Esta entrega requiere **008** antes de iniciar el backend actualizado. Ver [cambios, contratos y actualización segura](../simulacro_nombreAlumno/docs/redisenio-impulso.md). En PowerShell, con el servicio MySQL iniciado y desde la raíz del repositorio actualizado:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File docker/update-008.ps1
+```
+
+El script crea un respaldo, aplica exclusivamente 008 y reconstruye/inicia los servicios. No elimina volúmenes ni cambia `.env`. Las instalaciones nuevas ejecutan 001–008 desde la imagen MySQL.

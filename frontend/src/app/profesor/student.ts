@@ -1,4 +1,5 @@
 import { AuthService } from '../core/auth.service';
+import { DayPlan } from '../shared/day-plan';
 import { Component, inject, signal, viewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -14,7 +15,7 @@ import { Progress } from './progress';
 import { profesorError, text } from './utils';
 @Component({
   selector: 'app-teacher-student',
-  imports: [RouterLink, ReactiveFormsModule, RecordView, Confirm, Progress],
+  imports: [DayPlan, RouterLink, ReactiveFormsModule, RecordView, Confirm, Progress],
   templateUrl: './student.html',
 })
 export class Student {

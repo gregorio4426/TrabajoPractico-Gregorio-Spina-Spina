@@ -1,3 +1,4 @@
+import { dateAR } from '../shared/measurement';
 import { Component, computed, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ import { alumnoError, isClosed, text } from './utils';
   imports: [RouterLink, ReactiveFormsModule],
   template: `<section class="page-intro">
       <span class="eyebrow muted">CADA ENTRENAMIENTO CUENTA</span>
-      <h1>Mis sesiones<span class="accent">.</span></h1>
+      <h1>Mis entrenamientos<span class="accent">.</span></h1>
       <p>Continuá las sesiones abiertas o consultá tu historial, correcciones y anulaciones.</p>
     </section>
     <form class="admin-filters" [formGroup]="form" (ngSubmit)="load()">
@@ -35,7 +36,7 @@ import { alumnoError, isClosed, text } from './utils';
     @if (!loading() && !error()) {
       <p class="admin-help">
         {{ filtered().length }} sesiones. Filtros y páginas locales sobre tu historial. Orden por
-        fecha efectiva, más recientes primero.
+        fecha del entrenamiento, más recientes primero.
       </p>
       @for (s of visible(); track s.id) {
         <section class="student-session-row">
@@ -44,8 +45,8 @@ import { alumnoError, isClosed, text } from './utils';
             ><span class="student-badge">{{ isClosed(s) ? 'Finalizada' : 'Abierta' }}</span>
           </div>
           <p>
-            {{ s.fechaEfectiva ?? s.fecha }} · Versión {{ s.numeroVersion }} · Series
-            {{ s.seriesRealizadas }} / {{ s.seriesEsperadas }} · Día cumplido:
+            {{ dateAR(s.fechaEfectiva ?? s.fecha) }} · Series {{ s.seriesRealizadas }} /
+            {{ s.seriesEsperadas }} · Día cumplido:
             {{ text(s.diaCumplido) }}
           </p>
           <a class="primary" [routerLink]="['/alumno/sesiones', s.id]"
@@ -76,6 +77,7 @@ import { alumnoError, isClosed, text } from './utils';
     }`,
 })
 export class Sessions {
+  readonly dateAR = dateAR;
   private readonly api = inject(AlumnoApi);
   readonly data = signal<SesionResponse[]>([]);
   readonly error = signal('');

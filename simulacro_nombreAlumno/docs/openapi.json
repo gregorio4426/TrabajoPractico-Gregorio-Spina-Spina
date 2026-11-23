@@ -13699,7 +13699,6 @@
         "required": [
           "motivo",
           "numeroSerie",
-          "repsHechas",
           "revision"
         ],
         "type": "object",
@@ -13724,6 +13723,13 @@
           "revision": {
             "type": "integer",
             "format": "int64"
+          },
+          "segundosHechos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resultadoInformado": {
+            "type": "boolean"
           }
         }
       },
@@ -13784,6 +13790,17 @@
           "fechaEfectiva": {
             "type": "string",
             "format": "date"
+          },
+          "tipoMedicion": {
+            "type": "string",
+            "enum": [
+              "REPETICIONES",
+              "SEGUNDOS"
+            ]
+          },
+          "segundosHechos": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -13810,6 +13827,14 @@
           "pesoSugerido": {
             "type": "number",
             "format": "double"
+          },
+          "repsSugeridas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "segundosSugeridos": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -13909,7 +13934,6 @@
       "DiaEjercicioRequest": {
         "required": [
           "ejercicioId",
-          "repsSugeridas",
           "seriesSugeridas"
         ],
         "type": "object",
@@ -13954,13 +13978,23 @@
           "descansoVueltaSegundos": {
             "type": "integer",
             "format": "int32"
+          },
+          "segundosSugeridos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tipoMedicion": {
+            "type": "string",
+            "enum": [
+              "REPETICIONES",
+              "SEGUNDOS"
+            ]
           }
         }
       },
       "DiaRutinaRequest": {
         "required": [
           "ejercicios",
-          "nombre",
           "numeroOrden"
         ],
         "type": "object",
@@ -14057,6 +14091,25 @@
             "format": "int32"
           },
           "descansoVueltaSegundos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tipoMedicion": {
+            "type": "string",
+            "enum": [
+              "REPETICIONES",
+              "SEGUNDOS"
+            ]
+          },
+          "segundosSugeridos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "repsPersonalizadas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "segundosPersonalizados": {
             "type": "integer",
             "format": "int32"
           }
@@ -14372,6 +14425,14 @@
           "pesoSugerido": {
             "type": "number",
             "format": "double"
+          },
+          "repsSugeridas": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "segundosSugeridos": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -14805,8 +14866,7 @@
       "SerieRequest": {
         "required": [
           "diaEjercicioId",
-          "numeroSerie",
-          "repsHechas"
+          "numeroSerie"
         ],
         "type": "object",
         "properties": {
@@ -14825,6 +14885,13 @@
           "pesoUsado": {
             "type": "number",
             "format": "double"
+          },
+          "segundosHechos": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resultadoInformado": {
+            "type": "boolean"
           }
         }
       },

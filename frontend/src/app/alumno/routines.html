@@ -63,7 +63,7 @@
         <div>
           <strong>{{ r.nombre }}</strong>
           <p>
-            {{ r.fechaInicio }} → {{ r.fechaFin ?? 'Sin cierre' }} ·
+            {{ dateAR(r.fechaInicio) }} — {{ r.fechaFin ? dateAR(r.fechaFin) : 'Actual' }} ·
             {{ r.activa ? 'Activa' : 'Anterior' }}
           </p>
           <button class="secondary" (click)="selected.set(r)">

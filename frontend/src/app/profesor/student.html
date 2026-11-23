@@ -88,16 +88,16 @@
       <h3>Rutina activa</h3>
       @if (active()?.asignacionId && active()?.profesorId === auth.session()?.perfilId) {
         <a class="admin-link" [routerLink]="['/profesor/asignaciones', active()?.asignacionId]"
-          >Editar pesos individuales</a
+          >Editar sugerencias individuales</a
         >
       }
       @if (active(); as r) {
-        <p>{{ r.nombre }} · versión {{ r.numeroVersion }}</p>
+        <p>{{ r.nombre }}</p>
         <a
           class="admin-link"
           [routerLink]="['/profesor/rutinas', r.id, 'versiones', r.numeroVersion]"
-          >Consultar versión asignada</a
-        ><app-record-view [value]="r" />
+          >Ver rutina asignada</a
+        >@for (day of r.dias ?? []; track day.id) { <h4>{{ day.nombre }}</h4><app-day-plan [exercises]="day.ejercicios ?? []" [showWeights]="true" /> }
       } @else {
         <p class="admin-empty">El alumno no tiene rutina activa.</p>
       }
@@ -108,7 +108,7 @@
       <div class="teacher-history-list">
         @for (r of history(); track r.asignacionId) {
           <div>
-            <strong>{{ r.nombre }} · versión {{ r.numeroVersion }}</strong>
+            <strong>{{ r.nombre }}</strong>
             <p>
               {{ r.fechaInicio }} → {{ r.fechaFin ?? 'Sin fecha de cierre' }} ·
               {{ r.activa ? 'Activa' : 'Histórica' }}
@@ -116,7 +116,7 @@
             <a
               class="admin-link"
               [routerLink]="['/profesor/rutinas', r.id, 'versiones', r.numeroVersion]"
-              >Ver versión {{ r.numeroVersion }}</a
+              >Ver rutina anterior</a
             >
           </div>
         } @empty {
