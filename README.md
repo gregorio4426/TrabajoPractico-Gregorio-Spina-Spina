@@ -168,7 +168,7 @@ Configurar `GYM_E2E_PRODUCTION=1` para probar Angular en modo producción, o `GY
 | Verificación | Resultado |
 | --- | --- |
 | Backend, incluidos contratos HTTP, seguridad y MySQL | **219 pruebas aprobadas, sin omisiones** |
-| Angular: unitarias e integración HTTP | **139 pruebas aprobadas** |
+| Angular: unitarias e integración HTTP | **142 pruebas aprobadas** |
 | Chromium con Angular en configuración de producción | **59 aprobadas**: 51 con API real y 8 de interfaz aislada |
 | Compilación Angular de producción | Aprobada |
 

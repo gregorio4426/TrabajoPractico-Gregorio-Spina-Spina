@@ -20,6 +20,8 @@ Los entrenamientos finalizados muestran filas compactas con ejercicio, número d
 
 Esta mejora de presentación no modifica el backend ni requiere otra migración adicional a 008.
 
+Verificación de esta mejora: compilación de producción, 142 pruebas Angular/HTTP y los 59 recorridos Chromium aprobados. Incluye editar y volver a guardar en la misma fila, conservar el borrador de otra serie, recuperar valores tras recargar, gestionar correcciones históricas y comprobar filas de resultados de menos de 90 px de alto en celular, sin desplazamiento horizontal.
+
 ## Contratos y compatibilidad
 
 La migración **008** agrega columnas y cuatro tablas de sugerencias individuales, sin eliminar registros. Las prescripciones y resultados anteriores siguen siendo `REPETICIONES`; no se inventan segundos históricos. La migración permite su repetición, verifica que exista 007 y actualiza la restricción de resultados manteniendo la excepción explícita de legado.
@@ -51,7 +53,7 @@ En una instalación nueva, la imagen MySQL incorpora automáticamente 001–008.
 Verificado el 23/11/2026:
 
 - Compilación Angular de producción y empaquetado JAR aprobados.
-- **139 pruebas unitarias/HTTP de Angular**, en 27 archivos.
+- **142 pruebas unitarias/HTTP de Angular**, en 27 archivos.
 - **219 pruebas del backend**, incluidas MySQL y repetición de la migración 008 sobre datos existentes; sin fallos, errores ni omisiones.
 - **59 recorridos Chromium aprobados** con Angular en configuración de producción: 51 contra el backend real y 8 de interfaz aislada. Incluyen regresión ADMIN/PROFESOR/ALUMNO, escritorio/tablet/celular, JWT, permisos y respuestas 400/401/403/404/409. El recorrido nuevo comprueba datos por tiempo, personalización independiente de alumnos, persistencia, catálogo sin versiones duplicadas y pantallas móviles.
 
