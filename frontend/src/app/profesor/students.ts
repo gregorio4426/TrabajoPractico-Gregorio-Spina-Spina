@@ -13,7 +13,7 @@ import { profesorError, text } from './utils';
   imports: [ReactiveFormsModule, RouterLink, AvailableStudents],
   template: `<section class="page-intro">
       <span class="eyebrow muted">TU EQUIPO</span>
-      <h1>Alumnos vinculados<span class="accent">.</span></h1>
+      <h1>Mis alumnos<span class="accent">.</span></h1>
       <p>Solo personas con una vinculación vigente con tu perfil.</p>
     </section>
     <app-available-students (linked)="load()" />

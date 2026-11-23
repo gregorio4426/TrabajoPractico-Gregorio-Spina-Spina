@@ -21,7 +21,6 @@ public class DiaEjercicioRequest {
     @Positive
     private Integer seriesSugeridas;
 
-    @NotNull
     @Positive
     private Integer repsSugeridas;
 
@@ -34,4 +33,7 @@ public class DiaEjercicioRequest {
     @PositiveOrZero private Integer descansoEjercicioSegundos;
     @PositiveOrZero private Integer descansoVueltaSegundos;
 
+
+    @Positive private Integer segundosSugeridos;
+    @Builder.Default private utn.simulacro_nombreAlumno.model.TipoMedicion tipoMedicion = utn.simulacro_nombreAlumno.model.TipoMedicion.REPETICIONES;
 }

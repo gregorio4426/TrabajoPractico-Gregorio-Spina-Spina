@@ -14,13 +14,12 @@ import { profesorError } from './utils';
   template: `<div class="page-intro admin-kicker">
       <div>
         <span class="eyebrow muted">PLANIFICACIÓN</span>
-        <h1>Rutinas del gimnasio<span class="accent">.</span></h1>
+        <h1>Mis rutinas<span class="accent">.</span></h1>
       </div>
       <a class="primary" routerLink="/profesor/rutinas/nueva">Crear rutina</a>
     </div>
     <p class="admin-help">
-      El catálogo compartido devuelve solo familias no archivadas. Solo podés modificar y asignar
-      tus propias rutinas. Las archivadas se pueden consultar desde el historial.
+      Tus rutinas, listas para consultar, editar y asignar.
     </p>
     <form class="admin-filters" [formGroup]="filters" (ngSubmit)="load()">
       <label>Buscar rutina<input type="search" formControlName="q" /></label
@@ -58,13 +57,14 @@ import { profesorError } from './utils';
       <div class="teacher-history-list">
         @for (r of visible(); track r.id) {
           <div>
-            <strong>{{ r.nombre }} · versión {{ r.numeroVersion }}</strong>
+            <strong>{{ r.nombre }}</strong>
             <p>
               {{ r.dias?.length }} días · {{ r.alumnos?.length ?? 0 }} alumnos con acceso vigente ·
               {{ r.descripcion }} · Autor: {{ r.profesor }}
               {{ r.profesorId === auth.session()?.perfilId ? '(vos)' : '' }}
             </p>
             <a class="admin-link" [routerLink]="['/profesor/rutinas', r.id]">Ver {{ r.nombre }}</a>
+            @if (r.profesorId === auth.session()?.perfilId) { <a class="secondary" [routerLink]="['/profesor/rutinas', r.id, 'editar']">Editar rutina</a> }
           </div>
         } @empty {
           <p class="admin-empty">No hay rutinas con estos filtros.</p>

@@ -5,7 +5,7 @@ import lombok.*;
 
 @Entity
 @Table(name = "series", uniqueConstraints = @UniqueConstraint(name = "uk_serie_numero", columnNames = {"sesion_id", "ejercicio_id", "numero_serie_unica"}))
-@org.hibernate.annotations.Check(name = "ck_serie_valores", constraints = "legado_exento OR (numero_serie > 0 AND reps_hechas IS NOT NULL AND reps_hechas > 0 AND (peso_usado IS NULL OR peso_usado >= 0))")
+@org.hibernate.annotations.Check(name = "ck_serie_valores", constraints = "legado_exento OR (numero_serie > 0 AND ((tipo_medicion = 'REPETICIONES' AND reps_hechas IS NOT NULL AND reps_hechas > 0 AND segundos_hechos IS NULL) OR (tipo_medicion = 'SEGUNDOS' AND segundos_hechos IS NOT NULL AND segundos_hechos > 0 AND reps_hechas IS NULL)) AND (peso_usado IS NULL OR peso_usado >= 0))")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,6 +30,13 @@ public class Serie {
 
     private Integer repsHechas;
 
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
+    @jakarta.persistence.Column(nullable=false, length=20)
+    @org.hibernate.annotations.ColumnDefault("'REPETICIONES'")
+    @Builder.Default
+    private TipoMedicion tipoMedicion = TipoMedicion.REPETICIONES;
+    private Integer segundosHechos;
     private Double pesoUsado;
 
     private boolean completada;
@@ -53,7 +60,7 @@ public class Serie {
 
     public boolean isVigenteValida() {
         return !anulada && !legadoExento && completada && numeroSerie != null && numeroSerie > 0
-                && repsHechas != null && repsHechas > 0
+                && (tipoMedicion == TipoMedicion.SEGUNDOS ? segundosHechos != null && segundosHechos > 0 && repsHechas == null : repsHechas != null && repsHechas > 0 && segundosHechos == null)
                 && (pesoUsado == null || (Double.isFinite(pesoUsado) && pesoUsado >= 0));
     }
 }

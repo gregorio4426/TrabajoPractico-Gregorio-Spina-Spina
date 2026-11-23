@@ -54,7 +54,7 @@ export class Routine {
       this.assignedId.set(null);
     });
     const saved = this.route.snapshot.queryParamMap.get('guardada');
-    if (saved) this.success.set('Rutina guardada correctamente. Versión ' + saved + '.');
+    if (saved) this.success.set('Rutina guardada correctamente.');
     this.route.paramMap.pipe(takeUntilDestroyed()).subscribe((p) => {
       this.id.set(Number(p.get('id')));
       this.selectedVersion.set(p.has('version') ? Number(p.get('version')) : null);
@@ -134,7 +134,7 @@ export class Routine {
         this.assignedId.set(result.id ?? null);
         this.weights()?.reset();
         this.success.set(
-          `Rutina asignada: versión ${result.numeroVersion}. La asignación anterior del alumno se desactiva.`,
+          `Rutina asignada correctamente al alumno.`,
         );
       }
     } catch (e) {

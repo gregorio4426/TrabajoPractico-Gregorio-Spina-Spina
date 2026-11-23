@@ -37,4 +37,16 @@ public class AsignacionRutina {
     @Builder.Default
     private java.util.Map<Long,Double> pesosSugeridos = new java.util.LinkedHashMap<>();
     @Version private long revision;
+    @ElementCollection
+    @CollectionTable(name="reps_asignacion", joinColumns=@JoinColumn(name="asignacion_id"))
+    @MapKeyColumn(name="dia_ejercicio_id",nullable=false)
+    @Column(name="valor",nullable=false)
+    @Builder.Default
+    private java.util.Map<Long,Integer> repsPersonalizados = new java.util.LinkedHashMap<>();
+    @ElementCollection
+    @CollectionTable(name="segundos_asignacion", joinColumns=@JoinColumn(name="asignacion_id"))
+    @MapKeyColumn(name="dia_ejercicio_id",nullable=false)
+    @Column(name="valor",nullable=false)
+    @Builder.Default
+    private java.util.Map<Long,Integer> segundosPersonalizados = new java.util.LinkedHashMap<>();
 }

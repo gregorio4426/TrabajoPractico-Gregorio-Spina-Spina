@@ -21,10 +21,13 @@ public class SerieRequest {
     @Positive
     private Integer numeroSerie;
 
-    @NotNull
     @Positive
     private Integer repsHechas;
 
     @PesoValido
     private Double pesoUsado;
+
+    @Positive private Integer segundosHechos;
+    @AssertTrue(message="Ingresá repeticiones o segundos positivos, sin mezclar las unidades")
+    public boolean isResultadoInformado() { return (repsHechas != null && repsHechas > 0 && segundosHechos == null) || (segundosHechos != null && segundosHechos > 0 && repsHechas == null); }
 }

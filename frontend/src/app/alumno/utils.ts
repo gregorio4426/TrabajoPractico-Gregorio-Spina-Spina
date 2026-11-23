@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AbstractControl, ValidatorFn } from '@angular/forms';
 import { adminError } from '../admin/admin-utils';
+import { performed } from '../shared/measurement';
 import * as D from '../admin/contracts';
 export { text } from '../admin/admin-utils';
 export function alumnoError(e: unknown) {
@@ -22,8 +23,8 @@ export function validSeries(s: D.SerieResponse) {
     s.completada === true &&
     Number.isSafeInteger(s.numeroSerie) &&
     Number(s.numeroSerie) > 0 &&
-    Number.isSafeInteger(s.repsHechas) &&
-    Number(s.repsHechas) > 0 &&
+    Number.isSafeInteger(performed(s)) &&
+    Number(performed(s)) > 0 &&
     (s.pesoUsado == null || (Number.isFinite(s.pesoUsado) && s.pesoUsado >= 0))
   );
 }

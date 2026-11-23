@@ -50,10 +50,10 @@
               </button>
             </header>
             <label
-              >Nombre del día<input
+              >Nombre del día (opcional)<input
                 formControlName="nombre"
                 maxlength="255"
-                placeholder="Por ejemplo: Pecho y tríceps"
+                [placeholder]="'Día ' + (di + 1)"
             /></label>
             <div
               formArrayName="ejercicios"
@@ -171,14 +171,9 @@
                             formControlName="ejercicioId"
                             (created)="exerciseCreated($event)"
                           />
-                          <label
-                            >Repeticiones<input
-                              type="number"
-                              min="1"
-                              step="1"
-                              inputmode="numeric"
-                              formControlName="repsSugeridas"
-                          /></label>
+                          <div class="exercise-measure"><label>Medir por<select formControlName="tipoMedicion" (change)="changeMeasure(exercise)"><option value="REPETICIONES">Repeticiones</option><option value="SEGUNDOS">Segundos</option></select></label>
+                          @if (exercise.controls.tipoMedicion.value === 'SEGUNDOS') { <label>Segundos<input type="number" min="1" step="1" inputmode="numeric" formControlName="segundosSugeridos" placeholder="Opcional" /></label> }
+                          @else { <label>Repeticiones<input type="number" min="1" step="1" inputmode="numeric" formControlName="repsSugeridas" placeholder="Opcional" /></label> }</div>
                           <label
                             >Descanso (opcional)<input
                               type="number"
@@ -221,7 +216,7 @@
         }
       </div>
       <button class="primary" type="submit">
-        {{ pending() ? 'Guardando…' : editing ? 'Guardar nueva versión' : 'Crear rutina' }}
+        {{ pending() ? 'Guardando…' : editing ? 'Guardar rutina' : 'Crear rutina' }}
       </button>
     </fieldset>
   </form>

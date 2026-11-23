@@ -16,7 +16,7 @@ import { ProfesorApi } from './profesor-api';
 import { AuthService } from '../core/auth.service';
 import * as D from '../admin/contracts';
 import { Confirm } from './confirm';
-import { notBlank, positiveInteger, optionalWeight, profesorError } from './utils';
+import { notBlank, positiveInteger, optionalWeight, optionalPositiveInteger, profesorError } from './utils';
 export const uniqueDayOrder: ValidatorFn = (control) => {
   const orders = (control as FormArray).controls.map((day) =>
     Number(day.get('numeroOrden')?.value),
@@ -60,12 +60,14 @@ export class RoutineEditor {
       ],
       ejercicioId: [initial?.ejercicioId ?? null, [Validators.required, positiveInteger]],
       seriesSugeridas: [initial?.seriesSugeridas ?? 1, [Validators.required, positiveInteger]],
-      repsSugeridas: [initial?.repsSugeridas ?? 1, [Validators.required, positiveInteger]],
+      tipoMedicion: [initial?.tipoMedicion ?? 'REPETICIONES'],
+      segundosSugeridos: [initial?.segundosSugeridos ?? null as number|null, optionalPositiveInteger],
+      repsSugeridas: [initial?.tipoMedicion === 'SEGUNDOS' ? null : initial?.repsSugeridas ?? 1 as number|null, optionalPositiveInteger],
     });
   }
   day(initial?: D.DiaRutinaResponse, order = 1) {
     return this.fb.group({
-      nombre: [initial?.nombre ?? '', [Validators.required, notBlank, Validators.maxLength(255)]],
+      nombre: [initial?.nombre ?? '', [Validators.maxLength(255)]],
       numeroOrden: [initial?.numeroOrden ?? order, [Validators.required, positiveInteger]],
       ejercicios: new FormArray(
         (initial?.ejercicios ?? []).map((e) => this.exercise(e)),
@@ -134,6 +136,10 @@ export class RoutineEditor {
     } finally {
       this.loading.set(false);
     }
+  }
+  changeMeasure(row: ReturnType<RoutineEditor['exercise']>) {
+    if(row.controls.tipoMedicion.value==='SEGUNDOS') row.controls.repsSugeridas.setValue(null);
+    else row.controls.segundosSugeridos.setValue(null);
   }
   exerciseLists(day: number) {
     return this.blocks(day).map((_, i) => 'exercises-' + day + '-' + i);
@@ -516,7 +522,7 @@ export class RoutineEditor {
       nombre: v.nombre!.trim(),
       descripcion: v.descripcion!.trim(),
       dias: v.dias.map((d, dayIndex) => ({
-        nombre: d.nombre!.trim(),
+        nombre: d.nombre?.trim() || 'Día ' + (dayIndex + 1),
         numeroOrden: dayIndex + 1,
         ejercicios: d.ejercicios.map((e, index) => ({
           ...(e.bloqueOrden === null
@@ -537,7 +543,9 @@ export class RoutineEditor {
               }),
           ejercicioId: Number(e.ejercicioId),
           seriesSugeridas: Number(e.seriesSugeridas),
-          repsSugeridas: Number(e.repsSugeridas),
+          tipoMedicion: e.tipoMedicion ?? 'REPETICIONES',
+          repsSugeridas: e.tipoMedicion === 'SEGUNDOS' || e.repsSugeridas == null ? null : Number(e.repsSugeridas),
+          segundosSugeridos: e.tipoMedicion !== 'SEGUNDOS' || e.segundosSugeridos == null ? null : Number(e.segundosSugeridos),
         })),
       })),
     };

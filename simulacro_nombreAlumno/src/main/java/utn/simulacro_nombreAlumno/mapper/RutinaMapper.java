@@ -45,7 +45,11 @@ public interface RutinaMapper {
         response.setAlumnoNombre(asignacion.getAlumno()==null ? null : asignacion.getAlumno().getNombre()+" "+asignacion.getAlumno().getApellido());
         response.setAsignacionRevision(asignacion.getRevision());
         if(response.getDias()!=null) for(var dia:response.getDias()) if(dia.getEjercicios()!=null)
-            for(var ejercicio:dia.getEjercicios()) ejercicio.setPesoSugerido(asignacion.getPesosSugeridos().get(ejercicio.getId()));
+            for(var ejercicio:dia.getEjercicios()) {
+                ejercicio.setPesoSugerido(asignacion.getPesosSugeridos().get(ejercicio.getId()));
+                ejercicio.setRepsPersonalizadas(asignacion.getRepsPersonalizados().get(ejercicio.getId()));
+                ejercicio.setSegundosPersonalizados(asignacion.getSegundosPersonalizados().get(ejercicio.getId()));
+            }
         response.setFechaInicio(asignacion.getFechaInicio());
         response.setFechaFin(asignacion.getFechaFin());
         response.setActiva(asignacion.isActiva());

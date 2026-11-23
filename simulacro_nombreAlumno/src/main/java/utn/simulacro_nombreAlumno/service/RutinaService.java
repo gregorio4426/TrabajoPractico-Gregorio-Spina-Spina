@@ -152,6 +152,7 @@ public class RutinaService {
                         .bloqueOrden(e.getBloqueOrden()).bloqueNombre(e.getBloqueNombre()).vueltas(e.getVueltas())
                         .ordenEnBloque(e.getOrdenEnBloque()).descansoEjercicioSegundos(e.getDescansoEjercicioSegundos())
                         .descansoVueltaSegundos(e.getDescansoVueltaSegundos())
+                        .tipoMedicion(e.getTipoMedicion()==null?TipoMedicion.REPETICIONES:e.getTipoMedicion()).segundosSugeridos(e.getSegundosSugeridos())
                         .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas())
                         .ejercicioNombreSnapshot(ejercicio.getNombre()).ejercicioDescripcionSnapshot(ejercicio.getDescripcion())
                         .grupoMuscularSnapshot(ejercicio.getGrupoNombre()).build());
@@ -169,6 +170,7 @@ public class RutinaService {
                         .bloqueOrden(e.getBloqueOrden()).bloqueNombre(e.getBloqueNombre()).vueltas(e.getVueltas())
                         .ordenEnBloque(e.getOrdenEnBloque()).descansoEjercicioSegundos(e.getDescansoEjercicioSegundos())
                         .descansoVueltaSegundos(e.getDescansoVueltaSegundos())
+                        .tipoMedicion(e.getTipoMedicion()==null?TipoMedicion.REPETICIONES:e.getTipoMedicion()).segundosSugeridos(e.getSegundosSugeridos())
                         .seriesSugeridas(e.getSeriesSugeridas()).repsSugeridas(e.getRepsSugeridas())
                         .ejercicioNombreSnapshot(e.getNombreHistorico()).grupoMuscularSnapshot(e.getGrupoHistorico())
                         .ejercicioDescripcionSnapshot(e.getEjercicioDescripcionSnapshot()).build());
@@ -180,7 +182,7 @@ public class RutinaService {
     private List<?> firma(Rutina rutina) {
         return rutina.getDias().stream().map(d -> java.util.Arrays.asList(d.getNombre(), d.getNumeroOrden(),
                 d.getEjercicios().stream().map(e -> java.util.Arrays.asList(e.getEjercicio().getId(), e.getSeriesSugeridas(),
-                        e.getRepsSugeridas(), e.getPesoSugerido(), e.getNombreHistorico(), e.getGrupoHistorico(),
+                        e.getRepsSugeridas(), e.getTipoMedicion(), e.getSegundosSugeridos(), e.getPesoSugerido(), e.getNombreHistorico(), e.getGrupoHistorico(),
                         e.getEjercicioDescripcionSnapshot(), e.getBloqueOrden(), e.getBloqueNombre(),e.getVueltas(), e.getOrdenEnBloque(), e.getDescansoEjercicioSegundos(), e.getDescansoVueltaSegundos())).toList())).toList();
     }
 
@@ -250,12 +252,19 @@ public class RutinaService {
         // Validación también para llamadas internas, no solamente desde HTTP.
         validacion.validar(request);
         var permitidos=asignacion.getRutina().getDias().stream().flatMap(d->d.getEjercicios().stream()).map(e->e.getId()).collect(java.util.stream.Collectors.toSet());
+        var repeticiones=new java.util.LinkedHashMap<Long,Integer>();var segundos=new java.util.LinkedHashMap<Long,Integer>();
         var nuevos=new java.util.LinkedHashMap<Long,Double>();var vistos=new java.util.HashSet<Long>();
         for(var peso:request.pesos()) {
             if(!permitidos.contains(peso.diaEjercicioId()) || !vistos.add(peso.diaEjercicioId()))throw new ReglaNegocioException("Seleccioná ejercicios de la versión asignada, sin repetir posiciones");
+            var ejercicio=asignacion.getRutina().getDias().stream().flatMap(d->d.getEjercicios().stream()).filter(e->e.getId().equals(peso.diaEjercicioId())).findFirst().orElseThrow();
+            if((ejercicio.getTipoMedicion()==TipoMedicion.SEGUNDOS && peso.repsSugeridas()!=null) || (ejercicio.getTipoMedicion()!=TipoMedicion.SEGUNDOS && peso.segundosSugeridos()!=null)) throw new ReglaNegocioException("La personalización debe respetar la unidad del ejercicio");
+            if(peso.repsSugeridas()!=null)repeticiones.put(peso.diaEjercicioId(),peso.repsSugeridas());
+            if(peso.segundosSugeridos()!=null)segundos.put(peso.diaEjercicioId(),peso.segundosSugeridos());
             if(peso.pesoSugerido()!=null)nuevos.put(peso.diaEjercicioId(),peso.pesoSugerido());
         }
         asignacion.getPesosSugeridos().clear();asignacion.getPesosSugeridos().putAll(nuevos);
+        asignacion.getRepsPersonalizados().clear();asignacion.getRepsPersonalizados().putAll(repeticiones);
+        asignacion.getSegundosPersonalizados().clear();asignacion.getSegundosPersonalizados().putAll(segundos);
     }
 
     @Transactional

@@ -3,13 +3,16 @@
 
 export interface CorreccionSerieRequest {
   numeroSerie: number;
-  repsHechas: number;
+  repsHechas?: number | null;
+  segundosHechos?: number | null;
   pesoUsado?: number | null;
   motivo: string;
   revision: number;
 }
 
 export interface SerieResponse {
+  tipoMedicion?: 'REPETICIONES' | 'SEGUNDOS' | null;
+  segundosHechos?: number | null;
   id?: number | null;
   ejercicioNombre?: string | null;
   numeroSerie?: number | null;
@@ -32,6 +35,8 @@ export interface FinalizarSesionRequest {
 }
 
 export interface PesoSugeridoResponse {
+  repsSugeridas?: number | null;
+  segundosSugeridos?: number | null;
   diaEjercicioId?: number | null;
   ejercicioNombre?: string | null;
   pesoSugerido?: number | null;
@@ -64,9 +69,11 @@ export interface SesionResponse {
 }
 
 export interface DiaEjercicioRequest {
+  tipoMedicion?: 'REPETICIONES' | 'SEGUNDOS' | null;
+  segundosSugeridos?: number | null;
   ejercicioId: number;
   seriesSugeridas: number;
-  repsSugeridas: number;
+  repsSugeridas?: number | null;
   pesoSugerido?: number | null;
   bloqueOrden?: number | null;
   bloqueNombre?: string | null;
@@ -89,6 +96,10 @@ export interface RutinaRequest {
 }
 
 export interface DiaEjercicioResponse {
+  tipoMedicion?: 'REPETICIONES' | 'SEGUNDOS' | null;
+  segundosSugeridos?: number | null;
+  repsPersonalizadas?: number | null;
+  segundosPersonalizados?: number | null;
   id?: number | null;
   ejercicioNombre?: string | null;
   grupoMuscular?: string | null;
@@ -314,7 +325,8 @@ export interface SesionRequest {
 export interface SerieRequest {
   diaEjercicioId: number;
   numeroSerie: number;
-  repsHechas: number;
+  repsHechas?: number | null;
+  segundosHechos?: number | null;
   pesoUsado?: number | null;
 }
 

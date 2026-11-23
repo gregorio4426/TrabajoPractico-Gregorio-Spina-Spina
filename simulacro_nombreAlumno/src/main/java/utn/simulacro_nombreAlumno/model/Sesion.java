@@ -60,4 +60,16 @@ public class Sesion {
     @Column(name="peso_sugerido",nullable=false)
     @Builder.Default
     private java.util.Map<Long,Double> pesosSugeridos = new java.util.LinkedHashMap<>();
+    @ElementCollection
+    @CollectionTable(name="reps_sesion", joinColumns=@JoinColumn(name="sesion_id"))
+    @MapKeyColumn(name="dia_ejercicio_id",nullable=false)
+    @Column(name="valor",nullable=false)
+    @Builder.Default
+    private java.util.Map<Long,Integer> repsPersonalizados = new java.util.LinkedHashMap<>();
+    @ElementCollection
+    @CollectionTable(name="segundos_sesion", joinColumns=@JoinColumn(name="sesion_id"))
+    @MapKeyColumn(name="dia_ejercicio_id",nullable=false)
+    @Column(name="valor",nullable=false)
+    @Builder.Default
+    private java.util.Map<Long,Integer> segundosPersonalizados = new java.util.LinkedHashMap<>();
 }

@@ -35,4 +35,6 @@ public class SerieResponse {
     private String incidenciaLegado;
     private long revision;
     private java.time.LocalDate fechaEfectiva;
+    private utn.simulacro_nombreAlumno.model.TipoMedicion tipoMedicion;
+    private Integer segundosHechos;
 }

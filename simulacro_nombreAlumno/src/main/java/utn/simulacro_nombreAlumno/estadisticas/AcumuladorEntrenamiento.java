@@ -9,6 +9,7 @@ import static utn.simulacro_nombreAlumno.estadisticas.EstadisticaDtos.*;
 /** Recibe proyecciones por ID de sesión ascendente. Producto/suma decimal exactos, incluso para pesos grandes. */
 final class AcumuladorEntrenamiento {
     private long registradas,abiertas,finalizadas,entrenamientos,series,excluidas,seriesAbiertas,repeticiones,conPeso,sinPeso;
+    private boolean hayTiempo;
     private Integer maxReps;
     private BigDecimal maxPeso,volumen;
     private final Set<Long> alumnos=new HashSet<>();
@@ -25,11 +26,13 @@ final class AcumuladorEntrenamiento {
         if(r.serieId()==null)return;
         if(!r.finalizada()){seriesAbiertas++;return;}
         if(!r.serieValida()){excluidas++;return;}
-        sesionValida=true;series++;repeticiones=Math.addExact(repeticiones,r.repeticiones());
-        maxReps=maxReps==null?r.repeticiones():Math.max(maxReps,r.repeticiones());
+        sesionValida=true;series++;
+        if(r.repeticiones()!=null) {repeticiones=Math.addExact(repeticiones,r.repeticiones());maxReps=maxReps==null?r.repeticiones():Math.max(maxReps,r.repeticiones());}
+        else hayTiempo=true;
         if(r.peso()==null){sinPeso++;return;}
         conPeso++;BigDecimal peso=BigDecimal.valueOf(r.peso());
         maxPeso=maxPeso==null?peso:maxPeso.max(peso);
+        if(r.repeticiones()==null)return;
         BigDecimal carga=peso.multiply(BigDecimal.valueOf(r.repeticiones()));
         volumen=volumen==null?carga:volumen.add(carga);
     }
@@ -43,6 +46,6 @@ final class AcumuladorEntrenamiento {
     Metricas resultado() {
         cerrarSesion();
         return new Metricas(registradas,abiertas,finalizadas,entrenamientos,finalizadas-entrenamientos,alumnos.size(),fechas.size(),ultima,
-                series,excluidas,seriesAbiertas,repeticiones,maxReps,conPeso,sinPeso,maxPeso,volumen,series>0&&sinPeso==0);
+                series,excluidas,seriesAbiertas,repeticiones,maxReps,conPeso,sinPeso,maxPeso,volumen,series>0&&sinPeso==0&&!hayTiempo);
     }
 }

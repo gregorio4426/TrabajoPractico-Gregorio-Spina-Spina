@@ -49,6 +49,32 @@ class VersionadoIntegrationTest {
     private Ejercicio ejercicio;
     private LocalDate fecha;
 
+    @Test void timedPrescriptionsAndPersonalTargetsRemainDistinctAndSnapshotSessions() throws Exception {
+        String definition="{\"nombre\":\"Mixto\",\"descripcion\":\"Tiempo y repeticiones\",\"dias\":[{\"numeroOrden\":1,\"ejercicios\":[{\"ejercicioId\":%d,\"seriesSugeridas\":2,\"repsSugeridas\":12,\"bloqueOrden\":1,\"vueltas\":2,\"ordenEnBloque\":1},{\"ejercicioId\":%d,\"seriesSugeridas\":2,\"tipoMedicion\":\"SEGUNDOS\",\"segundosSugeridos\":45,\"bloqueOrden\":1,\"vueltas\":2,\"ordenEnBloque\":2}]}]}".formatted(ejercicio.getId(),ejercicio.getId());
+        var mixed=response(post("/api/rutinas"),teacher,definition,201);
+        assertThat(mixed.at("/dias/0/nombre").asText()).isEqualTo("Día 1");
+        long root=mixed.get("id").asLong(),day=mixed.at("/dias/0/id").asLong(),rep=mixed.at("/dias/0/ejercicios/0/id").asLong(),time=mixed.at("/dias/0/ejercicios/1/id").asLong();
+        String config="{\"pesos\":[{\"diaEjercicioId\":%d,\"pesoSugerido\":60,\"repsSugeridas\":10},{\"diaEjercicioId\":%d,\"segundosSugeridos\":60}]}".formatted(rep,time);
+        long assigned=response(post("/api/rutinas/asignar/alumno/"+alumno.getId()+"/rutina/"+root),teacher,config,200).get("id").asLong();
+        var active=response(get("/api/rutinas/me/activa"),student,null,200);
+        assertThat(active.at("/dias/0/ejercicios/0/repsPersonalizadas").asInt()).isEqualTo(10);
+        assertThat(active.at("/dias/0/ejercicios/1/segundosPersonalizados").asInt()).isEqualTo(60);
+        long session=response(post("/api/sesiones"),student,"{\"diaRutinaId\":"+day+",\"fecha\":\""+fecha+"\"}",201).get("id").asLong();
+        response(post("/api/sesiones/"+session+"/series"),student,"{\"diaEjercicioId\":"+time+",\"numeroSerie\":1,\"repsHechas\":45}",400);
+        var result=response(post("/api/sesiones/"+session+"/series"),student,"{\"diaEjercicioId\":"+time+",\"numeroSerie\":1,\"segundosHechos\":44}",201);
+        assertThat(result.get("repsHechas").isNull()).isTrue();assertThat(result.get("segundosHechos").asInt()).isEqualTo(44);
+        response(put("/api/asignaciones/"+assigned+"/pesos"),teacher,"{\"pesos\":[{\"diaEjercicioId\":"+time+",\"segundosSugeridos\":90}],\"revision\":"+active.get("asignacionRevision").asLong()+"}",200);
+        var snapshot=response(get("/api/sesiones/"+session),student,null,200);
+        assertThat(snapshot.at("/pesosSugeridos/1/segundosSugeridos").asInt()).isEqualTo(60);
+        var before=response(get("/api/alumnos/me/estadisticas"),student,null,200);
+        var finished=response(put("/api/sesiones/"+session+"/completar"),student,null,200);
+        assertThat(finished.get("diaCumplido").asBoolean()).isFalse();assertThat(finished.get("seriesRealizadas").asInt()).isEqualTo(1);
+        var after=response(get("/api/alumnos/me/estadisticas"),student,null,200);
+        assertThat(after.at("/datos/repeticionesTotales")).isEqualTo(before.at("/datos/repeticionesTotales"));
+        assertThat(response(get("/api/rutinas/"+root),teacher,null,200).at("/dias/0/ejercicios/1/segundosSugeridos").asInt()).isEqualTo(45);
+        response(get("/api/sesiones/"+session),next,null,403);
+    }
+
     @BeforeEach
     void fixture() throws Exception {
         String suffix = UUID.randomUUID().toString();

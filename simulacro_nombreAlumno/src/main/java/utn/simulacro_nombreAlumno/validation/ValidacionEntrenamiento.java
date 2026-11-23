@@ -21,9 +21,12 @@ public class ValidacionEntrenamiento {
         if (request.getDias() != null) {
             var ordenes = new HashSet<Integer>();
             for (var dia : request.getDias()) {
+                if(dia.getNombre()==null || dia.getNombre().isBlank()) dia.setNombre("Día " + dia.getNumeroOrden());
                 var bloques = new java.util.HashMap<Integer, java.util.List<Object>>();
                 var posiciones = new java.util.HashSet<String>();
                 for(var ejercicio:dia.getEjercicios()) {
+                    var tipo=ejercicio.getTipoMedicion()==null?utn.simulacro_nombreAlumno.model.TipoMedicion.REPETICIONES:ejercicio.getTipoMedicion();
+                    if(tipo==utn.simulacro_nombreAlumno.model.TipoMedicion.SEGUNDOS ? ejercicio.getRepsSugeridas()!=null : ejercicio.getSegundosSugeridos()!=null) throw new ReglaNegocioException("No mezcles segundos y repeticiones en la misma prescripción");
                     if(ejercicio.getPesoSugerido()!=null)throw new ReglaNegocioException("El peso sugerido se configura al asignar la rutina a un alumno, no en la plantilla");
                     if(ejercicio.getBloqueOrden()==null) {
                         if(ejercicio.getVueltas()!=null || ejercicio.getOrdenEnBloque()!=null || ejercicio.getBloqueNombre()!=null || ejercicio.getDescansoEjercicioSegundos()!=null || ejercicio.getDescansoVueltaSegundos()!=null)

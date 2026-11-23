@@ -1,3 +1,4 @@
+import { isTimed, unitLabel, performed } from '../shared/measurement';
 import { WorkoutGrid } from './workout-grid';
 import { DayPlan } from '../shared/day-plan';
 import {
@@ -37,6 +38,7 @@ type Action = 'add' | 'finish' | 'correct' | 'annul' | 'restore' | 'date';
   templateUrl: './session.html',
 })
 export class StudentSession {
+  readonly isTimed=isTimed; readonly unitLabel=unitLabel; readonly performed=performed;
   private readonly api = inject(AlumnoApi);
   private readonly injector = inject(Injector);
   private readonly recordingEntry = viewChild<ElementRef<HTMLElement>>('recordingEntry');
@@ -130,6 +132,8 @@ export class StudentSession {
               ...day,
               ejercicios: day.ejercicios?.map((e) => ({
                 ...e,
+                repsPersonalizadas: session.pesosSugeridos?.find(p=>p.diaEjercicioId===e.id)?.repsSugeridas ?? null,
+                segundosPersonalizados: session.pesosSugeridos?.find(p=>p.diaEjercicioId===e.id)?.segundosSugeridos ?? null,
                 pesoSugerido:
                   session.pesosSugeridos?.find((p) => p.diaEjercicioId === e.id)?.pesoSugerido ??
                   null,
@@ -200,7 +204,7 @@ export class StudentSession {
     this.success.set('');
     this.correction.reset({
       numeroSerie: series.numeroSerie ?? 1,
-      repsHechas: series.repsHechas ?? null,
+      repsHechas: performed(series) ?? null,
       pesoUsado: series.pesoUsado ?? null,
       motivo: '',
     });
@@ -293,7 +297,7 @@ export class StudentSession {
         request = this.api.addSeries(this.id(), {
           diaEjercicioId: this.block()!.id!,
           numeroSerie: Number(v.numeroSerie),
-          repsHechas: Number(v.repsHechas),
+          ...(isTimed(this.block()) ? {segundosHechos:Number(v.repsHechas)} : {repsHechas:Number(v.repsHechas)}),
           pesoUsado: v.pesoUsado == null || String(v.pesoUsado) === '' ? null : Number(v.pesoUsado),
         });
       } else if (action === 'finish')
@@ -314,7 +318,7 @@ export class StudentSession {
         else {
           const body: D.CorreccionSerieRequest = {
             numeroSerie: Number(v.numeroSerie),
-            repsHechas: Number(v.repsHechas),
+            ...(isTimed(this.selectedSeries()) ? {segundosHechos:Number(v.repsHechas)} : {repsHechas:Number(v.repsHechas)}),
             pesoUsado:
               v.pesoUsado == null || String(v.pesoUsado) === '' ? null : Number(v.pesoUsado),
             revision: s.revision!,

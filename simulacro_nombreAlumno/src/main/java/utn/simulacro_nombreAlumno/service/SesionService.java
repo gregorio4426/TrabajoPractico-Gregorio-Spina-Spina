@@ -58,10 +58,14 @@ public class SesionService {
 
         Sesion sesion = Sesion.builder()
                 .alumno(alumno).diaRutina(diaRutina).asignacion(activa).estadoVinculoAsignacion("REGISTRADA")
+                .repsPersonalizados(new java.util.LinkedHashMap<>(activa.getRepsPersonalizados())).segundosPersonalizados(new java.util.LinkedHashMap<>(activa.getSegundosPersonalizados()))
                 .fecha(request.getFecha()).completada(false).pesosSugeridos(new java.util.LinkedHashMap<>(activa.getPesosSugeridos())).build();
         return sesionMapper.toDto(sesionRepository.save(sesion));
     }
 
+    private void validarUnidad(DiaEjercicio ejercicio,Integer reps,Integer segundos) {
+        if(ejercicio.getTipoMedicion()==TipoMedicion.SEGUNDOS ? (segundos==null || reps!=null) : (reps==null || segundos!=null)) throw new ReglaNegocioException("Registrá el resultado con la unidad indicada para este ejercicio");
+    }
     @Transactional
     public SerieResponse registrarSerie(Long sesionId, SerieRequest request, Authentication authentication) {
         Sesion sesion = bloquearPropia(sesionId, authentication);
@@ -73,8 +77,10 @@ public class SesionService {
         if (!diaEjercicio.getDiaRutina().getId().equals(sesion.getDiaRutina().getId()))
             throw new AccessDeniedException("Ese ejercicio no pertenece al día que estás entrenando");
 
+        validarUnidad(diaEjercicio,request.getRepsHechas(),request.getSegundosHechos());
         exigirNumeroDisponible(sesionId, diaEjercicio.getEjercicio().getId(), request.getNumeroSerie(), -1L);
         Serie serie = Serie.builder().sesion(sesion).diaEjercicio(diaEjercicio).ejercicio(diaEjercicio.getEjercicio())
+                .tipoMedicion(diaEjercicio.getTipoMedicion()).segundosHechos(request.getSegundosHechos())
                 .numeroSerie(request.getNumeroSerie()).repsHechas(request.getRepsHechas())
                 .pesoUsado(request.getPesoUsado()).completada(true).build();
         Serie guardada = serieRepository.saveAndFlush(serie);
@@ -157,7 +163,10 @@ public class SesionService {
         if (!restaurar && serie.isAnulada()) throw new ReglaNegocioException("Para una serie anulada usá la restauración explícita");
         if (restaurar && !serie.isAnulada()) throw new ReglaNegocioException("La serie no está anulada");
         exigirNumeroDisponible(sesionId, serie.getDiaEjercicio().getEjercicio().getId(), request.getNumeroSerie(), serieId);
+        validarUnidad(serie.getDiaEjercicio(),request.getRepsHechas(),request.getSegundosHechos());
         String antes = fotoSerie(serie);
+        serie.setTipoMedicion(serie.getDiaEjercicio().getTipoMedicion());
+        serie.setSegundosHechos(request.getSegundosHechos());
         serie.setNumeroSerie(request.getNumeroSerie());
         serie.setRepsHechas(request.getRepsHechas());
         serie.setPesoUsado(request.getPesoUsado());
@@ -246,7 +255,7 @@ public class SesionService {
         datos.put("serieId", serie.getId()); datos.put("sesionId", serie.getSesion().getId());
         datos.put("ejercicioId", serie.getDiaEjercicio().getEjercicio().getId()); datos.put("diaEjercicioId", serie.getDiaEjercicio().getId());
         datos.put("rutinaVersionId", serie.getSesion().getDiaRutina().getRutina().getId());
-        datos.put("numeroSerie", serie.getNumeroSerie()); datos.put("repsHechas", serie.getRepsHechas()); datos.put("pesoUsado", serie.getPesoUsado());
+        datos.put("numeroSerie", serie.getNumeroSerie()); datos.put("repsHechas", serie.getRepsHechas()); datos.put("tipoMedicion",serie.getTipoMedicion()); datos.put("segundosHechos",serie.getSegundosHechos()); datos.put("pesoUsado", serie.getPesoUsado());
         datos.put("completada", serie.isCompletada());
         datos.put("anulada", serie.isAnulada()); datos.put("legadoExento", serie.isLegadoExento());
         datos.put("incidenciaLegado", serie.getIncidenciaLegado()); datos.put("revision", serie.getRevision());

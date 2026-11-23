@@ -15,7 +15,6 @@ import java.util.List;
 @Builder
 public class DiaRutinaRequest {
 
-    @NotBlank
     @Size(max = 255)
     private String nombre;
 

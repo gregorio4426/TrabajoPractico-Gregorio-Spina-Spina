@@ -19,7 +19,7 @@
     <h2>{{ s.rutinaNombre }} · {{ s.diaRutinaNombre }}</h2>
     <div class="student-session-status">
       <span class="student-badge">{{ closed() ? 'Finalizada' : 'Abierta' }}</span
-      ><span>{{ s.fechaEfectiva ?? s.fecha }} · Versión {{ s.numeroVersion }}</span
+      ><span>{{ s.fechaEfectiva ?? s.fecha }} </span
       ><span>Series válidas: {{ s.seriesRealizadas }} / {{ s.seriesEsperadas }}</span
       ><span>Día cumplido: {{ text(s.diaCumplido) }}</span>
     </div>
@@ -60,7 +60,7 @@
     <section #recordingEntry class="student-block-form">
       <h2>Registrar {{ b.ejercicioNombre }}</h2>
       <p class="student-instruction">
-        Número global para este ejercicio dentro de la sesión, incluso si aparece en varios bloques.
+        Elegí el número de serie que querés registrar.
         Podés revisar el número propuesto; repeticiones y peso realizados se ingresan
         explícitamente.
       </p>
@@ -74,7 +74,7 @@
               inputmode="numeric"
               formControlName="numeroSerie" /></label
           ><label
-            >Repeticiones realizadas<input
+            >{{ isTimed(b) ? 'Segundos realizados' : 'Repeticiones realizadas' }}<input
               type="number"
               min="1"
               step="1"
@@ -101,7 +101,7 @@
           @for (serie of previous.series ?? []; track serie.id) {
             @if (validSeries(serie)) {
               <p class="admin-help">
-                Serie {{ serie.numeroSerie }}: {{ serie.repsHechas }} repeticiones · peso
+                Serie {{ serie.numeroSerie }}: {{ performed(serie) }} repeticiones · peso
                 {{ text(serie.pesoUsado) }}
               </p>
             }
@@ -149,7 +149,7 @@
                 step="1"
                 formControlName="numeroSerie" /></label
             ><label
-              >Repeticiones corregidas<input
+              >{{ isTimed(selected) ? 'Segundos corregidos' : 'Repeticiones corregidas' }}<input
                 type="number"
                 min="1"
                 step="1"
@@ -201,7 +201,7 @@
         </div>
         <div class="student-series-values">
           <div>
-            <strong>{{ text(serie.repsHechas) }}</strong
+            <strong>{{ text(performed(serie)) }}</strong
             ><small>repeticiones</small>
           </div>
           <div>

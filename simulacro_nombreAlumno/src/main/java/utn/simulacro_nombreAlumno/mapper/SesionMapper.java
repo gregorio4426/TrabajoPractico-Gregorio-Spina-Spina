@@ -39,7 +39,7 @@ public interface SesionMapper {
     List<SesionResponse> toLISTDto(List<Sesion> sesiones);
     default java.util.List<utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse> pesosDeSesion(Sesion sesion) {
         if(sesion.getDiaRutina()==null || sesion.getDiaRutina().getEjercicios()==null)return java.util.List.of();
-        return sesion.getDiaRutina().getEjercicios().stream().map(e->new utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse(e.getId(),e.getNombreHistorico(),sesion.getPesosSugeridos().get(e.getId()))).toList();
+        return sesion.getDiaRutina().getEjercicios().stream().map(e->new utn.simulacro_nombreAlumno.model.response.PesoSugeridoResponse(e.getId(),e.getNombreHistorico(),sesion.getPesosSugeridos().get(e.getId()),sesion.getRepsPersonalizados().get(e.getId()),sesion.getSegundosPersonalizados().get(e.getId()))).toList();
     }
 
 

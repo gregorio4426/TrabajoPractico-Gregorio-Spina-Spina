@@ -28,9 +28,15 @@ public class DiaEjercicio {
     @Column(nullable = false)
     private Integer seriesSugeridas;
 
-    @Column(nullable = false)
     private Integer repsSugeridas;
 
+    @jakarta.persistence.Enumerated(jakarta.persistence.EnumType.STRING)
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.VARCHAR)
+    @jakarta.persistence.Column(nullable=false, length=20)
+    @org.hibernate.annotations.ColumnDefault("'REPETICIONES'")
+    @Builder.Default
+    private TipoMedicion tipoMedicion = TipoMedicion.REPETICIONES;
+    private Integer segundosSugeridos;
     private Double pesoSugerido;
 
     @Column(updatable = false, length = 60)

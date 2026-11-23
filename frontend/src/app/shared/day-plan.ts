@@ -1,3 +1,4 @@
+import { suggested, unitLabel } from './measurement';
 import { Component, computed, input, output } from '@angular/core';
 import * as D from '../admin/contracts';
 import { text } from '../admin/admin-utils';
@@ -31,16 +32,7 @@ export function prescriptionBlocks(exercises: D.DiaEjercicioResponse[]) {
   template: ` @for (block of blocks(); track block.key; let bi = $index) {
       <section class="routine-block" [attr.aria-label]="block.name || 'Bloque ' + (bi + 1)">
         <h4>
-          {{
-            block.name ||
-              (block.entries.length === 1
-                ? 'Serie individual'
-                : block.entries.length === 2
-                  ? 'Biserie'
-                  : 'Circuito')
-          }}
-          · {{ block.rounds ?? 'Sin indicar' }}
-          {{ block.entries.length === 1 ? 'series' : 'vueltas' }}
+          {{ block.name || 'Bloque ' + (bi + 1) }} · {{ block.rounds ?? '' }} vueltas
         </h4>
         @if (block.entries.length > 1) {
           <p class="admin-help">
@@ -54,13 +46,13 @@ export function prescriptionBlocks(exercises: D.DiaEjercicioResponse[]) {
           <div class="student-prescription">
             <strong>{{ entry.exercise.ejercicioNombre }}</strong>
             <p>
-              {{ entry.exercise.repsSugeridas }} repeticiones
+              {{ suggested(entry.exercise) }} {{ suggested(entry.exercise) == null ? '' : unitLabel(entry.exercise) }}
               @if (block.entries.length > 1) {
                 por vuelta
               }
             </p>
-            @if (showWeights()) {
-              <p>Peso sugerido: {{ text(entry.exercise.pesoSugerido) }} (unidad registrada)</p>
+            @if (showWeights() && entry.exercise.pesoSugerido != null) {
+              <p>Peso sugerido: {{ text(entry.exercise.pesoSugerido) }}</p>
             }
             @if (entry.exercise.descansoEjercicioSegundos != null) {
               <p>
@@ -85,6 +77,7 @@ export function prescriptionBlocks(exercises: D.DiaEjercicioResponse[]) {
     }`,
 })
 export class DayPlan {
+  readonly suggested=suggested; readonly unitLabel=unitLabel;
   readonly exercises = input<D.DiaEjercicioResponse[]>([]);
   readonly showWeights = input(false);
   readonly selectable = input(false);

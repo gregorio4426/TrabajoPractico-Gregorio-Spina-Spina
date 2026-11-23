@@ -18,12 +18,14 @@ public final class CumplimientoEntrenamiento {
             }
         }
         for (DiaEjercicio plan : sesion.getDiaRutina().getEjercicios()) {
-            if (plan.getSeriesSugeridas() == null || plan.getSeriesSugeridas() <= 0 || plan.getRepsSugeridas() == null || plan.getRepsSugeridas() <= 0) {
+            if (plan.getSeriesSugeridas() == null || plan.getSeriesSugeridas() <= 0) {
                 return new Resultado(null, 0, vigentes.size());
             }
+            boolean tiempo=plan.getTipoMedicion()==TipoMedicion.SEGUNDOS;
+            Integer objetivo=tiempo?sesion.getSegundosPersonalizados().getOrDefault(plan.getId(),plan.getSegundosSugeridos()):sesion.getRepsPersonalizados().getOrDefault(plan.getId(),plan.getRepsSugeridas());
             esperadas += plan.getSeriesSugeridas();
             long hechas = vigentes.stream().filter(s -> s.getDiaEjercicio() != null && Objects.equals(s.getDiaEjercicio().getId(), plan.getId()))
-                    .filter(s -> s.getRepsHechas() >= plan.getRepsSugeridas()).count();
+                    .filter(s -> s.getTipoMedicion()==plan.getTipoMedicion()).filter(s -> objetivo==null || (tiempo?s.getSegundosHechos():s.getRepsHechas()) >= objetivo).count();
             completo &= hechas >= plan.getSeriesSugeridas();
         }
         // Numeración global por ejercicio, aunque aparezca en dos prescripciones del día.

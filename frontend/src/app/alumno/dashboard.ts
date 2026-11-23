@@ -36,8 +36,8 @@ import { alumnoError, isClosed, text } from './utils';
           <p>
             {{
               d.rutinaActiva
-                ? 'Versión ' + d.rutinaActiva.numeroVersion
-                : 'Vinculate con un profesor para organizar tu entrenamiento.'
+                ? 'Tu plan está listo. Vamos a entrenar.'
+                : 'Elegí un profesor para organizar tu entrenamiento.'
             }}
           </p>
           <a class="primary" routerLink="/alumno/rutina">Ver mi rutina y entrenar</a>
@@ -66,26 +66,8 @@ import { alumnoError, isClosed, text } from './utils';
           </div>
         </section>
       }
-      <section class="admin-metrics">
-        <a routerLink="/alumno/sesiones"
-          ><span>Entrenamientos con datos válidos</span
-          ><strong>{{ text(d.entrenamientos?.entrenamientosConDatosValidos) }}</strong
-          ><small>{{ d.periodo?.desde }} → {{ d.periodo?.hasta }}</small></a
-        ><a routerLink="/alumno/sesiones"
-          ><span>Sesiones finalizadas del período</span
-          ><strong>{{ text(d.entrenamientos?.sesionesFinalizadas) }}</strong
-          ><small>Finalizar no equivale a cumplir todo el día</small></a
-        ><a routerLink="/alumno/progreso"
-          ><span>Repeticiones realizadas</span
-          ><strong>{{ text(d.entrenamientos?.repeticionesTotales) }}</strong
-          ><small>Resultados válidos registrados</small></a
-        ><a routerLink="/alumno/progreso"
-          ><span>Frecuencia semanal observada</span
-          ><strong>{{ text(d.frecuencia?.entrenamientosPorSemana) }}</strong
-          ><small>No representa asistencia</small></a
-        >
-      </section>
-      <app-student-progress [period]="period()" [showDates]="false" />
+
+      <app-student-progress [period]="period()" [showDates]="false" [compact]="true" />
     }`,
 })
 export class StudentDashboard {

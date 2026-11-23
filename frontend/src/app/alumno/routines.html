@@ -9,8 +9,8 @@
 </section>
 <nav class="admin-nav" aria-label="Consulta de rutinas">
   <a routerLink="/alumno/rutina">Rutina activa</a
-  ><a routerLink="/alumno/rutinas">Historial de asignaciones</a
-  ><a routerLink="/alumno/sesiones">Mis sesiones abiertas e historial</a>
+  ><a routerLink="/alumno/rutinas">Rutinas anteriores</a
+  ><a routerLink="/alumno/sesiones">Mis entrenamientos</a>
 </nav>
 @if (loading()) {
   <p class="notice" role="status">Consultando tus rutinas y sesiones…</p>
@@ -24,8 +24,7 @@
       <section class="admin-panel">
         <h2>{{ r.nombre }}</h2>
         <p class="admin-help">
-          {{ r.descripcion }} · Versión {{ r.numeroVersion }}. Las series y pesos sugeridos no son
-          resultados realizados.
+          {{ r.descripcion }}
         </p>
         <form class="admin-filters" [formGroup]="form">
           <label
@@ -57,19 +56,18 @@
     }
   } @else {
     <p class="admin-help">
-      Todas tus asignaciones: activas y anteriores. Consultar una versión antigua no la convierte en
-      tu rutina activa.
+      Tus planes actuales y anteriores, con sus entrenamientos conservados.
     </p>
     <div class="teacher-history-list">
       @for (r of history(); track r.asignacionId) {
         <div>
-          <strong>{{ r.nombre }} · versión {{ r.numeroVersion }}</strong>
+          <strong>{{ r.nombre }}</strong>
           <p>
             {{ r.fechaInicio }} → {{ r.fechaFin ?? 'Sin cierre' }} ·
             {{ r.activa ? 'Activa' : 'Anterior' }}
           </p>
           <button class="secondary" (click)="selected.set(r)">
-            Ver {{ r.nombre }} · versión {{ r.numeroVersion }}
+            Ver {{ r.nombre }}
           </button>
         </div>
       } @empty {
@@ -78,7 +76,7 @@
     </div>
     @if (selected(); as r) {
       <section class="admin-panel">
-        <h2>{{ r.nombre }} · versión histórica {{ r.numeroVersion }}</h2>
+        <h2>{{ r.nombre }}</h2>
         <app-student-prescription [routine]="r" />
       </section>
     }

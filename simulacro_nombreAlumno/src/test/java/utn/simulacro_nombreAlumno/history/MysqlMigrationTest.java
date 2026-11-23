@@ -291,6 +291,12 @@ class MysqlMigrationTest {
             script(connection,"/db/mysql/007_pesos_por_asignacion.sql");
             assertThat(number(connection,"SELECT COUNT(*) FROM pesos_asignacion WHERE dia_ejercicio_id=1")).isZero();
             assertThat(number(connection,"SELECT COUNT(*) FROM dias_ejercicio WHERE id=1 AND peso_sugerido=0")).isEqualTo(1);
+            script(connection,"/db/mysql/008_medicion_y_personalizacion.sql");
+            script(connection,"/db/mysql/008_medicion_y_personalizacion.sql");
+            assertThat(number(connection,"SELECT COUNT(*) FROM gimnasio_schema_migrations WHERE version_num=8")).isEqualTo(1);
+            assertThat(number(connection,"SELECT COUNT(*) FROM sesiones")).isEqualTo(sessions);
+            assertThat(number(connection,"SELECT COUNT(*) FROM series")).isEqualTo(performed);
+            assertThat(number(connection,"SELECT COUNT(*) FROM series WHERE tipo_medicion <> 'REPETICIONES' OR segundos_hechos IS NOT NULL")).isZero();
             assertThat(number(connection,"SELECT COUNT(*) FROM grupos_musculares")).isEqualTo(6);
             assertThat(number(connection,"SELECT COUNT(*) FROM dias_ejercicio WHERE bloque_orden IS NOT NULL")).isZero();
         }

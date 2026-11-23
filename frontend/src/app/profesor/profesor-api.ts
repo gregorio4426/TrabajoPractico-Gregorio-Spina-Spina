@@ -105,7 +105,7 @@ export class ProfesorApi {
   updateAssignmentWeights(
     id: number,
     body: {
-      pesos: Array<{ diaEjercicioId: number; pesoSugerido: number | null }>;
+      pesos: Array<{ diaEjercicioId: number; pesoSugerido: number | null; repsSugeridas?:number|null; segundosSugeridos?:number|null }>;
       revision: number | null;
     },
   ) {
@@ -115,7 +115,7 @@ export class ProfesorApi {
     studentId: number,
     routineId: number,
     body?: {
-      pesos: Array<{ diaEjercicioId: number; pesoSugerido: number | null }>;
+      pesos: Array<{ diaEjercicioId: number; pesoSugerido: number | null; repsSugeridas?:number|null; segundosSugeridos?:number|null }>;
       revision?: number | null;
     },
   ) {

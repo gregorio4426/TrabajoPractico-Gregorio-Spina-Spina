@@ -16,7 +16,7 @@ class EstadisticaRepository {
     private static final String FECHA="COALESCE(s.fecha_corregida,s.fecha)";
     // Misma regla que Serie.isVigenteValida, más coherencia de identidad/día.
     private static final String VALIDA="se.id IS NOT NULL AND se.anulada=false AND se.legado_exento=false AND se.completada=true "
-            +"AND se.numero_serie>0 AND se.reps_hechas>0 AND (se.peso_usado IS NULL OR (se.peso_usado>=0 AND se.peso_usado<=1.7976931348623157E308)) "
+            +"AND se.numero_serie>0 AND ((se.tipo_medicion='REPETICIONES' AND se.reps_hechas>0 AND se.segundos_hechos IS NULL) OR (se.tipo_medicion='SEGUNDOS' AND se.segundos_hechos>0 AND se.reps_hechas IS NULL)) AND (se.peso_usado IS NULL OR (se.peso_usado>=0 AND se.peso_usado<=1.7976931348623157E308)) "
             +"AND se.ejercicio_id=de.ejercicio_id AND de.dia_rutina_id=s.dia_rutina_id";
     private static final String FROM=" FROM sesiones s LEFT JOIN series se ON se.sesion_id=s.id "
             +"LEFT JOIN dias_ejercicio de ON de.id=se.dia_ejercicio_id LEFT JOIN ejercicios e ON e.id=se.ejercicio_id WHERE ";
@@ -74,7 +74,7 @@ class EstadisticaRepository {
             Collection<Long> sesiones,Collection<Long> alumnos,Consumer<RegistroEstadistico> consumer) {
         Consulta c=base(a,p,soloValidas);lista(c,FECHA,dias);lista(c,"se.ejercicio_id",ejercicios);lista(c,"s.id",sesiones);lista(c,"s.alumno_id",alumnos);
         c.sql="SELECT s.id AS sesion_id,s.alumno_id,s.fecha,"+FECHA+" AS fecha_efectiva,s.completada AS finalizada,"
-                +"se.id AS serie_id,se.ejercicio_id,de.ejercicio_nombre_snapshot,se.numero_serie,se.reps_hechas,se.peso_usado,"
+                +"se.id AS serie_id,se.ejercicio_id,de.ejercicio_nombre_snapshot,se.numero_serie,se.reps_hechas,se.peso_usado,se.tipo_medicion,se.segundos_hechos,"
                 +"se.completada,se.anulada,se.legado_exento,CASE WHEN se.ejercicio_id=de.ejercicio_id AND de.dia_rutina_id=s.dia_rutina_id THEN true ELSE false END AS coherente"
                 +c.sql+" ORDER BY s.id ASC,se.id ASC";
         jdbc.query(connection->{
@@ -89,6 +89,6 @@ class EstadisticaRepository {
                 rs.getObject("fecha",LocalDate.class),rs.getObject("fecha_efectiva",LocalDate.class),rs.getBoolean("finalizada"),
                 rs.getObject("serie_id",Long.class),rs.getObject("ejercicio_id",Long.class),rs.getString("ejercicio_nombre_snapshot"),
                 rs.getObject("numero_serie",Integer.class),rs.getObject("reps_hechas",Integer.class),rs.getObject("peso_usado",Double.class),
-                rs.getBoolean("completada"),rs.getBoolean("anulada"),rs.getBoolean("legado_exento"),rs.getBoolean("coherente"))));
+                rs.getBoolean("completada"),rs.getBoolean("anulada"),rs.getBoolean("legado_exento"),rs.getBoolean("coherente"),rs.getString("tipo_medicion"),rs.getObject("segundos_hechos",Integer.class))));
     }
 }

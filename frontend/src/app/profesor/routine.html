@@ -1,12 +1,12 @@
 <p><a class="admin-link" routerLink="/profesor/rutinas">← Volver a rutinas</a></p>
 <div class="page-intro admin-kicker">
-  <h1>Detalle de rutina{{ selectedVersion() ? ' · versión ' + selectedVersion() : '' }}</h1>
+  <h1>Tu rutina</h1>
   <button class="secondary" (click)="load()" [disabled]="loading() || pending()">
     Recargar rutina
   </button>
 </div>
 @if (loading()) {
-  <p class="notice" role="status">Consultando rutina y versiones…</p>
+  <p class="notice" role="status">Cargando rutina…</p>
 }
 @if (error()) {
   <p class="error-message" role="alert">{{ error() }}</p>
@@ -34,7 +34,7 @@
     @if (own() && !r.archivada) {
       <div class="admin-actions">
         <a class="primary" [routerLink]="['/profesor/rutinas', id(), 'editar']"
-          >Editar última versión</a
+          >Editar rutina</a
         ><button class="secondary" (click)="ask('archive')" [disabled]="pending()">
           Archivar rutina
         </button>
@@ -44,21 +44,21 @@
       <form class="admin-filters" [formGroup]="form" (ngSubmit)="ask('assign')">
         <app-entity-picker
           kind="alumnos"
-          label="Alumno vinculado"
+          label="Alumno"
           [options]="studentOptions()"
           formControlName="alumnoId"
         /><button class="primary" [disabled]="pending() || students().length === 0">
-          Asignar última versión
+          Asignar rutina
         </button>
       </form>
-      <app-assignment-weights #weights [routine]="r" />
+      @if (form.controls.alumnoId.value) { <app-assignment-weights #weights [routine]="r" /> }
       @if (!students().length) {
         <p class="admin-help">No hay alumnos vinculados disponibles para asignación.</p>
       }
     }
     @if (assignedId()) {
       <a class="admin-link" [routerLink]="['/profesor/asignaciones', assignedId()]"
-        >Editar pesos de la asignación</a
+        >Editar sugerencias del alumno</a
       >
     }
     @for (day of r.dias ?? []; track day.id) {
@@ -70,8 +70,7 @@
       <app-record-view [value]="r" [hiddenFields]="['pesoSugerido', 'dias']" />
     </details>
   </section>
-  <section class="admin-panel">
-    <h2>Versiones conservadas</h2>
+  <details class="admin-panel"><summary>Historial de cambios</summary>
     <p class="admin-help">
       Editar crea una versión nueva si hay cambios. Archivar no elimina las versiones ni los
       resultados anteriores. La asignación siempre usa la última versión disponible.
@@ -88,7 +87,7 @@
         >Consultar la última versión</a
       >
     </p>
-  </section>
+  </details>
 }
 <app-teacher-confirm
   #confirmation

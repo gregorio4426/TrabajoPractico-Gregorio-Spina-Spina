@@ -5,6 +5,7 @@ export { text } from '../admin/admin-utils';
 export const notBlank: ValidatorFn = (c) => (String(c.value ?? '').trim() ? null : { blank: true });
 export const positiveInteger: ValidatorFn = (c) =>
   Number.isSafeInteger(Number(c.value)) && Number(c.value) > 0 ? null : { integer: true };
+export const optionalPositiveInteger: ValidatorFn = c => c.value === null || c.value === '' ? null : positiveInteger(c);
 export const optionalWeight: ValidatorFn = (c) =>
   c.value === null || c.value === '' || (Number.isFinite(Number(c.value)) && Number(c.value) >= 0)
     ? null

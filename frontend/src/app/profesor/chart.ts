@@ -22,9 +22,9 @@ export function chartNumber(value: ChartPoint['value']): number | null {
   imports: [RouterLink],
   template: `<section class="teacher-chart">
     <h3>{{ title() }}</h3>
-    <p class="chart-scroll-help">
+    @if(!friendly()) { <p class="chart-scroll-help">
       Desplazá horizontalmente el gráfico o la tabla si no entran en pantalla.
-    </p>
+    </p> }
     @if (points().length) {
       <div
         class="teacher-chart-scroll"
@@ -75,7 +75,7 @@ export function chartNumber(value: ChartPoint['value']): number | null {
         </svg>
       </div>
       <details>
-        <summary>Ver valores exactos de {{ title().toLowerCase() }}</summary>
+        <summary>{{ friendly() ? 'Ver registros' : 'Ver valores exactos de ' + title().toLowerCase() }}</summary>
         <div
           class="admin-table-wrap"
           tabindex="0"
@@ -118,17 +118,18 @@ export function chartNumber(value: ChartPoint['value']): number | null {
           </table>
         </div>
       </details>
-      <p class="admin-help">
+      @if(!friendly()) { <p class="admin-help">
         El trazado es aproximado. Los datos ausentes o fuera de precisión gráfica no se unen ni se
         convierten en cero. Se muestran solo los registros de la página consultada, espaciados por
         registro y no por tiempo transcurrido.
-      </p>
+      </p> }
     } @else {
       <p class="admin-empty">Sin datos registrados para este gráfico.</p>
     }
   </section>`,
 })
 export class Chart {
+  readonly friendly = input(false);
   readonly title = input.required<string>();
   readonly points = input<ChartPoint[]>([]);
   readonly kind = input<'line' | 'bar'>('line');

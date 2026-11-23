@@ -34,4 +34,8 @@ public class DiaEjercicioResponse {
     private Integer descansoEjercicioSegundos;
     private Integer descansoVueltaSegundos;
 
+    private utn.simulacro_nombreAlumno.model.TipoMedicion tipoMedicion;
+    private Integer segundosSugeridos;
+    private Integer repsPersonalizadas;
+    private Integer segundosPersonalizados;
 }
