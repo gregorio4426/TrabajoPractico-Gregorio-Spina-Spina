@@ -167,12 +167,12 @@ Configurar `GYM_E2E_PRODUCTION=1` para probar Angular en modo producción, o `GY
 
 | Verificación | Resultado |
 | --- | --- |
-| Backend, incluidos contratos HTTP, seguridad y MySQL | **218 pruebas aprobadas, sin omisiones** |
-| Angular: unitarias e integración HTTP | **131 pruebas aprobadas** |
-| Chromium con Angular en configuración de producción | **58 aprobadas**: 50 con API real y 8 de interfaz aislada |
+| Backend, incluidos contratos HTTP, seguridad y MySQL | **219 pruebas aprobadas, sin omisiones** |
+| Angular: unitarias e integración HTTP | **139 pruebas aprobadas** |
+| Chromium con Angular en configuración de producción | **59 aprobadas**: 51 con API real y 8 de interfaz aislada |
 | Compilación Angular de producción | Aprobada |
 
-Los recorridos incluyen regresión de los tres roles, permisos, versiones, sesiones parciales, comentarios, estadísticas y pantallas de escritorio/tablet/celular. Ver el [informe de rutinas simplificadas y registro por vuelta](simulacro_nombreAlumno/docs/rutinas-simples.md).
+Los recorridos incluyen regresión de los tres roles, permisos, versiones, sesiones parciales, comentarios, estadísticas y pantallas de escritorio/tablet/celular. La actualización IMPULSO agrega ejercicios por segundos, sugerencias personales, calendario con acceso al historial y simplificación de los paneles. Ver el [informe actual y la migración obligatoria 008 para instalaciones existentes](simulacro_nombreAlumno/docs/redisenio-impulso.md).
 
 ## Arquitectura y contratos
 

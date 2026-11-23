@@ -38,6 +38,32 @@ El script detiene frontend/backend, genera un respaldo con `mysqldump`, lo copia
 
 En una instalación nueva, la imagen MySQL incorpora automáticamente 001–008. Después de actualizar, abrir http://localhost:8088 y recargar el navegador.
 
-## Verificación en curso
+## Verificación final
 
-La compilación de producción pasó, al igual que 139 pruebas unitarias/HTTP de Angular y 219 del backend, incluidas MySQL sin omisiones. El recorrido nuevo de Chromium ya comprueba datos por tiempo, personalización independiente de alumnos, persistencia, catálogo sin versiones duplicadas y pantallas móviles. Los resultados completos se actualizan al cerrar la regresión.
+Verificado el 23/11/2026:
+
+- Compilación Angular de producción y empaquetado JAR aprobados.
+- **139 pruebas unitarias/HTTP de Angular**, en 27 archivos.
+- **219 pruebas del backend**, incluidas MySQL y repetición de la migración 008 sobre datos existentes; sin fallos, errores ni omisiones.
+- **59 recorridos Chromium aprobados** con Angular en configuración de producción: 51 contra el backend real y 8 de interfaz aislada. Incluyen regresión ADMIN/PROFESOR/ALUMNO, escritorio/tablet/celular, JWT, permisos y respuestas 400/401/403/404/409. El recorrido nuevo comprueba datos por tiempo, personalización independiente de alumnos, persistencia, catálogo sin versiones duplicadas y pantallas móviles.
+
+Durante la repetición se interrumpió el proceso local del backend y se descartaron esas corridas sin conexión; la ejecución completa posterior, con el servicio activo en una sesión persistente, aprobó los 59 casos sin omisiones.
+
+El recorrido `frontend/e2e/ux-impulso.spec.ts` también comprueba que seleccionar un día del calendario abre el historial con ambas fechas aplicadas, y que guardar resultados de un ejercicio no borra el borrador de otro. Las pruebas de cálculos verifican semanas de lunes a domingo, continuidad semanal, sesiones por tiempo, series anuladas, fechas desconocidas o futuras y valores personalizados.
+
+Comandos de verificación (con requisitos y credenciales configurados según los README):
+
+```bash
+# Backend: configurar MYSQL_TEST_URL, MYSQL_TEST_USERNAME y MYSQL_TEST_PASSWORD
+cd simulacro_nombreAlumno
+./mvnw test
+./mvnw -DskipTests package
+
+# Frontend; requiere API real iniciada para el último comando
+cd ../frontend
+npm ci
+npm run check
+GYM_E2E_PRODUCTION=1 GYM_E2E_CREDENTIALS_FILE=/ruta/privada/accounts.json CHROMIUM_PATH=/usr/bin/chromium npm run e2e:real
+```
+
+Limitaciones: las vistas móviles se verifican con Chromium emulando tamaños, no en dispositivos físicos. La evolución de peso conserva la paginación y precisión de la API; no se inventan cargas cuando faltan, ni volumen para ejercicios por tiempo. Las sesiones capturan la prescripción y las sugerencias al comenzar: los cambios posteriores no alteran su historial. Esta entrega no publica un servidor ni realiza merge a `master`.

@@ -1,5 +1,7 @@
 # Validación del stack Docker
 
+Este informe corresponde a la dockerización original. Para los contratos actuales de IMPULSO, la migración obligatoria **008** y los resultados de las pruebas posteriores, consultar el [informe de actualización](../simulacro_nombreAlumno/docs/redisenio-impulso.md). Las pruebas de esta actualización utilizan Angular y el backend reales contra MySQL; no equivalen a una nueva construcción completa de imágenes Docker.
+
 Se construyeron imágenes multietapa de Angular 22/Node 24, Java 21/Maven y MySQL 8.4. Los scripts SQL originales se copiaron sin cambios a la imagen de MySQL; el arranque se comprobó sobre un volumen nuevo e independiente de las bases anteriores.
 
 Resultados:
